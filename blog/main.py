@@ -23,6 +23,26 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     db.refresh(new_blog)
     return new_blog
 
+@app.delete('/blog/{id}',status_code = status.HTTP_204_NO_CONTENT)
+def destroy(id, db: Session = Depends(get_db)):
+    blog = db.query(models.Blog).filter(models.Blog.id ==id)
+    if not blog:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Blog with id {id} not found")
+    blog.delete(synchronize_session=False)
+    db.commit()
+    return {'detail': f'deleted blog number {id}'}
+
+
+@app.put('/blog/{id}', status_code = status.HTTP_202_ACCEPTED)
+def update(id,request: schemas.Blog, db: Session = Depends(get_db)):
+    blog = db.query(models.Blog).filter(models.Blog.id == id)
+    if not blog:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"blog id number {id} not found")
+    blog.update({models.Blog.title: request.title, models.Blog.body: request.body})
+    db.commit()
+    return db.query(models.Blog).filter(models.Blog.id == id).first()
+    
+
 
 @app.get('/blog')
 def all(db: Session = Depends(get_db)):
