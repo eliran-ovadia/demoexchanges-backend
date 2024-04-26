@@ -35,4 +35,4 @@ class Blog(BaseModel):
 
 @app.post('/blog')
 def create_blog(request: Blog):
-    return {'data': f"blog is created with title as {request.title}"}
+    return {'data': f"blog is created with title as: {request.title},the body is: {request.body}. and {request.published}"}
