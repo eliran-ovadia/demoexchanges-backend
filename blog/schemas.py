@@ -1,21 +1,7 @@
 #--------------------------------schemas is reffering to the way the API interracts with the responses/requests------------------------------------
-
 from pydantic import BaseModel
+from typing import List
 
-
-
-class Blog(BaseModel):
-    title: str
-    body: str
-
-
-class ShowBlog(BaseModel):
-    title: str # return in the response only the title of the blog
-    
-    #class Config(): #I dont need it for my version
-    #    orm_mode = True #I dont need it for my version
-    
-    
 
 class User(BaseModel):
     name: str
@@ -23,6 +9,24 @@ class User(BaseModel):
     password: str
     
     
+class Blog(BaseModel):
+    title: str
+    body: str
+    
+    
+    
+    
 class ShowUser(BaseModel):
     name: str
     email: str
+    blogs: List[Blog]
+    
+
+
+class ShowBlog(BaseModel):
+    title: str # return in the response only the title of the blog
+    body: str
+    creator: ShowUser
+    #class Config(): #I dont need it for my version
+    #    orm_mode = True #I dont need it for my version
+    
