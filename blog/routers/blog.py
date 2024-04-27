@@ -3,13 +3,15 @@ from fastapi import APIRouter, Depends, status
 from .. import schemas, database
 from sqlalchemy.orm import Session
 from .repository import blog
+from ..oauth2 import get_current_user
+
 
 router = APIRouter(tags = ['blogs'], prefix = "/blog")
 check_db = Depends(database.get_db)
-
+check_auth = Depends(get_current_user)
 
 @router.get('/', response_model = List[schemas.ShowBlog])
-def all(db: Session = check_db):
+def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return blog.get_all(db)
 
 @router.get('/{id}', status_code = 200, response_model = schemas.ShowBlog)
