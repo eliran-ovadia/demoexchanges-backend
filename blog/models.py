@@ -1,3 +1,4 @@
+#--------------------------------models is reffering to the way the database interracts with the responses/requests------------------------------------
 from sqlalchemy import Column, Integer, String
 from .database import Base
 
