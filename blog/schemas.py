@@ -29,4 +29,9 @@ class ShowBlog(BaseModel):
     creator: ShowUser
     #class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
-    
+
+
+
+class Login(BaseModel):
+    username: str
+    password: str
