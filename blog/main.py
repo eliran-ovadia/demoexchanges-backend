@@ -1,10 +1,9 @@
 from typing import List
 from fastapi import FastAPI, Depends, status , HTTPException, Response
 from pydantic  import BaseModel
-from . import schemas, models
+from . import schemas, models, hashing
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 
 app = FastAPI()
 
@@ -59,14 +58,10 @@ def show(id,response: Response, db: Session = Depends(get_db)):
     return blog
     
     
-    
-
-pwd_cxt = CryptContext(schemes = ['bcrypt'], deprecated = "auto")
 
 @app.post('/user')
 def create_user(request: schemas.User, db: Session = Depends(get_db)):
-    hashedPassword = pwd_cxt.hash(request.password)
-    new_user = models.User(name = request.name, email = request.email, password = hashedPassword)
+    new_user = models.User(name = request.name, email = request.email, password = hashing.Hash.bcrypt(request.password))
     db.add(new_user)
     db.commit()
     db.refresh(new_user) #refreshing the new_user to be able to return the newly created user
