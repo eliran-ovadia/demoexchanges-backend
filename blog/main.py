@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import FastAPI, Depends, status , HTTPException, Response
 from pydantic  import BaseModel
 from . import schemas, models
@@ -6,7 +7,7 @@ from sqlalchemy.orm import Session
 
 app = FastAPI()
 
-models.Base.metadata.create_all(engine)
+models.Base.metadata.create_all(engine) #evey time we find a new base we create the table for it
 
 def get_db():
     db = SessionLocal()
@@ -44,15 +45,25 @@ def update(id,request: schemas.Blog, db: Session = Depends(get_db)):
     
 
 
-@app.get('/blog')
+@app.get('/blog', response_model = List[schemas.ShowBlog])
 def all(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     return blogs
 
-@app.get('/blog/{id}', status_code = 200)
+@app.get('/blog/{id}', status_code = 200, response_model = schemas.ShowBlog)
 def show(id,response: Response, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
     if not blog:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"blog with id of {id} is not in the database")
     return blog
     
+    
+    
+
+@app.post('/user')
+def create_user(request: schemas.User, db: Session = Depends(get_db)):
+    new_user = models.User(**request.model_dump())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user) #refreshing the new_user to be able to return the newly created user
+    return new_user
