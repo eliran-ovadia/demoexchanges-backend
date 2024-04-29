@@ -4,6 +4,7 @@ from .database import Base
 from sqlalchemy.orm import relationship
 
 
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(String, primary_key = True, index = True, unique = True)

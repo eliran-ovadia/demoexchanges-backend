@@ -21,7 +21,7 @@ class ShowPortfolio(BaseModel):
     lastPrice: float
     totalValue: float
     profit: float
-    user_id: int
+    user_id: str
     #class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
     

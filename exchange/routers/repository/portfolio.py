@@ -3,8 +3,8 @@ from ... import models, schemas
 from fastapi import HTTPException, status
 
 def get_all(db: Session):
-    blogs = db.query(models.Portfolio).all()
-    return blogs
+    portfolios = db.query(models.Portfolio).all()
+    return portfolios
 
 def create(request: schemas.Portfolio, db: Session):
     new_blog = models.Portfolio(title = request.title, body = request.body, user_id = 1)
