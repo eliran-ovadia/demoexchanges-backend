@@ -9,7 +9,7 @@ router = APIRouter(tags = ['users'], prefix = '/users')
 check_db = Depends(database.get_db)
 
 
-@router.post('/', response_model = schemas.ShowUser)
+@router.post('/', response_model = schemas.User)
 def create_user(request: schemas.User, db: Session = check_db):
     return user.create_user(request, db)
 

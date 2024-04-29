@@ -9,28 +9,28 @@ class User(BaseModel):
     password: str
     
     
-class Blog(BaseModel):
-    title: str
-    body: str
+class Portfolio(BaseModel):
+    symbol: str
+    amount: int
     
     
+class ShowPortfolio(BaseModel):
+    symbol: str
+    amount: int
+    costPrice: float
+    lastPrice: float
+    totalValue: float
+    profit: float
+    user_id: int
+    #class Config(): #I dont need it for my version
+    #    orm_mode = True #I dont need it for my version
     
     
 class ShowUser(BaseModel):
     name: str
     email: str
-    blogs: List[Blog]
+    blogs: List[ShowPortfolio]
     
-
-
-class ShowBlog(BaseModel):
-    title: str # return in the response only the title of the blog
-    body: str
-    creator: ShowUser
-    #class Config(): #I dont need it for my version
-    #    orm_mode = True #I dont need it for my version
-
-
 
 class Login(BaseModel):
     username: str

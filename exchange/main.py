@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from . import models
 from .database import engine
-from .routers import blog, user, authentication
+from .routers import portfolio, user, authentication
 
 app = FastAPI()
 
@@ -9,5 +9,5 @@ models.Base.metadata.create_all(engine) #evey time we find a new base we create 
 
 
 app.include_router(authentication.router)
-app.include_router(blog.router)
+app.include_router(portfolio.router)
 app.include_router(user.router)
