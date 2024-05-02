@@ -10,7 +10,7 @@ check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
 @router.post('/', response_model = schemas.User, status_code = status.HTTP_201_CREATED)
-def create_user(request: schemas.CreateUser, db: Session = check_db, current_user: schemas.User = check_auth):
+def create_user(request: schemas.CreateUser, db: Session = check_db):
     return user.create_user(request, db)
 
 @router.get('/{email}', response_model = schemas.User, status_code = status.HTTP_200_OK)

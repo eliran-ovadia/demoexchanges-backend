@@ -28,6 +28,7 @@ class CreateUser(BaseModel):
     name: str
     email: str
     password: str
+    is_admin: bool = False
 
 
 class User(BaseModel):
@@ -35,6 +36,7 @@ class User(BaseModel):
     name: str
     email: str
     password: str
+    is_admin: bool
     portfolio: List[ShowPortfolio]
 
         

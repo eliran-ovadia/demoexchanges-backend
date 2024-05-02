@@ -1,5 +1,5 @@
 #--------------------------------models is reffering to the way the database interracts with the responses/requests------------------------------------
-from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean
 from .database import Base
 from sqlalchemy.orm import relationship
 
@@ -11,6 +11,7 @@ class User(Base):
     name = Column(String, nullable = False)
     email = Column(String, unique = True, nullable=False) #candidate key
     password = Column(String, nullable = False)
+    is_admin = Column(Boolean, nullable = False)
     
     portfolio = relationship("Portfolio", back_populates = "creator")
 

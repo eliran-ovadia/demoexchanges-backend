@@ -18,6 +18,8 @@ def deleteportfolio(email: str, db: Session):
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with email {email} not found")
+    if user.id == "admin":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Admin is not deletable.")
     
     userPortfolio = db.query(models.Portfolio).filter(models.Portfolio.user_id == user.id).all()
     if not userPortfolio:
