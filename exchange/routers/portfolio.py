@@ -16,14 +16,14 @@ def all(db: Session = check_db, current_user: schemas.User = check_auth):
 
 @router.get('/getportfolio/{email}', status_code = 200, response_model = List[schemas.ShowPortfolio])
 def getPortfolio(email: str, db: Session = check_db, current_user: schemas.User = Depends(get_current_user)):
-    return portfolio.getPortfolio(email, db, current_user)
+    return portfolio.getPortfolio(email, db)
 
-@router.post('/', status_code=status.HTTP_201_CREATED)
-def create(request: schemas.Portfolio, db: Session = check_db, current_user: schemas.User = check_auth):
-    return portfolio.create(request, db)
+@router.post('/Order/{email}', response_model = schemas.ShowPortfolio, status_code=status.HTTP_201_CREATED)
+def order(email: str, request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
+    return portfolio.order(email, request, db)
 
 @router.put('/{id}', status_code = status.HTTP_202_ACCEPTED)
-def update(id,request: schemas.Portfolio, db: Session = check_db, current_user: schemas.User = check_auth):
+def update(id,request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.update(id, db, request)
 
 

@@ -6,10 +6,10 @@ from typing import List
 class ShowPortfolio(BaseModel): #get a stock object
     symbol: str
     amount: int
-    costPrice: float
-    lastPrice: float
-    totalValue: float
-    profit: float
+    costPrice: float | None = None
+    lastPrice: float | None = None
+    totalValue: float | None = None
+    profit: float | None = None
     #class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
     
@@ -22,14 +22,11 @@ class User(BaseModel):
     portfolio: List[ShowPortfolio]
 
         
-class Portfolio(BaseModel): #buy/sell stocks for a user
+class Order(BaseModel): #buy/sell stocks for a user
     symbol: str
     amount: int
     
-    
-class GetPortfolio(BaseModel): #get a users portfolio
-    stoks: List[ShowPortfolio]
-    
+
 
 class Login(BaseModel):
     username: str
