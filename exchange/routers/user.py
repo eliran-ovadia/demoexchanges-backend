@@ -13,6 +13,6 @@ check_db = Depends(database.get_db)
 def create_user(request: schemas.User, db: Session = check_db):
     return user.create_user(request, db)
 
-@router.get('/{id}', response_model = schemas.ShowUser)
-def get_user(id: int, db: Session = check_db):
-    return user.get_user(id, db)
+@router.get('/{email}', response_model = schemas.User)
+def get_user(email: str, db: Session = check_db):
+    return user.get_user(email, db)

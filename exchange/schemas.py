@@ -3,33 +3,32 @@ from pydantic import BaseModel
 from typing import List
 
 
-class User(BaseModel):
-    name: str
-    email: str
-    password: str
-    
-    
-class Portfolio(BaseModel):
-    symbol: str
-    amount: int
-    
-    
-class ShowPortfolio(BaseModel):
+class ShowPortfolio(BaseModel): #get a stock object
     symbol: str
     amount: int
     costPrice: float
     lastPrice: float
     totalValue: float
     profit: float
-    user_id: str
     #class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
     
     
-class ShowUser(BaseModel):
+class User(BaseModel):
+    id: str
     name: str
     email: str
-    blogs: List[ShowPortfolio]
+    password: str
+    portfolio: List[ShowPortfolio]
+
+        
+class Portfolio(BaseModel): #buy/sell stocks for a user
+    symbol: str
+    amount: int
+    
+    
+class GetPortfolio(BaseModel): #get a users portfolio
+    stoks: List[ShowPortfolio]
     
 
 class Login(BaseModel):

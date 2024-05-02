@@ -7,10 +7,10 @@ from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column(String, primary_key = True, index = True, unique = True)
-    name = Column(String)
-    email = Column(String, unique = True)
-    password = Column(String)
+    id = Column(String, primary_key = True, index = True, unique = True) #UUID
+    name = Column(String, nullable = False)
+    email = Column(String, unique = True, nullable=False) #candidate key
+    password = Column(String, nullable = False)
     
     portfolio = relationship("Portfolio", back_populates = "creator")
 
@@ -23,6 +23,6 @@ class Portfolio(Base):
     lastPrice = Column(Float)
     totalValue = Column(Float)
     profit = Column(Float)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(String, ForeignKey('users.id'))
     
-    creator = relationship("User", back_populates = "portfolio") 
+    creator = relationship("User", back_populates = "portfolio")

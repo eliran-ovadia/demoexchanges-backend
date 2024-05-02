@@ -14,9 +14,9 @@ check_auth = Depends(get_current_user)
 def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.get_all(db)
 
-@router.get('/{id}', status_code = 200, response_model = schemas.ShowPortfolio)
-def show(id, db: Session = check_db, current_user: schemas.User = check_auth):
-    return portfolio.show(id, db)
+@router.get('/getportfolio/{email}', status_code = 200, response_model = List[schemas.ShowPortfolio])
+def getPortfolio(email: str, db: Session = check_db, current_user: schemas.User = Depends(get_current_user)):
+    return portfolio.getPortfolio(email, db, current_user)
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 def create(request: schemas.Portfolio, db: Session = check_db, current_user: schemas.User = check_auth):

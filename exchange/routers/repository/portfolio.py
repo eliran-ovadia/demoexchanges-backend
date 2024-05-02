@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 from ... import models, schemas
 from fastapi import HTTPException, status
+from typing import List
 
 def get_all(db: Session):
-    portfolios = db.query(models.Portfolio).all()
+    portfolios = db.query(models.Portfolio).all() #for some reson i cannot just return the db object
     return portfolios
 
 def create(request: schemas.Portfolio, db: Session):
@@ -31,8 +32,9 @@ def update(id: int, db: Session, request: schemas.Portfolio):
     return db.query(models.Portfolio).filter(models.Portfolio.id == id).first()
 
 
-def show(id: int, db = Session):
-    Portfolio = db.query(models.Portfolio).filter(models.Portfolio.id == id).first()
-    if not Portfolio:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"blog with id of {id} is not in the database")
-    return Portfolio
+def getPortfolio(email: str, db: Session, current_user: schemas.User):
+    requestedUser: schemas.User = db.query(models.User).filter(models.User.email == email).first()
+    portfolio = requestedUser.portfolio
+    if not portfolio:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"portfolio for account: {current_user.name} - not found")
+    return portfolio
