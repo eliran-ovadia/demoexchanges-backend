@@ -16,7 +16,7 @@ class User(Base):
 
 class Portfolio(Base):
     __tablename__ = 'portfolio'
-    id = Column(Integer, primary_key = True, index = True)
+    stock_id = Column(Integer, primary_key = True, index = True)
     symbol = Column(String)
     amount = Column(Integer)
     costPrice = Column(Float)

@@ -3,6 +3,17 @@ from pydantic import BaseModel
 from typing import List
 
 
+class ShowPortfolioForPool(BaseModel): #get a stock object
+    stock_id: int
+    user_id: str
+    symbol: str
+    amount: int
+    costPrice: float | None = None
+    lastPrice: float | None = None
+    totalValue: float | None = None
+    profit: float | None = None
+
+
 class ShowPortfolio(BaseModel): #get a stock object
     symbol: str
     amount: int
@@ -13,7 +24,12 @@ class ShowPortfolio(BaseModel): #get a stock object
     #class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
     
-    
+class CreateUser(BaseModel):
+    name: str
+    email: str
+    password: str
+
+
 class User(BaseModel):
     id: str
     name: str

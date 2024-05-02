@@ -10,7 +10,7 @@ router = APIRouter(tags = ['portfolios'], prefix = "/portfolio")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
-@router.get('/', response_model = List[schemas.ShowPortfolio])
+@router.get('/getpool', response_model = List[schemas.ShowPortfolioForPool])
 def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.get_all(db)
 
