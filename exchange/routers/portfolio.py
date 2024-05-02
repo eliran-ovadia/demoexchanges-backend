@@ -27,6 +27,6 @@ def update(id,request: schemas.Order, db: Session = check_db, current_user: sche
     return portfolio.update(id, db, request)
 
 
-@router.delete('/{id}',status_code = status.HTTP_204_NO_CONTENT)
-def destroy(id, db: Session = check_db, current_user: schemas.User = check_auth):
-    return portfolio.destroy(id, db)
+@router.delete('/{email}', status_code = status.HTTP_202_ACCEPTED)
+def deleteportfolio(email, db: Session = check_db, current_user: schemas.User = check_auth):
+    return portfolio.deleteportfolio(email, db)

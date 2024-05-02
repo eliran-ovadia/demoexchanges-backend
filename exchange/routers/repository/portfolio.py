@@ -14,13 +14,18 @@ def order(email:str, request: schemas.Order, db: Session):
     db.refresh(new_order)
     return new_order
 
-def destroy(id: int, db: Session):
-    Portfolio = db.query(models.Portfolio).filter(models.Portfolio.id ==id)
-    if not Portfolio:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Blog with id {id} not found")
-    Portfolio.delete(synchronize_session=False)
+def deleteportfolio(email: str, db: Session):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with email {email} not found")
+    
+    userPortfolio = db.query(models.Portfolio).filter(models.Portfolio.user_id == user.id).all()
+    if not userPortfolio:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolio for the user: {email} not found")
+    for portfolio in userPortfolio:
+        db.delete(portfolio)
     db.commit()
-    return {'detail': f'deleted blog number {id}'}
+    return {'detail': f'deleted the entire portfolio for user: {email}'}
 
 
 # def update(id: int, db: Session, request: schemas.Portfolio):
@@ -36,5 +41,5 @@ def getPortfolio(email: str, db: Session):
     requestedUser: schemas.User = db.query(models.User).filter(models.User.email == email).first()
     portfolio = requestedUser.portfolio
     if not portfolio:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"portfolio for account: {current_user.name} - not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"portfolio for account: {email} - not found")
     return portfolio
