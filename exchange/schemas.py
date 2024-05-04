@@ -1,6 +1,7 @@
 #--------------------------------schemas is reffering to the way the API interracts with the responses/requests------------------------------------
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 
 class ShowPortfolioForPool(BaseModel): #get a stock object
@@ -37,7 +38,6 @@ class User(BaseModel):
     email: str
     password: str
     is_admin: bool
-    portfolio: List[ShowPortfolio]
 
         
 class Order(BaseModel): #buy/sell stocks for a user
@@ -49,6 +49,18 @@ class Order(BaseModel): #buy/sell stocks for a user
 class Login(BaseModel):
     username: str
     password: str
+    
+class History(BaseModel):
+    order_id: int | None = None
+    symbol: str | None = None
+    price: float | None = None
+    amount: int | None = None
+    type: str | None = None
+    value: float | None = None
+    profit: float | None = None
+    date: datetime | None = None
+    user_id: str | None = None
+
     
     
 class Token(BaseModel):

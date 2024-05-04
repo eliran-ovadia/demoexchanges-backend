@@ -1,8 +1,7 @@
 #--------------------------------models is reffering to the way the database interracts with the responses/requests------------------------------------
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, DateTime
 from .database import Base
 from sqlalchemy.orm import relationship
-
 
 
 class User(Base):
@@ -13,17 +12,50 @@ class User(Base):
     password = Column(String, nullable = False)
     is_admin = Column(Boolean, nullable = False)
     
+    history = relationship("History", back_populates = "creator")
     portfolio = relationship("Portfolio", back_populates = "creator")
-
+    
+    
 class Portfolio(Base):
     __tablename__ = 'portfolio'
-    stock_id = Column(Integer, primary_key = True, index = True)
+    stock_id = Column(Integer, primary_key=True, index=True, unique=True)
+    user_id = Column(String, ForeignKey('users.id'))
     symbol = Column(String)
     amount = Column(Integer)
-    costPrice = Column(Float)
-    lastPrice = Column(Float)
-    totalValue = Column(Float)
-    profit = Column(Float)
-    user_id = Column(String, ForeignKey('users.id'))
+    avg_price = Column(Float)
+    last_price = Column(Float)
+    day_change_percent = Column(Float)
+    day_change_price = Column(Float)
+    bid = Column(Float)
+    ask = Column(Float)
+    total_value = Column(Float)
+    total_profit = Column(Float)
+    next_report = Column(DateTime)
     
-    creator = relationship("User", back_populates = "portfolio")
+    creator = relationship("User", back_populates="portfolio")
+    fifo = relationship("Fifo", back_populates = "portfolio")
+
+class Fifo(Base):
+    __tablename__ = 'fifo'
+    order_id = Column(Integer, primary_key=True, index=True)
+    price = Column(Float)
+    amount = Column(Integer)
+    date = Column(DateTime)
+    stock_id = Column(Integer, ForeignKey('portfolio.stock_id'))
+    
+    portfolio = relationship("Portfolio", back_populates="fifo")
+
+
+class History(Base):
+    __tablename__ = 'history'
+    order_id = Column(Integer, primary_key=True, index=True)
+    symbol = Column(String)
+    price = Column(Float)
+    amount = Column(Integer)
+    type = Column(String)
+    value = Column(Float)
+    profit = Column(Float)
+    date = Column(DateTime)
+    user_id = Column(String, ForeignKey('users.id'))
+
+    creator = relationship("User", back_populates="history")
