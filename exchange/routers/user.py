@@ -13,9 +13,9 @@ check_auth = Depends(get_current_user)
 def create_user(request: schemas.CreateUser, db: Session = check_db):
     return user.create_user(request, db)
 
-@router.get('/{email}', response_model = schemas.User, status_code = status.HTTP_200_OK)
-def get_user(email: str, db: Session = check_db, current_user: schemas.User = check_auth):
-    return user.get_user(email, db)
+@router.get('/', response_model = schemas.User, status_code = status.HTTP_200_OK)
+def get_user(db: Session = check_db, current_user: schemas.TokenData = check_auth):
+    return user.get_user(current_user, db)
 
 @router.delete('/delete/{email}', status_code = status.HTTP_202_ACCEPTED)
 def delete_user(email: str, db: Session = check_db, current_user: schemas.User = check_auth):

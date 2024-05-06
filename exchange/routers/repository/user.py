@@ -17,10 +17,10 @@ def create_user(request: schemas.CreateUser, db: Session):
     return new_user
 
 
-def get_user(email: str, db: Session):
-    user = db.query(models.User).filter(models.User.email == email).first()
+def get_user(current_user: schemas.TokenData, db: Session):
+    user = db.query(models.User).filter(models.User.email == current_user.email).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"User with id of {id} is not in the database")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"User with id of {current_user.email} is not in the database")
     return user
 
 def delete_user(email: str, db: Session):
