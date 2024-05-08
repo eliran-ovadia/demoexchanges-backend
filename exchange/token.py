@@ -4,7 +4,7 @@ from . import schemas
 
 SECRET_KEY = "b1f8e2ef0fb1874b24d54c8675ca002791f7769c0337725389c67c0d33f2c317"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -21,10 +21,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 def verify_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        id: str = payload.get("sub")
+        is_admin: bool = payload.get("is_admin")
+        email: str = payload.get("email")
+        name: str = payload.get("name")
+        if id is None:
             raise credentials_exception
-        token_data = schemas.TokenData(email=email)
+        token_data = schemas.TokenData(id=id, is_admin=is_admin, email=email, name=name)
     except JWTError:
         raise credentials_exception
     return token_data # From my understanding in a website i will not return the data, but will save the bearer in a coockie in front-end

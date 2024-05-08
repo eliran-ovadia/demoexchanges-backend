@@ -29,7 +29,6 @@ class CreateUser(BaseModel):
     name: str
     email: str
     password: str
-    is_admin: bool = False
 
 
 class User(BaseModel):
@@ -39,7 +38,6 @@ class User(BaseModel):
     password: str
     is_admin: bool
 
-        
 class Order(BaseModel): #buy/sell stocks for a user
     symbol: str
     amount: int
@@ -62,11 +60,14 @@ class History(BaseModel):
     user_id: str | None = None
 
     
-    
+#--------------------------Token--------------------------
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 
 class TokenData(BaseModel):
-    email: str | None = None
+    id: str
+    is_admin: bool
+    email: str
+    name: str

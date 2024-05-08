@@ -18,5 +18,5 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = check_db
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"Invalid credentials 2")
     
     #---------creating_access_token----------------------------
-    access_token = token.create_access_token(data={"sub": user.email})
+    access_token = token.create_access_token(data={"sub": user.id , "is_admin": user.is_admin, "name": user.name, "email": user.email})
     return schemas.Token(access_token=access_token, token_type="bearer")
