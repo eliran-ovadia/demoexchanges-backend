@@ -10,10 +10,11 @@ class User(Base):
     name = Column(String, nullable = False)
     email = Column(String, unique = True, nullable=False) #candidate key
     password = Column(String, nullable = False)
+    cash = Column(Float, nullable = False)
     is_admin = Column(Boolean, nullable = False)
     
-    history = relationship("History", back_populates = "creator")
-    portfolio = relationship("Portfolio", back_populates = "creator")
+    history = relationship("History", back_populates = "creator", cascade="all, delete-orphan")
+    portfolio = relationship("Portfolio", back_populates = "creator", cascade="all, delete-orphan")
     
     
 class Portfolio(Base):
@@ -33,7 +34,7 @@ class Portfolio(Base):
     next_report = Column(DateTime)
     
     creator = relationship("User", back_populates="portfolio")
-    fifo = relationship("Fifo", back_populates = "portfolio")
+    fifo = relationship("Fifo", back_populates = "portfolio", cascade="all, delete-orphan")
 
 class Fifo(Base):
     __tablename__ = 'fifo'

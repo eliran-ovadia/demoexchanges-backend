@@ -22,7 +22,7 @@ class ShowPortfolio(BaseModel): #get a stock object
     lastPrice: float | None = None
     totalValue: float | None = None
     profit: float | None = None
-    #class Config(): #I dont need it for my version
+    # class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
     
 class CreateUser(BaseModel):
@@ -36,7 +36,9 @@ class User(BaseModel):
     name: str
     email: str
     password: str
+    cash: float
     is_admin: bool
+    portfolio: List[ShowPortfolioForPool]
 
 class Order(BaseModel): #buy/sell stocks for a user
     symbol: str
