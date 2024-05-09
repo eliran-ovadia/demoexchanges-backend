@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, Date
 from .database import Base
 from sqlalchemy.orm import relationship
 
+#2024-05-03 10:15:30.123456
 
 class User(Base):
     __tablename__ = 'users'
