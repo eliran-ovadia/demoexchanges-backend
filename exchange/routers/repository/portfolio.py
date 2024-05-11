@@ -19,7 +19,6 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
     price = float(get_stock_price(symbol))
     timestamp = datetime.now()
     value = price * amount
-    
     user = db.query(models.User).filter(models.User.id == user_id).first()
     
     #handeling errors-----------------------------------
@@ -39,18 +38,22 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
         
         if total_amount is None or total_amount < amount:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stock for selling")
+        
+        new_history = models.History(
+        symbol=symbol, price=price, amount=amount, type=type,
+        value=value, time_stamp=timestamp, user_id=user_id
+    )
     else:
         type = "buy"
-        if amount > user.cash:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient cash")
-        user_row = db.query(models.User).filter(models.User.id == user_id).first()
-        if user_row.cash < value:
+        
+        if user.cash < value:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient cash for buying")
     new_history = models.History(
         symbol=symbol, price=price, amount=amount, type=type,
         value=value, time_stamp=timestamp, user_id=user_id
     )
     db.add(new_history)
+    db.refresh(new_history)
     db.commit()
     #handeling errors end-------------------------------
     
@@ -71,7 +74,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
             if amount == 0:
                 break
             if entry.amount <= amount:
-                amount += entry.amount
+                amount -= entry.amount
                 db.delete(entry)
             else:
                 entry.amount -= amount
