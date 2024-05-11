@@ -53,7 +53,6 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
         value=value, time_stamp=timestamp, user_id=user_id
     )
     db.add(new_history)
-    db.refresh(new_history)
     db.commit()
     #handeling errors end-------------------------------
     
@@ -63,7 +62,6 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
             symbol=symbol, amount=amount, time_stamp=timestamp, user_id=user_id
         )
         db.add(new_portfolio)
-        db.refresh(new_portfolio)
     else:
         portfolio_entries = db.query(models.Portfolio).filter(
             models.Portfolio.user_id == user_id,
@@ -80,6 +78,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
                 entry.amount -= amount
                 break
     db.commit()
+    return "success"
         
 
 
