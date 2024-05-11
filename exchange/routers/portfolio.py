@@ -30,3 +30,8 @@ def update(id,request: schemas.Order, db: Session = check_db, current_user: sche
 @router.delete('/{email}', status_code = status.HTTP_202_ACCEPTED)
 def deleteportfolio(email, db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.deleteportfolio(email, db)
+
+
+@router.get('/{symbol}', status_code = status.HTTP_200_OK)
+def get_stock_price(symbol):
+    return portfolio.get_stock_price(symbol)
