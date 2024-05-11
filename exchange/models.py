@@ -27,7 +27,7 @@ class History(Base):
     type = Column(String)
     value = Column(Float)
     profit = Column(Float)
-    date = Column(DateTime)
+    time_stamp = Column(DateTime)
     user_id = Column(String, ForeignKey('users.id'))
 
     creator = relationship("User", back_populates="history")
@@ -38,7 +38,7 @@ class Portfolio(Base):
     user_id = Column(String, ForeignKey('users.id'))
     symbol = Column(String)
     amount = Column(Integer)
-    timestamp = Column(DateTime)
+    time_stamp = Column(DateTime)
     #avg_price = Column(Float) calculation is done in the repository
     #last_price = Column(Float) calculation is done in the repository
     #day_change_percent = Column(Float) calculation is done in the repository

@@ -15,12 +15,15 @@ def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.get_all(db)
 
 @router.get('/getportfolio/', status_code = 200, response_model = List[schemas.ShowPortfolio]) #return portfolio for logged in user
-def getPortfolio(email: str, db: Session = check_db, current_user: schemas.User = Depends(get_current_user)):
+def getPortfolio(db: Session = check_db, current_user: schemas.User = Depends(get_current_user)):
     return portfolio.getPortfolio(db, current_user)
 
-@router.post('/Order/', response_model = schemas.ShowPortfolio, status_code=status.HTTP_201_CREATED) #buy/sell stocks
-def order(email: str, request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
-    return portfolio.order(email, request, db)
+
+
+
+@router.post('/Order/', response_model = str, status_code=status.HTTP_201_CREATED) #buy/sell stocks
+def order(request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
+    return portfolio.order(request, db, current_user)
 
 
 

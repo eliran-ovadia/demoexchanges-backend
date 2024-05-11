@@ -32,6 +32,10 @@ class ShowPortfolio(BaseModel): #get stocks
     # class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
     
+    
+class fifoDates(BaseModel):
+    time_stamp: datetime
+    
 class CreateUser(BaseModel):
     name: str
     email: str

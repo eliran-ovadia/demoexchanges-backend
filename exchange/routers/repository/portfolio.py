@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from ... import models, schemas
 from fastapi import HTTPException, status
 from typing import List
 from twelvedata import TDClient
+from datetime import datetime
 
 def get_all(db: Session):
     portfolios = db.query(models.Portfolio).all() #for some reson i cannot just return the db object
@@ -10,34 +12,81 @@ def get_all(db: Session):
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolios table is empty")
     return portfolios
 
-def order(email:str, request: schemas.Order, db: Session):
-    new_order = models.Portfolio(symbol = request.symbol.upper(), amount = request.amount, user_id = db.query(models.User).filter(models.User.email == email).first().id)
-    db.add(new_order)
-    db.commit()
-    db.refresh(new_order)
-    return new_order
-
-def deleteportfolio(email: str, db: Session):
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with email {email} not found")
-    if user.id == "admin":
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Admin is not deletable.")
+def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
+    user_id = current_user.id
+    symbol = request.symbol
+    amount = request.amount
+    price = float(get_stock_price(symbol))
+    timestamp = datetime.now()
+    value = price * amount
     
-    userPortfolio = db.query(models.Portfolio).filter(models.Portfolio.user_id == user.id).all()
-    if not userPortfolio:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolio for the user: {email} not found")
-    for portfolio in userPortfolio:
-        db.delete(portfolio)
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    
+    #handeling errors-----------------------------------
+    if amount == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount cannot be 0")
+    
+    if amount < 0: #sell adaptation
+        type = "sell"
+        value *= -1
+        amount *= -1
+        
+        #calculated total stocks amount for symbol
+        total_amount = db.query(func.sum(models.Portfolio.amount)).filter(
+            models.Portfolio.user_id == user_id,
+            models.Portfolio.symbol == symbol
+            ).scalar()
+        
+        if total_amount is None or total_amount < amount:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stock for selling")
+    else:
+        type = "buy"
+        if amount > user.cash:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient cash")
+        user_row = db.query(models.User).filter(models.User.id == user_id).first()
+        if user_row.cash < value:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient cash for buying")
+    new_history = models.History(
+        symbol=symbol, price=price, amount=amount, type=type,
+        value=value, time_stamp=timestamp, user_id=user_id
+    )
+    db.add(new_history)
     db.commit()
-    return {'detail': f'deleted the entire portfolio for user: {email}'}
+    #handeling errors end-------------------------------
+    
+    # Update portfolio
+    if amount > 0:
+        new_portfolio = models.Portfolio(
+            symbol=symbol, amount=amount, time_stamp=timestamp, user_id=user_id
+        )
+        db.add(new_portfolio)
+        db.refresh(new_portfolio)
+    else:
+        portfolio_entries = db.query(models.Portfolio).filter(
+            models.Portfolio.user_id == user_id,
+            models.Portfolio.symbol == symbol
+        ).order_by(models.Portfolio.time_stamp).all()
+        
+        for entry in portfolio_entries:
+            if amount == 0:
+                break
+            if entry.amount <= amount:
+                amount += entry.amount
+                db.delete(entry)
+            else:
+                entry.amount -= amount
+                break
+    db.commit()
+        
+
 
 def getPortfolio(db: Session, current_user: schemas.TokenData):
     portfolios = List[schemas.ShowPortfolio]
-    for portfolio in portfolios:
-        portfolio.price = get_stock_price(portfolio.symbol)
+    portfolios = db.query(models.Portfolio).filter(models.Portfolio.user_id == current_user.id).all()
+    if not portfolios:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolio table is empty")
     return portfolios
-    pass
+    
     
 
 
