@@ -4,7 +4,7 @@ from typing import List
 from datetime import datetime
 
 
-class ShowPortfolioForPool(BaseModel): #get a stock object
+class ShowPortfolioForPool(BaseModel): #get a stock
     stock_id: int
     user_id: str
     symbol: str
@@ -15,7 +15,7 @@ class ShowPortfolioForPool(BaseModel): #get a stock object
     profit: float | None = None
 
 
-class ShowPortfolio(BaseModel): #get a stock object
+class ShowPortfolio(BaseModel): #get stocks
     symbol: str
     amount: int
     costPrice: float | None = None
