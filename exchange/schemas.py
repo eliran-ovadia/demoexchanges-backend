@@ -18,10 +18,17 @@ class ShowPortfolioForPool(BaseModel): #get a stock
 class ShowPortfolio(BaseModel): #get stocks
     symbol: str
     amount: int
-    costPrice: float | None = None
-    lastPrice: float | None = None
-    totalValue: float | None = None
+    avg_price: float | None = None
+    last_price: float | None = None
+    total_value: float | None = None
     profit: float | None = None
+    bid: float | None = None
+    ask: float | None = None
+    range_low: float | None = None
+    range_high: float | None = None
+    total_return: float | None = None
+    next_report: datetime | None = None #deal with it later-------
+    
     # class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
     

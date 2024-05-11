@@ -10,28 +10,26 @@ router = APIRouter(tags = ['portfolios'], prefix = "/portfolio")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
-@router.get('/getpool', response_model = List[schemas.ShowPortfolioForPool])
+@router.get('/getpool', response_model = List[schemas.ShowPortfolioForPool]) #return all portfolios-----done!
 def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.get_all(db)
 
-@router.get('/getportfolio/{email}', status_code = 200, response_model = List[schemas.ShowPortfolio])
+@router.get('/getportfolio/', status_code = 200, response_model = List[schemas.ShowPortfolio]) #return portfolio for logged in user
 def getPortfolio(email: str, db: Session = check_db, current_user: schemas.User = Depends(get_current_user)):
-    return portfolio.getPortfolio(email, db)
+    return portfolio.getPortfolio(db, current_user)
 
-@router.post('/Order/{email}', response_model = schemas.ShowPortfolio, status_code=status.HTTP_201_CREATED)
+@router.post('/Order/', response_model = schemas.ShowPortfolio, status_code=status.HTTP_201_CREATED) #buy/sell stocks
 def order(email: str, request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.order(email, request, db)
 
-@router.put('/{id}', status_code = status.HTTP_202_ACCEPTED)
-def update(id,request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
-    return portfolio.update(id, db, request)
 
 
-@router.delete('/{email}', status_code = status.HTTP_202_ACCEPTED)
-def deleteportfolio(email, db: Session = check_db, current_user: schemas.User = check_auth):
-    return portfolio.deleteportfolio(email, db)
 
 
-@router.get('/{symbol}', status_code = status.HTTP_200_OK)
+
+
+
+
+@router.get('/{symbol}', status_code = status.HTTP_200_OK) #just for me to check the stock price
 def get_stock_price(symbol):
     return portfolio.get_stock_price(symbol)

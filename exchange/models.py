@@ -16,36 +16,6 @@ class User(Base):
     
     history = relationship("History", back_populates = "creator", cascade="all, delete-orphan")
     portfolio = relationship("Portfolio", back_populates = "creator", cascade="all, delete-orphan")
-    
-    
-class Portfolio(Base):
-    __tablename__ = 'portfolio'
-    stock_id = Column(Integer, primary_key=True, index=True, unique=True)
-    user_id = Column(String, ForeignKey('users.id'))
-    symbol = Column(String)
-    amount = Column(Integer)
-    avg_price = Column(Float)
-    last_price = Column(Float)
-    day_change_percent = Column(Float)
-    day_change_price = Column(Float)
-    bid = Column(Float)
-    ask = Column(Float)
-    total_value = Column(Float)
-    total_profit = Column(Float)
-    next_report = Column(DateTime)
-    
-    creator = relationship("User", back_populates="portfolio")
-    fifo = relationship("Fifo", back_populates = "portfolio", cascade="all, delete-orphan")
-
-class Fifo(Base):
-    __tablename__ = 'fifo'
-    order_id = Column(Integer, primary_key=True, index=True)
-    price = Column(Float)
-    amount = Column(Integer)
-    date = Column(DateTime)
-    stock_id = Column(Integer, ForeignKey('portfolio.stock_id'))
-    
-    portfolio = relationship("Portfolio", back_populates="fifo")
 
 
 class History(Base):
@@ -61,3 +31,34 @@ class History(Base):
     user_id = Column(String, ForeignKey('users.id'))
 
     creator = relationship("User", back_populates="history")
+    
+class Portfolio(Base):
+    __tablename__ = 'portfolio'
+    stock_id = Column(Integer, primary_key=True, index=True, unique=True)
+    user_id = Column(String, ForeignKey('users.id'))
+    symbol = Column(String)
+    amount = Column(Integer)
+    timestamp = Column(DateTime)
+    #avg_price = Column(Float) calculation is done in the repository
+    #last_price = Column(Float) calculation is done in the repository
+    #day_change_percent = Column(Float) calculation is done in the repository
+    #day_change_price = Column(Float) calculation is done in the repository
+    #bid = Column(Float) calculation is done in the repository
+    #ask = Column(Float) calculation is done in the repository
+    #total_value = Column(Float) calculation is done in the repository
+    #total_profit = Column(Float) calculation is done in the repository
+    #next_report = Column(DateTime) calculation is done in the repository
+    
+    creator = relationship("User", back_populates="portfolio")
+    #fifo = relationship("Fifo", back_populates = "portfolio", cascade="all, delete-orphan")
+
+
+# class Fifo(Base):
+#     __tablename__ = 'fifo'
+#     order_id = Column(Integer, primary_key=True, index=True)
+#     price = Column(Float)
+#     amount = Column(Integer)
+#     date = Column(DateTime)
+#     stock_id = Column(Integer, ForeignKey('portfolio.stock_id'))
+    
+#     portfolio = relationship("Portfolio", back_populates="fifo")

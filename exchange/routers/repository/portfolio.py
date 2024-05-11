@@ -6,6 +6,8 @@ from twelvedata import TDClient
 
 def get_all(db: Session):
     portfolios = db.query(models.Portfolio).all() #for some reson i cannot just return the db object
+    if not portfolios:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolios table is empty")
     return portfolios
 
 def order(email:str, request: schemas.Order, db: Session):
@@ -30,13 +32,13 @@ def deleteportfolio(email: str, db: Session):
     db.commit()
     return {'detail': f'deleted the entire portfolio for user: {email}'}
 
-def getPortfolio(email: str, db: Session):
-    requestedUser: schemas.User = db.query(models.User).filter(models.User.email == email).first()
-    portfolio = requestedUser.portfolio
-    if not portfolio:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"portfolio for account: {email} - not found")
-    return portfolio
-
+def getPortfolio(db: Session, current_user: schemas.TokenData):
+    portfolios = List[schemas.ShowPortfolio]
+    for portfolio in portfolios:
+        portfolio.price = get_stock_price(portfolio.symbol)
+    return portfolios
+    pass
+    
 
 
 def get_stock_price(symbol: str):
