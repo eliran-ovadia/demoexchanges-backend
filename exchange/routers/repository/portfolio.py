@@ -25,8 +25,10 @@ def get_all(db: Session):
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
     user_id = current_user.id
     symbol = request.symbol.upper()
+    if ',' in symbol:
+        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = "cannot buy/sell more than one stock at once")
     amount = request.amount
-    price = float(get_stock_price(symbol))
+    price = float(get_stock_price(symbol)['price'])
     timestamp = datetime.now()
     value = price * amount
     user = db.query(models.User).filter(models.User.id == user_id).first()
@@ -103,6 +105,11 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     
 
 
+
+
+
+#TwelveData handlers---------------------------------------------------------------------
+
 def get_stock_price(symbol: str):
     
     td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
@@ -110,4 +117,15 @@ def get_stock_price(symbol: str):
         stock = td.price(symbol = symbol).as_json()
     except:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"stock with symbol: {symbol} - not found")
-    return str(stock['price'])
+    return stock
+
+
+
+def get_quote(symbol: str):
+        
+    td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
+    try:
+        stock = td.quote(symbol = symbol).as_json()
+    except:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"stock with symbol: {symbol} - not found")
+    return dict(stock)
