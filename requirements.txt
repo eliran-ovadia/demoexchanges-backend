@@ -5,4 +5,5 @@ passlib
 bcrypt
 python-jose[cryptography]
 python-multipart
+setuptools
 twelvedata[pandas,matplotlib,plotly,websocket-client]

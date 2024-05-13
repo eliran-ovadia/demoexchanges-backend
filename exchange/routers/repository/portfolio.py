@@ -12,73 +12,82 @@ def get_all(db: Session):
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolios table is empty")
     return portfolios
 
+
+
+    '''_summary_
+    thing to check:
+    order value is not bigger than cash
+    check for a large negative value
+    check if can get the price for my symbol
+    check if the value is taken from users cash
+    '''
+
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
     user_id = current_user.id
-    symbol = request.symbol
+    symbol = request.symbol.upper()
     amount = request.amount
     price = float(get_stock_price(symbol))
     timestamp = datetime.now()
     value = price * amount
     user = db.query(models.User).filter(models.User.id == user_id).first()
+    availbale_cash = user.cash
     
-    #handeling errors-----------------------------------
     if amount == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount cannot be 0")
     
-    if amount < 0: #sell adaptation
-        type = "sell"
+
+    #Sell order-----------------------------------------------------------------------------------------------------------
+    if amount < 0:
+        type = "Sell"
         value *= -1
         amount *= -1
         
         #calculated total stocks amount for symbol
-        total_amount = db.query(func.sum(models.Portfolio.amount)).filter(
+        user_total_amount_of_stcok = db.query(func.sum(models.Portfolio.amount)).filter(
             models.Portfolio.user_id == user_id,
             models.Portfolio.symbol == symbol
             ).scalar()
         
-        if total_amount is None or total_amount < amount:
+        if user_total_amount_of_stcok is None or user_total_amount_of_stcok < amount:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stock for selling")
         
-        new_history = models.History(
-        symbol=symbol, price=price, amount=amount, type=type,
-        value=value, time_stamp=timestamp, user_id=user_id
-    )
-    else:
-        type = "buy"
+        portfolio_entries = db.query(models.Portfolio).filter(
+            models.Portfolio.user_id == user_id,
+            models.Portfolio.symbol == symbol
+        ).order_by(models.Portfolio.time_stamp.asc()).all()
+        
+        amount_copy = amount
+        for entry in portfolio_entries:
+            if amount_copy <= 0:
+                break
+            if entry.amount <= amount_copy:
+                amount_copy -= entry.amount
+                db.delete(entry)
+                db.commit()
+            else:
+                entry.amount -= amount_copy
+                amount_copy = 0
+        user.cash += value
+    else: #Buy order------------------------------------------------------------------------------------------------------
+        type = "Buy"
         
         if user.cash < value:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient cash for buying")
-    new_history = models.History(
-        symbol=symbol, price=price, amount=amount, type=type,
-        value=value, time_stamp=timestamp, user_id=user_id
-    )
-    db.add(new_history)
-    db.commit()
-    #handeling errors end-------------------------------
-    
-    # Update portfolio
-    if amount > 0:
+
         new_portfolio = models.Portfolio(
             symbol=symbol, amount=amount, time_stamp=timestamp, user_id=user_id
         )
         db.add(new_portfolio)
-    else:
-        portfolio_entries = db.query(models.Portfolio).filter(
-            models.Portfolio.user_id == user_id,
-            models.Portfolio.symbol == symbol
-        ).order_by(models.Portfolio.time_stamp).all()
-        
-        for entry in portfolio_entries:
-            if amount == 0:
-                break
-            if entry.amount <= amount:
-                amount -= entry.amount
-                db.delete(entry)
-            else:
-                entry.amount -= amount
-                break
+        user.cash -= value
+#-------------------------------------------------------------------------------------------------------------------------
+
+    new_history = models.History(
+        symbol=symbol, price=price, amount=amount, type=type,
+        value=value, time_stamp=timestamp, user_id=user_id)
+    
+    db.add(new_history)
     db.commit()
-    return "success"
+    return f"stock: {symbol}   type: {type}    amount: {amount}    price: {price}    value: {value}"
         
 
 
