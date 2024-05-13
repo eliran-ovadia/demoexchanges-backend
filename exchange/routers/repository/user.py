@@ -35,12 +35,12 @@ def resetPortfolio(db: Session, current_user: schemas.TokenData):
     db.query(models.History).filter(models.History.user_id == user.id).delete()
     user.cash = 100_000
     db.commit()
-    return "Portfolio is now empty and cash reset to 100_000"
+    return "Portfolio is now empty and cash reset to $100,000"
 
-def delete_user(email: str, db: Session):
-    user = db.query(models.User).filter(models.User.email == email).first()
+def delete_user(db: Session, current_user: schemas.TokenData):
+    user = db.query(models.User).filter(models.User.email == current_user.id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with email {email} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found")
 
     # Check if the user is an admin
     if user.is_admin:
@@ -50,4 +50,4 @@ def delete_user(email: str, db: Session):
     db.delete(user)
     db.commit()
 
-    return {"message": f"User with email {email} has been deleted"}
+    return {"message": f"User has been deleted"}

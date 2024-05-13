@@ -38,6 +38,7 @@ class Portfolio(Base):
     user_id = Column(String, ForeignKey('users.id'))
     symbol = Column(String)
     amount = Column(Integer)
+    price = Column(Float)
     time_stamp = Column(DateTime)
     #avg_price = Column(Float) calculation is done in the repository
     #last_price = Column(Float) calculation is done in the repository

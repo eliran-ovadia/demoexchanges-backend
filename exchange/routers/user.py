@@ -22,6 +22,6 @@ def get_user(db: Session = check_db, current_user: schemas.TokenData = check_aut
 def resetPortfolio(db: Session = check_db, current_user: schemas.TokenData = check_auth):
     return user.resetPortfolio(db, current_user)
 
-@router.delete('/deleteUser/{email}', status_code = status.HTTP_202_ACCEPTED)
-def delete_user(email: str, db: Session = check_db, current_user: schemas.TokenData = check_auth):
-    return user.delete_user(email, db)
+@router.delete('/deleteUser/', status_code = status.HTTP_202_ACCEPTED)
+def delete_user(db: Session = check_db, current_user: schemas.TokenData = check_auth):
+    return user.delete_user(db, current_user)
