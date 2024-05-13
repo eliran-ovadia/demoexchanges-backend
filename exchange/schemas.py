@@ -18,6 +18,9 @@ class ShowPortfolioForPool(BaseModel): #get a stock
 class ShowPortfolio(BaseModel): #get stocks
     symbol: str
     amount: int
+    exchange: str | None = None
+    open: float | None = None
+    previous_close: float | None = None
     avg_price: float | None = None
     last_price: float | None = None
     total_value: float | None = None
@@ -27,14 +30,14 @@ class ShowPortfolio(BaseModel): #get stocks
     range_low: float | None = None
     range_high: float | None = None
     total_return: float | None = None
-    next_report: datetime | None = None #deal with it later-------
+    next_report: datetime | None = None #deal with it later
     
     # class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
-    
-    
-class fifoDates(BaseModel):
-    time_stamp: datetime
+
+class market_open(BaseModel):
+    is_market_open: bool | None = None
+
     
 class CreateUser(BaseModel):
     name: str

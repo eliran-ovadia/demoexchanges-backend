@@ -51,15 +51,3 @@ class Portfolio(Base):
     #next_report = Column(DateTime) calculation is done in the repository
     
     creator = relationship("User", back_populates="portfolio")
-    #fifo = relationship("Fifo", back_populates = "portfolio", cascade="all, delete-orphan")
-
-
-# class Fifo(Base):
-#     __tablename__ = 'fifo'
-#     order_id = Column(Integer, primary_key=True, index=True)
-#     price = Column(Float)
-#     amount = Column(Integer)
-#     date = Column(DateTime)
-#     stock_id = Column(Integer, ForeignKey('portfolio.stock_id'))
-    
-#     portfolio = relationship("Portfolio", back_populates="fifo")
