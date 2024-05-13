@@ -31,8 +31,13 @@ def order(request: schemas.Order, db: Session = check_db, current_user: schemas.
 
 
 
-
+#for testing purpose--------------------------------------------------------------------------------------------
 
 @router.get('/{symbol}', status_code = status.HTTP_200_OK) #just for me to check the stock price
 def get_stock_price(symbol):
     return portfolio.get_stock_price(symbol)
+
+
+@router.get('/{symbols}', status_code = status.HTTP_200_OK) #just for me to check the quote
+def get_quote(symbols):
+    return portfolio.get_quote(symbols)

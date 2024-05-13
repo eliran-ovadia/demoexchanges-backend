@@ -116,16 +116,16 @@ def get_stock_price(symbol: str):
     try:
         stock = td.price(symbol = symbol).as_json()
     except:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"stock with symbol: {symbol} - not found")
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"price for symbol: {symbol} - not found")
     return stock
 
 
 
-def get_quote(symbol: str):
+def get_quote(symbols: str):
         
     td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
     try:
-        stock = td.quote(symbol = symbol).as_json()
+        stock = td.quote(symbol = symbols).as_json()
     except:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"stock with symbol: {symbol} - not found")
-    return dict(stock)
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"quote for one of the symbols: {symbols} - not found")
+    return stock
