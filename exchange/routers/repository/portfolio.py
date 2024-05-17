@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 from typing import List
 from twelvedata import TDClient
 from datetime import datetime
-
+from fastapi.responses import JSONResponse
 def get_all(db: Session):
     portfolios = db.query(models.Portfolio).all() #for some reson i cannot just return the db object
     if not portfolios:
@@ -117,10 +117,9 @@ def get_stock_price(symbol: str):
 
 
 def get_quote(symbols: str):
-        
     td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
     try:
-        stock = td.quote(symbol = symbols).as_json()
-    except:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"quote for one of the symbols: {symbols} - not found")
-    return stock['exchange']
+        stock = td.quote(symbol=symbols).as_json()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"quote for one of the symbols: {symbols} - not found")
+    return stock
