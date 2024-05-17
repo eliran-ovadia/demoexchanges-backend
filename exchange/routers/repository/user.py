@@ -18,8 +18,6 @@ def create_user(request: schemas.CreateUser, db: Session):
 
 
 def get_user(db: Session, current_user: schemas.TokenData): # not really a nessecery endpoint
-    # if not current_user.is_admin:
-    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail = f"User with email {current_user.email} is not an admin")
     user = db.query(models.User).filter(models.User.id == current_user.id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"user not located in the database")

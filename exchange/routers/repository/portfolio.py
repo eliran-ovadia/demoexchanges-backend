@@ -13,15 +13,6 @@ def get_all(db: Session):
     return portfolios
 
 
-
-    '''_summary_
-    thing to check:
-    order value is not bigger than cash
-    check for a large negative value
-    check if can get the price for my symbol
-    check if the value is taken from users cash
-    '''
-
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
     user_id = current_user.id
     symbol = request.symbol.upper()
@@ -51,7 +42,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
             ).scalar()
         
         if user_total_amount_of_stcok is None or user_total_amount_of_stcok < amount:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stock for selling")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stocks for selling")
         
         portfolio_entries = db.query(models.Portfolio).filter(
             models.Portfolio.user_id == user_id,
@@ -103,7 +94,11 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     return portfolios
     
     
-
+def getHistory(db: Session, current_user: schemas.TokenData):
+    history = db.query(models.History).filter(models.History.user_id == current_user.id).order_by(models.History.time_stamp.desc()).all()
+    if not history:
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"History table is empty")
+    return history
 
 
 
@@ -128,4 +123,4 @@ def get_quote(symbols: str):
         stock = td.quote(symbol = symbols).as_json()
     except:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"quote for one of the symbols: {symbols} - not found")
-    return stock
+    return stock['exchange']

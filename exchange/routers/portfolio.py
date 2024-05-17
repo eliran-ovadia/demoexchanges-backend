@@ -10,22 +10,24 @@ router = APIRouter(tags = ['portfolios'], prefix = "/portfolio")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
-@router.get('/getpool', response_model = List[schemas.ShowPortfolioForPool]) #return all portfolios-----done!
+
+
+
+@router.get('/getpool', response_model = List[schemas.ShowPortfolioForPool]) #return all portfolios raw data
 def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.get_all(db)
 
-@router.get('/getportfolio/', status_code = 200, response_model = List[schemas.ShowPortfolio]) #return portfolio for logged in user
+@router.get('/getportfolio/', status_code = 200, response_model = List[schemas.ShowPortfolio]) #return portfolio for logged in user --- not done yet
 def getPortfolio(db: Session = check_db, current_user: schemas.User = Depends(get_current_user)):
     return portfolio.getPortfolio(db, current_user)
-
-
-
 
 @router.post('/Order/', response_model = str, status_code=status.HTTP_201_CREATED) #buy/sell stocks
 def order(request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.order(request, db, current_user)
 
-
+@router.get('/getHistory',response_model = List[schemas.History], status_code = status.HTTP_200_OK)
+def getHistory(db: Session = check_db, current_user: schemas.User = check_auth):
+    return portfolio.getHistory(db, current_user)
 
 
 

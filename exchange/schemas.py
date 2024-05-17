@@ -65,15 +65,16 @@ class Login(BaseModel):
     password: str
     
 class History(BaseModel):
-    order_id: int | None = None
     symbol: str | None = None
     price: float | None = None
     amount: int | None = None
     type: str | None = None
     value: float | None = None
     profit: float | None = None
-    date: datetime | None = None
-    user_id: str | None = None
+    time_stamp: datetime | None = None
+    
+class Quotes(BaseModel):
+    name: str
 
     
 #--------------------------Token--------------------------
