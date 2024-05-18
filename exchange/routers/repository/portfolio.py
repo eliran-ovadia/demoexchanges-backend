@@ -2,10 +2,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from ... import models, schemas
 from fastapi import HTTPException, status
-from typing import List
 from twelvedata import TDClient
 from datetime import datetime
-from fastapi.responses import JSONResponse
+
 def get_all(db: Session):
     portfolios = db.query(models.Portfolio).all() #for some reson i cannot just return the db object
     if not portfolios:
@@ -87,13 +86,81 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
 
 
 def getPortfolio(db: Session, current_user: schemas.TokenData):
-    portfolios = List[schemas.ShowPortfolio]
-    portfolios = db.query(models.Portfolio).filter(models.Portfolio.user_id == current_user.id).all()
-    if not portfolios:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolio table is empty")
-    return portfolios
+    # Create a TD client to get quotes
+    td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
     
+    # Query the database to get the symbols, total amounts, and average prices for the current user
+    result = db.query(
+        models.Portfolio.symbol,
+        func.sum(models.Portfolio.amount).label('total_amount'),
+        func.avg(models.Portfolio.price).label('avg_price')
+    ).filter(
+        models.Portfolio.user_id == current_user.id
+    ).group_by(
+        models.Portfolio.symbol
+    ).all()
+
+    # Convert the result into a dictionary
+    summary = {symbol: {'total_amount': total_amount, 'avg_price': avg_price} for symbol, total_amount, avg_price in result}
+
+    # Get all the symbols
+    symbols = list(summary.keys())
     
+    # Fetch the quotes for all the symbols
+    try:
+        quotes_response = td.quote(symbol=",".join(symbols)).as_json()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    if len(symbols) == 1:
+        symbol = symbols[0]
+        quotes = {symbol: quotes_response}
+    else:
+        quotes = quotes_response
+    # Combine the quote data with the total amounts and average prices
+    portfolio_data = []
+    for symbol in symbols:
+        quote_data = quotes.get(symbol, {})
+        last_price_str = quote_data.get('last', None)
+        if last_price_str is None:
+            last_price_str = quote_data.get('close', None)
+        
+        try:
+            last_price = float(last_price_str) if last_price_str is not None else None
+        except (TypeError, ValueError):
+            last_price = None
+        
+        total_amount = summary[symbol]['total_amount']
+        avg_price = summary[symbol]['avg_price']
+        total_value = last_price * total_amount if last_price is not None else None
+        total_return = (last_price - avg_price) * total_amount if last_price is not None and avg_price is not None else None
+        range = quote_data['fifty_two_week']['range'] if 'fifty_two_week' in quote_data else None
+        total_return_percent = total_return / avg_price if total_return is not None and avg_price is not None else None
+        show_portfolio_data = {
+            'symbol': symbol,
+            'full_name': quote_data.get('name', None),
+            'amount': total_amount,
+            'exchange': quote_data.get('exchange', None),
+            'open': quote_data.get('open', None),
+            'previous_close': quote_data.get('previous_close', None),
+            'avg_price': avg_price,
+            'last_price': last_price,
+            'total_value': total_value,
+            'bid': quote_data.get('bid', None),
+            'ask': quote_data.get('ask', None),
+            'year_range': range,
+            'total_return': total_return,
+            'total_return_percent': total_return_percent
+        }
+        portfolio_data.append(show_portfolio_data)
+
+    portfolio_data.sort(key=lambda x: x['total_value'], reverse=True)
+    
+    return portfolio_data
+
+
+
+
+   
 def getHistory(db: Session, current_user: schemas.TokenData):
     history = db.query(models.History).filter(models.History.user_id == current_user.id).order_by(models.History.time_stamp.desc()).all()
     if not history:

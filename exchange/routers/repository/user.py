@@ -4,10 +4,8 @@ from fastapi import HTTPException, status
 from ...hashing import Hash
 from uuid import uuid4
 
-
-
 def create_user(request: schemas.CreateUser, db: Session):
-    new_user = models.User(id = str(uuid4()),name = request.name, email = request.email, password = Hash.bcrypt(request.password),cash = 100_000, is_admin = False)
+    new_user = models.User(id = str(uuid4()),name = request.name, last_name = request.last_name, email = request.email, password = Hash.bcrypt(request.password),cash = 100_000, is_admin = False)
     same_email_user = db.query(models.User).filter(models.User.email == request.email).first()
     if same_email_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail = f"a user with the same email is already exists in the exchange")

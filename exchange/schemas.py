@@ -1,8 +1,8 @@
 #--------------------------------schemas is reffering to the way the API interracts with the responses/requests------------------------------------
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import List
 from datetime import datetime
-
+import re
 
 class ShowPortfolioForPool(BaseModel): #get a stock
     stock_id: int
@@ -17,6 +17,7 @@ class ShowPortfolioForPool(BaseModel): #get a stock
 
 class ShowPortfolio(BaseModel): #get stocks
     symbol: str
+    full_name: str | None = None
     amount: int
     exchange: str | None = None
     open: float | None = None
@@ -24,13 +25,11 @@ class ShowPortfolio(BaseModel): #get stocks
     avg_price: float | None = None
     last_price: float | None = None
     total_value: float | None = None
-    profit: float | None = None
     bid: float | None = None
     ask: float | None = None
-    range_low: float | None = None
-    range_high: float | None = None
+    year_range: str | None = None
     total_return: float | None = None
-    next_report: datetime | None = None #deal with it later
+    total_return_percent: float | None = None
     
     # class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
@@ -41,8 +40,25 @@ class market_open(BaseModel):
     
 class CreateUser(BaseModel):
     name: str
-    email: str
+    last_name: str
+    email: EmailStr
     password: str
+    
+    @field_validator("password")
+    def password_check(cls, v: str):
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters long')
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not re.search(r'[0-9]', v):
+            raise ValueError('Password must contain at least one digit')
+        if not re.search(r'[\W_]', v):
+            raise ValueError('Password must contain at least one special character')
+        if re.search(r'(.)\1\1', v):
+            raise ValueError('Password must not contain the same character three times in a row')
+        return v.title()
 
 
 class User(BaseModel):
