@@ -33,7 +33,7 @@ def resetPortfolio(db: Session, current_user: schemas.TokenData):
     db.commit()
     return "Portfolio is now empty and cash reset to $100,000"
 
-def delete_user(db: Session, current_user: schemas.TokenData):
+def delete_user(email: str, db: Session, current_user: schemas.TokenData): # FIX TO CHECK IF USER IS ADMIN + CHECK USER EMAIL GIVEN BY ADMIN
     user = db.query(models.User).filter(models.User.email == current_user.id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found")
