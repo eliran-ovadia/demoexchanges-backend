@@ -155,7 +155,25 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
 
     portfolio_data.sort(key=lambda x: x['total_value'], reverse=True)
     
-    return portfolio_data
+    #add balances values
+    user = db.query(models.User).filter(models.User.id == current_user.id).first()
+    
+    portfolio_value = sum([x['total_value'] for x in portfolio_data]) if portfolio_data else 0
+    total_return = sum([x['total_return'] for x in portfolio_data]) if portfolio_data else 0
+    total_invested = sum([(x['avg_price'] * x['amount']) for x in portfolio_data]) if portfolio_data else 0
+    total_return_percent = (total_return / total_invested) if total_invested > 0 else 0 #needs QA
+    
+    balances_dict = {
+        'Buying_power': user.cash,
+        'portfolio_value': portfolio_value,
+        'total_return': total_return,
+        'total_return_percent': total_return_percent,
+        'account_value': user.cash + portfolio_value
+        }
+    
+    get_portfolio = dict(balance = balances_dict, portfolio = portfolio_data)
+    
+    return get_portfolio
 
 
 
