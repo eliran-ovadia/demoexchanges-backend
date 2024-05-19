@@ -6,13 +6,13 @@ from ...hashing import Hash
 from uuid import uuid4
 
 def create_user(request: schemas.CreateUser, db: Session):
-    
+    Hashed_password = Hash.bcrypt(request.password)
     new_user = models.User(
         id=str(uuid4()),
         name=request.name,
         last_name=request.last_name,
         email=request.email,
-        password=Hash.bcrypt(request.password),
+        password = Hashed_password,
         cash=100_000,
         is_admin=False
     )
@@ -29,9 +29,8 @@ def create_user(request: schemas.CreateUser, db: Session):
 
 
 def get_user(email: str, db: Session, current_user: schemas.TokenData): # endpoint for admin
-    user = db.query(models.User.is_admin).filter(models.User.id == current_user.id).first()
     user_to_return = db.query(models.User).filter(models.User.email == email).first()
-    if user[0] == False:
+    if current_user.is_admin == False:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail = "Needs admin permission to perform this action")
     if not user_to_return:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"user not located in the database")
