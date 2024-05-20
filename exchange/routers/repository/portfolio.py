@@ -6,6 +6,7 @@ from twelvedata import TDClient
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import time
 
 def get_all(db: Session):
     portfolios = db.query(models.Portfolio).all() #for some reson i cannot just return the db object
@@ -96,7 +97,9 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     ).group_by(
         models.Portfolio.symbol
     ).all()
-
+    
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio is empty")
     # Convert the result into a dictionary
     summary = {symbol: {'total_amount': total_amount, 'avg_price': avg_price} for symbol, total_amount, avg_price in result}
 
@@ -171,6 +174,12 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     get_portfolio = dict(balance = balances_dict, portfolio = portfolio_data)
     
     return get_portfolio
+
+def event_stream(db: Session, current_user: schemas.User):
+    while True:
+        portfolio_data = getPortfolio(db, current_user)
+        yield f"data: {portfolio_data}\n\n"
+        time.sleep(10)
 
 def getHistory(db: Session, current_user: schemas.TokenData):
     history = db.query(models.History).filter(models.History.user_id == current_user.id).order_by(models.History.time_stamp.desc()).all()

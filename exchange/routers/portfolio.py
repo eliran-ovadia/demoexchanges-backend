@@ -1,15 +1,16 @@
 from typing import List
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 from .. import schemas, database
 from sqlalchemy.orm import Session
 from .repository import portfolio
 from ..oauth2 import get_current_user
 
 
-router = APIRouter(tags = ['portfolios'], prefix = "/portfolio")
+router = APIRouter(tags = ['portfolio'], prefix = "/portfolio")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
-
+        
 
 @router.get('/getPool', response_model = List[schemas.ShowPortfolioForPool]) #returns the portfolio table - testing only
 def all(db: Session = check_db, current_user: schemas.User = check_auth):
@@ -18,6 +19,10 @@ def all(db: Session = check_db, current_user: schemas.User = check_auth):
 @router.get('/getPortfolio', status_code = 200, response_model = dict)
 def getPortfolio(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.getPortfolio(db, current_user)
+
+@router.get('/getPortfolioStream', status_code=200)
+def get_portfolio_stream(db: Session = check_db, current_user: schemas.User = check_auth):
+    return StreamingResponse(portfolio.event_stream(db, current_user), media_type="text/event-stream")
 
 @router.post('/Order', response_model = schemas.AfterOrder, status_code=status.HTTP_201_CREATED)
 def order(request: schemas.Order, db: Session = check_db, current_user: schemas.User = check_auth):
