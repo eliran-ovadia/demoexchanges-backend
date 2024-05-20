@@ -4,7 +4,6 @@ from .. import schemas, database, models, token
 from sqlalchemy.orm import Session
 from ..hashing import Hash
 
-
 router = APIRouter(tags = ['Authentication'])
 check_db = Depends(database.get_db)
 

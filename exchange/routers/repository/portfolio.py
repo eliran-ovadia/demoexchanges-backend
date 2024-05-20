@@ -4,13 +4,14 @@ from ... import models, schemas
 from fastapi import HTTPException, status
 from twelvedata import TDClient
 from datetime import datetime
+import os
+from dotenv import load_dotenv
 
 def get_all(db: Session):
     portfolios = db.query(models.Portfolio).all() #for some reson i cannot just return the db object
     if not portfolios:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"Portfolios table is empty")
     return portfolios
-
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
     user_id = current_user.id
@@ -26,10 +27,9 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
     sell_profit = 0
     
     if amount == 0:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount cannot be 0")
-    
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount cannot be 0")  
 
-    #Sell order-----------------------------------------------------------------------------------------------------------
+    #Sell order
     if amount < 0:
         type = "Sell"
         value *= -1
@@ -62,7 +62,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
                 entry.amount -= amount_copy
                 amount_copy = 0
         user.cash += value
-    else: #Buy order------------------------------------------------------------------------------------------------------
+    else: #Buy order
         type = "Buy"
         
         if user.cash < value:
@@ -73,7 +73,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
         )
         db.add(new_portfolio)
         user.cash -= value
-#-------------------------------------------------------------------------------------------------------------------------
+
 
     new_history = models.History(
         symbol=symbol, price=price, amount=amount, type=type, profit = sell_profit,
@@ -81,10 +81,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
     
     db.add(new_history)
     db.commit()
-    return f"stock: {symbol}   type: {type}    amount: {amount}    price: {price}    value: {value}   profit: {sell_profit}"
-        
-
-
+    return schemas.AfterOrder(symbol=symbol, price=price, amount=amount, type=type, value=value, profit=sell_profit)
 def getPortfolio(db: Session, current_user: schemas.TokenData):
     # Create a TD client to get quotes
     td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
@@ -161,7 +158,7 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     portfolio_value = sum([x['total_value'] for x in portfolio_data]) if portfolio_data else 0
     total_return = sum([x['total_return'] for x in portfolio_data]) if portfolio_data else 0
     total_invested = sum([(x['avg_price'] * x['amount']) for x in portfolio_data]) if portfolio_data else 0
-    total_return_percent = (total_return / total_invested) if total_invested > 0 else 0 #needs QA
+    total_return_percent = (total_return / total_invested) if total_invested > 0 else 0
     
     balances_dict = {
         'Buying_power': user.cash,
@@ -175,34 +172,27 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     
     return get_portfolio
 
-
-
-
-   
 def getHistory(db: Session, current_user: schemas.TokenData):
     history = db.query(models.History).filter(models.History.user_id == current_user.id).order_by(models.History.time_stamp.desc()).all()
     if not history:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"History table is empty")
     return history
 
-
-
-
-#TwelveData handlers---------------------------------------------------------------------
-
+#TwelveData handlers-------
 def get_stock_price(symbol: str):
-    
-    td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
+    load_dotenv()
+    api_key = os.getenv("TWELVE_DATA_API_KEY")
+    td = TDClient(apikey = api_key)
     try:
         stock = td.price(symbol = symbol).as_json()
     except:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"price for symbol: {symbol} - not found")
     return stock
 
-
-
 def get_quote(symbols: str):
-    td = TDClient(apikey="375f5ab7748a4ddb807d4c810bae5cf2")
+    load_dotenv()
+    api_key = os.getenv("TWELVE_DATA_API_KEY")
+    td = TDClient(apikey = api_key)
     try:
         stock = td.quote(symbol=symbols).as_json()
     except Exception as e:

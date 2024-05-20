@@ -8,3 +8,4 @@ python-multipart
 setuptools
 twelvedata[pandas,matplotlib,plotly,websocket-client]
 pydantic[email]
+python-dotenv

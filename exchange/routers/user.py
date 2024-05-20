@@ -18,7 +18,7 @@ def get_user(email: str, db: Session = check_db, current_user: schemas.TokenData
     return user.get_user(email, db, current_user)
 
 
-@router.patch('/resetPortfolio/', status_code = status.HTTP_202_ACCEPTED)
+@router.patch('/resetPortfolio/', status_code = status.HTTP_200_OK)
 def resetPortfolio(db: Session = check_db, current_user: schemas.TokenData = check_auth):
     return user.resetPortfolio(db, current_user)
 

@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from . import schemas
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "b1f8e2ef0fb1874b24d54c8675ca002791f7769c0337725389c67c0d33f2c317"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+load_dotenv()
 
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -30,4 +33,4 @@ def verify_token(token: str, credentials_exception):
         token_data = schemas.TokenData(id=id, is_admin=is_admin, email=email, name=name)
     except JWTError:
         raise credentials_exception
-    return token_data # From my understanding in a website i will not return the data, but will save the bearer in a coockie in front-end
+    return token_data

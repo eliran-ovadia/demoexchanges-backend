@@ -70,12 +70,10 @@ class User(BaseModel):
     is_admin: bool
     portfolio: List[ShowPortfolioForPool]
 
-class Order(BaseModel): #buy/sell stocks for a user
+class Order(BaseModel): #buy/sell stocks
     symbol: str
     amount: int
     
-
-
 class Login(BaseModel):
     username: str
     password: str
@@ -89,15 +87,20 @@ class History(BaseModel):
     profit: float | None = None
     time_stamp: datetime | None = None
     
-class Quotes(BaseModel):
+class AfterOrder(BaseModel):
+    symbol: str
+    price: float
+    amount: int
+    type: str
+    value: float
+    profit: float
+class Quotes(BaseModel): #personal use
     name: str
-
-    
+ 
 #--------------------------Token--------------------------
 class Token(BaseModel):
     access_token: str
     token_type: str
-
 
 class TokenData(BaseModel):
     id: str
