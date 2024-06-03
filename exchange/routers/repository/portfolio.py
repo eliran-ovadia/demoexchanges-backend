@@ -176,10 +176,12 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     return get_portfolio
 
 def event_stream(db: Session, current_user: schemas.User):
-    while True:
+    flag = 0
+    while flag < 20: #limit the number of stream time to 200 seconds
         portfolio_data = getPortfolio(db, current_user)
         yield f"data: {portfolio_data}\n\n"
         time.sleep(10)
+        flag += 1
 
 def getHistory(db: Session, current_user: schemas.TokenData):
     history = db.query(models.History).filter(models.History.user_id == current_user.id).order_by(models.History.time_stamp.desc()).all()
