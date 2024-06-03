@@ -175,13 +175,20 @@ def getPortfolio(db: Session, current_user: schemas.TokenData):
     
     return get_portfolio
 
-def event_stream(db: Session, current_user: schemas.User):
+def event_stream(db: Session, current_user: schemas.User, duration: int = 100, interval: int = 5):
     flag = 0
-    while flag < 20: #limit the number of stream time to 200 seconds
-        portfolio_data = getPortfolio(db, current_user)
-        yield f"data: {portfolio_data}\n\n"
-        time.sleep(10)
-        flag += 1
+    while flag < duration:
+        try:
+            portfolio_data = getPortfolio(db, current_user)
+            yield f"data: {portfolio_data}\n\n"
+        except Exception as e:
+            yield f"data: {{'error': '{str(e)}'}}\n\n"
+        
+        time.sleep(interval)
+        flag += interval
+
+    # Send a final event indicating the end of the stream
+    yield f"data: {{'message': 'Stream ended after {duration} seconds'}}\n\n"
 
 def getHistory(db: Session, current_user: schemas.TokenData):
     history = db.query(models.History).filter(models.History.user_id == current_user.id).order_by(models.History.time_stamp.desc()).all()
