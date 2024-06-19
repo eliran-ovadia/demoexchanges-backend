@@ -7,7 +7,7 @@ from .repository import portfolio
 from ..oauth2 import get_current_user
 
 
-router = APIRouter(tags = ['portfolio'], prefix = "/portfolio")
+router = APIRouter(tags = ['portfolio'], prefix = "/api/portfolio")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
         
