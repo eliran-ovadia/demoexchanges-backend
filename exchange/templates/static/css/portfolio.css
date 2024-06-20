@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: linear-gradient(115deg, #F6FDFF, #CFEFF8, #CFEFF8, #F0FBFE);
+    overflow: hidden;
+    background-size: cover;
+    background-size: cover;
+    min-height: 100vh
+  }
+  ::selection {
+    background: rgba(106, 185, 255, 0.277);
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+
+    width: 100%;
+    padding: 3vh;
+  }
+
+.cube {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.17);
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.18);
+    text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 2vh;
+}
+/* summary cube start*/
+#summary {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 56vh;
+    min-height: 31.5vh;
+    width: 100%;
+}
+
+#greeting, #name{
+    font-size: 3vh;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+
+.inner_cube_summary {
+    display: flex;
+    flex: 1 1 30%;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+.inner_cube_summary p {
+    font-size: 2.6vh;
+    font-weight: 500;
+}
+
+#grey_title {
+    color: #9D9D9D;
+    font-size: 1.8vh;
+    font-weight: 400;
+}
+
+/* summary cube end*/
+
+/* order cube end*/

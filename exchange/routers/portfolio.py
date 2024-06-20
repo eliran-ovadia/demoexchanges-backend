@@ -34,8 +34,6 @@ def getHistory(db: Session = check_db, current_user: schemas.User = check_auth):
 
 
 
-
-
 #for testing purpose--------------------------------------------------------------------------------------------
 
 @router.get('/getStockPrice', status_code = status.HTTP_200_OK) #just for me to check the stock price
