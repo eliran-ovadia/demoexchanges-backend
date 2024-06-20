@@ -1,15 +1,12 @@
 from fastapi import APIRouter, Depends
 from .. import database, schemas
 from ..oauth2 import get_current_user
-from fastapi.responses import HTMLResponse, RedirectResponse
-
+from fastapi.responses import HTMLResponse
 
 router = APIRouter(tags = ['frontEnd'])
+
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
-
-
-
 
 @router.get('/', response_class=HTMLResponse)
 def get_index():
