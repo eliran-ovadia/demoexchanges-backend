@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from .. import database, schemas
 from ..oauth2 import get_current_user
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 router = APIRouter(tags = ['frontEnd'])
 

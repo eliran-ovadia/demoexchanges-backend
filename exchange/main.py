@@ -4,13 +4,11 @@ from .database import engine
 from .routers import portfolio, user, authentication, front
 from fastapi.staticfiles import StaticFiles
 
-
 app = FastAPI()
 
 models.Base.metadata.create_all(engine) #evey time we find a new base we create the table for it
 
 app.mount("/static", StaticFiles(directory="exchange/templates/static"), name="static")#mount the static folder for frontend
-
 
 app.include_router(authentication.router)
 app.include_router(portfolio.router)
