@@ -5,7 +5,7 @@ from .repository import user
 from ..oauth2 import get_current_user
 
 
-router = APIRouter(tags = ['users'], prefix = '/api/users')
+router = APIRouter(tags = ['users'], prefix = '/api')
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
