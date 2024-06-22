@@ -22,24 +22,11 @@ document.getElementById('login-form').addEventListener('submit', async function(
 
       const data = await response.json();
       const token = data.access_token; // Assuming the token is returned in this field
-
-      // Fetch the portfolio page using the token
-      const portfolioResponse = await fetch('http://127.0.0.1:8000/portfolio', {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'text/html',
-              'Authorization': `Bearer ${token}`,
-          },
-      });
-
-      if (!portfolioResponse.ok) {
-          throw new Error('Failed to load portfolio.');
-      }
-
-      const portfolioHtml = await portfolioResponse.text();
-
-      // Insert the portfolio HTML into the current document
-      document.body.innerHTML = portfolioHtml;
+      const token_to_save = "Bearer " + token;
+      localStorage.setItem('token', token_to_save); //local stoge save to save the token for navigating to the portfolio page
+      console.log('Token to save:', token_to_save);
+      console.log('Stored token:', localStorage.getItem('token'));
+      window.location.href = 'http://127.0.0.1:8000/portfolio';
 
   } catch (error) {
       console.error('Login error:', error);

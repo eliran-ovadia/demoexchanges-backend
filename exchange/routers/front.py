@@ -15,6 +15,5 @@ def get_index():
     
 @router.get('/portfolio', response_class=HTMLResponse)
 def get_portfolio():
-    #current_user: schemas.User = check_auth ----enter in arguments to protect
     with open("exchange/templates/portfolio.html") as f:
         return HTMLResponse(content=f.read(), status_code=200)
