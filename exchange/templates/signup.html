@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>demo_exchange</title>
-    <link rel="stylesheet" href="/static/css/index.css" />
+    <link rel="stylesheet" href="/static/css/signup.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
@@ -15,8 +15,16 @@
   <body>
     <div class="container">
       <div class="wrapper">
-        <div class="title"><span>Exchange Login</span></div>
-        <form id="login-form">
+        <div class="title"><span>Sign Up To Trade</span></div>
+        <form id="signup-form">
+            <div class="row">
+                <i class="fa fa-user"></i>
+                <input type="text" id="firstname" placeholder="First Name" required />
+              </div>
+              <div class="row">
+                <i class="fa fa-users" ></i>
+                <input type="text" id="lastname" placeholder="Last Name" required />
+              </div>
           <div class="row">
             <i class="fas fa-envelope"></i>
             <input type="email" id="email" placeholder="Email Address" required />
@@ -26,14 +34,14 @@
             <input type="password" id="password" placeholder="Password" required />
           </div>
           <div class="row button">
-            <input type="submit" value="Login" />
+            <input type="submit" value="Sign Up" />
           </div>
           <div class="signup-link">
-            Ready to trade? <a href="/signup">Click to sign up</a>
+            Already a member? <a href="/login">Click to log in</a>
           </div>
         </form>
       </div>
     </div>
-    <script src="/static/js/index.js"></script>
+    <script src="/static/js/signup.js"></script>
   </body>
 </html>

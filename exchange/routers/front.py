@@ -13,6 +13,13 @@ def get_index():
     with open("exchange/templates/index.html") as f:
         return HTMLResponse(content=f.read(), status_code=200)
     
+    
+@router.get('/signup', response_class=HTMLResponse)
+def get_index():
+    with open("exchange/templates/signup.html") as f:
+        return HTMLResponse(content=f.read(), status_code=200)
+    
+    
 @router.get('/portfolio', response_class=HTMLResponse)
 def get_portfolio():
     with open("exchange/templates/portfolio.html") as f:

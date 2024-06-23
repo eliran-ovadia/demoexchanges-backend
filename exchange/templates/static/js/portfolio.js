@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //JWT and name handling ------------------------------------------------------------
 
-    const BASE_API_URL = 'http://127.0.0.1:8000/api';
+    const BASE_API_URL = 'http://127.0.0.1:8000/api/';
 
-    const fetchWithToken = async (url, token) => {  //a function to easly fetch data with the token
+    const GETfetchWithToken = async (url, token) => {  //a function to easly fetch data with the token
         try {
         const response = await fetch(url, {
             headers: {
@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const updateDOMWithPortfolioData = (data) => {
         if (!data || !data.balance || typeof data.balance === 'undefined') {
+            console.log("TESTING GETPORTFOLIO RESPONSE:" + data);
             console.error('Error: Portfolio data or account value is undefined.');
             return;
         }
@@ -63,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };//--------------------------
 
-    fetchWithToken(BASE_API_URL + '/getPortfolio', token) //fetching getportfolio for the account summary cube
+    GETfetchWithToken(BASE_API_URL + 'getPortfolio', token) //fetching getportfolio for the account summary cube
             .then(data => {
                 if (data) {
                     updateDOMWithPortfolioData(data);

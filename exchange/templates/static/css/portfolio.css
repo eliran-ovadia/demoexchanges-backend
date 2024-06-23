@@ -10,7 +10,6 @@ body {
     background: linear-gradient(115deg, #F6FDFF, #CFEFF8, #CFEFF8, #F0FBFE);
     overflow: hidden;
     background-size: cover;
-    background-size: cover;
     min-height: 100vh
   }
   ::selection {
@@ -18,12 +17,11 @@ body {
   }
 
   .wrapper {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-
     width: 100%;
     padding: 3vh;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
   }
 
 .cube {
