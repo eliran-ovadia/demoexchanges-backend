@@ -3,8 +3,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, Date
 from .database import Base
 from sqlalchemy.orm import relationship
 
-#2024-05-03 10:15:30.123456
-
 class User(Base):
     __tablename__ = 'users'
     id = Column(String, primary_key = True, index = True, unique = True) #UUID
@@ -41,14 +39,5 @@ class Portfolio(Base):
     amount = Column(Integer)
     price = Column(Float)
     time_stamp = Column(DateTime)
-    #avg_price = Column(Float) calculation is done in the repository
-    #last_price = Column(Float) calculation is done in the repository
-    #day_change_percent = Column(Float) calculation is done in the repository
-    #day_change_price = Column(Float) calculation is done in the repository
-    #bid = Column(Float) calculation is done in the repository
-    #ask = Column(Float) calculation is done in the repository
-    #total_value = Column(Float) calculation is done in the repository
-    #total_profit = Column(Float) calculation is done in the repository
-    #next_report = Column(DateTime) calculation is done in the repository
     
     creator = relationship("User", back_populates="portfolio")

@@ -16,11 +16,11 @@ check_auth = Depends(get_current_user)
 def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.get_all(db)
 
-@router.get('/getPortfolio', status_code = 200, response_model = dict)
+@router.get('/getPortfolio', status_code = status.HTTP_200_OK, response_model = dict)
 def getPortfolio(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.getPortfolio(db, current_user)
 
-@router.get('/getPortfolioStream', status_code=200)
+@router.get('/getPortfolioStream', status_code = status.HTTP_200_OK)
 def get_portfolio_stream(db: Session = check_db, current_user: schemas.User = check_auth):
     return StreamingResponse(portfolio.event_stream(db, current_user), media_type="text/event-stream")
 
