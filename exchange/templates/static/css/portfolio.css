@@ -36,38 +36,19 @@ body {
     flex-wrap: wrap;
   }
 
-.top-cube {
+  .cube {
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.17);
     border-radius: 25px;
-    box-shadow: 0px 6px 20px 5px rgba(0, 0, 0, 0.18);
+    box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.25);
     text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
     padding: 3px;
     margin: 20px;
-    min-width: 730px; /* not responsive */
-    min-height: 300px; /* not responsive */
     max-width: 100%;
-}
-
-.cube {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  border-radius: 25px;
-  box-shadow: 0px 6px 20px 5px rgba(0, 0, 0, 0.18);
-  text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
-  padding: 3px;
-  margin: 20px;
-  min-width: 730px; /* not responsive */
-  min-height: 800px; /* not responsive */
-  max-width: 100%;
-}
-
+  }
 /* summary cube start*/
 #summary {
     display: flex;
