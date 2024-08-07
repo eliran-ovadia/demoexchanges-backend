@@ -7,7 +7,7 @@ from .repository import portfolio
 from ..oauth2 import get_current_user
 
 
-router = APIRouter(tags = ['portfolio'], prefix = "/portfolio")
+router = APIRouter(tags = ['portfolio'], prefix = "/api")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
         
@@ -16,11 +16,11 @@ check_auth = Depends(get_current_user)
 def all(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.get_all(db)
 
-@router.get('/getPortfolio', status_code = 200, response_model = dict)
+@router.get('/getPortfolio', status_code = status.HTTP_200_OK, response_model = dict)
 def getPortfolio(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.getPortfolio(db, current_user)
 
-@router.get('/getPortfolioStream', status_code=200)
+@router.get('/getPortfolioStream', status_code = status.HTTP_200_OK)
 def get_portfolio_stream(db: Session = check_db, current_user: schemas.User = check_auth):
     return StreamingResponse(portfolio.event_stream(db, current_user), media_type="text/event-stream")
 
@@ -31,8 +31,6 @@ def order(request: schemas.Order, db: Session = check_db, current_user: schemas.
 @router.get('/getHistory',response_model = List[schemas.History], status_code = status.HTTP_200_OK)
 def getHistory(db: Session = check_db, current_user: schemas.User = check_auth):
     return portfolio.getHistory(db, current_user)
-
-
 
 
 
