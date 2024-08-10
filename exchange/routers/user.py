@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends , status
-from .. import database, schemas
-from sqlalchemy.orm import Session, backref
+from exchange import database, schemas
+from sqlalchemy.orm import Session
 from .repository import user
-from ..oauth2 import get_current_user
+from exchange.oauth2 import get_current_user
 
 
 router = APIRouter(tags = ['users'], prefix = '/api')

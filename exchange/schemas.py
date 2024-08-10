@@ -1,21 +1,9 @@
-#--------------------------------schemas is reffering to the way the API interracts with the responses/requests------------------------------------
-from pydantic import BaseModel, EmailStr, field_validator
+import re
 from typing import List
 from datetime import datetime
-import re
+from pydantic import BaseModel, EmailStr, field_validator
 
-class ShowPortfolioForPool(BaseModel): #get a stock
-    stock_id: int
-    user_id: str
-    symbol: str
-    amount: int
-    costPrice: float | None = None
-    lastPrice: float | None = None
-    totalValue: float | None = None
-    profit: float | None = None
-
-
-class ShowPortfolio(BaseModel): #get stocks
+class ShowPortfolio(BaseModel):
     symbol: str
     full_name: str | None = None
     amount: int
@@ -30,14 +18,12 @@ class ShowPortfolio(BaseModel): #get stocks
     year_range: str | None = None
     total_return: float | None = None
     total_return_percent: float | None = None
-    
     # class Config(): #I dont need it for my version
     #    orm_mode = True #I dont need it for my version
 
-class market_open(BaseModel):
+class market_open(BaseModel): #needs route to be developed
     is_market_open: bool | None = None
 
-    
 class CreateUser(BaseModel):
     name: str
     last_name: str
@@ -60,7 +46,6 @@ class CreateUser(BaseModel):
             raise ValueError('Password must not contain the same character three times in a row')
         return v.title()
 
-
 class User(BaseModel):
     id: str
     name: str
@@ -68,16 +53,28 @@ class User(BaseModel):
     password: str
     cash: float
     is_admin: bool
-    portfolio: List[ShowPortfolioForPool]
 
-class Order(BaseModel): #buy/sell stocks
+class Order(BaseModel):
     symbol: str
     amount: int
-    
+    type: str
+
+    @field_validator('type')
+    def validate_type(cls, v):
+        if v.lower() not in ['buy', 'sell']:
+            raise ValueError("Type must be either 'buy' or 'sell'")
+        return v.capitalize()
+
+    @field_validator('amount')
+    def validate_amount(cls, v):
+        if v <= 0:
+            raise ValueError("Amount must be greater than 0")
+        return v
+
 class Login(BaseModel):
     username: str
     password: str
-    
+
 class History(BaseModel):
     symbol: str | None = None
     price: float | None = None
@@ -86,7 +83,7 @@ class History(BaseModel):
     value: float | None = None
     profit: float | None = None
     time_stamp: datetime | None = None
-    
+
 class AfterOrder(BaseModel):
     symbol: str
     price: float
@@ -94,9 +91,10 @@ class AfterOrder(BaseModel):
     type: str
     value: float
     profit: float
+
 class Quotes(BaseModel): #personal use
     name: str
- 
+
 #--------------------------Token--------------------------
 class Token(BaseModel):
     access_token: str

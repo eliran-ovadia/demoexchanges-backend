@@ -1,4 +1,3 @@
-#--------------------------------models is reffering to the way the database interracts with the responses/requests------------------------------------
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, DateTime
 from .database import Base
 from sqlalchemy.orm import relationship

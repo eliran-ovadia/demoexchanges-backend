@@ -2,7 +2,7 @@ import bcrypt
 
 class Hash():
     @staticmethod
-    def bcrypt(password: str):
+    def bcrypt(password: str) -> str:
         salt = bcrypt.gensalt()
         return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 

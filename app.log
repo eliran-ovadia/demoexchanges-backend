@@ -1,0 +1,54 @@
+2024-08-10 20:27:24,481 - exchange.app_logger - INFO - Processing order: Buy 1 of asml for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:27:24,481 - exchange.app_logger - INFO - Fetching price for symbol: ASML
+2024-08-10 20:27:26,514 - exchange.app_logger - INFO - Price for ASML: {'price': '860.54999'}
+2024-08-10 20:27:26,514 - exchange.app_logger - INFO - Handling buy order: 1 of ASML at 860.54999 for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:33:43,959 - exchange.app_logger - INFO - Processing order: Buy 1 <class 'int'> of asml for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:33:43,959 - exchange.app_logger - INFO - Fetching price for symbol: ASML
+2024-08-10 20:33:45,325 - exchange.app_logger - INFO - Price for ASML: {'price': '860.54999'}
+2024-08-10 20:33:45,336 - exchange.app_logger - INFO - Handling buy order: 1 of ASML at 860.54999 for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:38:02,789 - exchange.app_logger - INFO - Processing order: Buy 1 <class 'int'> of asml for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:38:02,789 - exchange.app_logger - INFO - Fetching price for symbol: ASML
+2024-08-10 20:38:04,088 - exchange.app_logger - INFO - Price for ASML: {'price': '860.54999'}
+2024-08-10 20:38:04,106 - exchange.app_logger - INFO - Handling buy order: 1 <class 'int'> of ASML at 860.54999 <class 'str'> with the value 860.54999 <class 'str'> for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45 with cash of 96904.74995000001 <class 'float'>
+2024-08-10 20:40:57,249 - exchange.app_logger - INFO - Processing order: Buy 1 <class 'int'> of asml for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:40:57,251 - exchange.app_logger - INFO - Fetching price for symbol: ASML
+2024-08-10 20:40:59,286 - exchange.app_logger - INFO - Price for ASML: {'price': '860.54999'}
+2024-08-10 20:40:59,301 - exchange.app_logger - INFO - Handling buy order: 1 <class 'int'> of ASML at 860.54999 <class 'float'> with the value 860.54999 <class 'float'> for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45 with cash of 96904.74995000001 <class 'float'>
+2024-08-10 20:40:59,301 - exchange.app_logger - INFO - Buy order completed: 1 of ASML at 860.54999 for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:40:59,308 - exchange.app_logger - INFO - Recording history for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy 1 of ASML at 860.54999, profit: 0
+2024-08-10 20:40:59,330 - exchange.app_logger - INFO - Order processed successfully for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy 1 of ASML at 860.54999
+2024-08-10 20:41:27,893 - exchange.app_logger - INFO - Processing order: Buy 1 <class 'int'> of asml for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:41:27,894 - exchange.app_logger - INFO - Fetching price for symbol: ASML
+2024-08-10 20:41:28,924 - exchange.app_logger - INFO - Price for ASML: {'price': '860.54999'}
+2024-08-10 20:41:28,924 - exchange.app_logger - INFO - Handling buy order: 1 <class 'int'> of ASML at 860.54999 <class 'float'> with the value 860.54999 <class 'float'> for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45 with cash of 96044.19996000001 <class 'float'>
+2024-08-10 20:41:28,924 - exchange.app_logger - INFO - Buy order completed: 1 of ASML at 860.54999 for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:41:28,924 - exchange.app_logger - INFO - Recording history for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy 1 of ASML at 860.54999, profit: 0
+2024-08-10 20:41:28,947 - exchange.app_logger - INFO - Order processed successfully for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy 1 of ASML at 860.54999
+2024-08-10 20:41:34,419 - exchange.app_logger - INFO - Processing order: Buy -1 <class 'int'> of asml for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:41:34,420 - exchange.app_logger - INFO - Fetching price for symbol: ASML
+2024-08-10 20:41:35,451 - exchange.app_logger - INFO - Price for ASML: {'price': '860.54999'}
+2024-08-10 20:41:35,451 - exchange.app_logger - INFO - Handling buy order: -1 <class 'int'> of ASML at 860.54999 <class 'float'> with the value -860.54999 <class 'float'> for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45 with cash of 95183.64997000001 <class 'float'>
+2024-08-10 20:41:35,451 - exchange.app_logger - INFO - Buy order completed: -1 of ASML at 860.54999 for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:41:35,451 - exchange.app_logger - INFO - Recording history for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy -1 of ASML at 860.54999, profit: 0
+2024-08-10 20:41:35,482 - exchange.app_logger - INFO - Order processed successfully for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy -1 of ASML at 860.54999
+2024-08-10 20:41:43,271 - exchange.app_logger - INFO - Processing order: Buy -5 <class 'int'> of asml for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:41:43,272 - exchange.app_logger - INFO - Fetching price for symbol: ASML
+2024-08-10 20:41:44,317 - exchange.app_logger - INFO - Price for ASML: {'price': '860.54999'}
+2024-08-10 20:41:44,317 - exchange.app_logger - INFO - Handling buy order: -5 <class 'int'> of ASML at 860.54999 <class 'float'> with the value -4302.749949999999 <class 'float'> for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45 with cash of 96044.19996000001 <class 'float'>
+2024-08-10 20:41:44,317 - exchange.app_logger - INFO - Buy order completed: -5 of ASML at 860.54999 for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45
+2024-08-10 20:41:44,317 - exchange.app_logger - INFO - Recording history for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy -5 of ASML at 860.54999, profit: 0
+2024-08-10 20:41:44,340 - exchange.app_logger - INFO - Order processed successfully for user 71e64e7b-59ea-4cfa-8b0b-f282d799cb45: Buy -5 of ASML at 860.54999
+2024-08-10 20:53:48,415 - exchange.app_logger - INFO - Processing order: Buy -5 of aapl for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9
+2024-08-10 20:53:48,416 - exchange.app_logger - INFO - Fetching price for symbol: AAPL
+2024-08-10 20:53:50,489 - exchange.app_logger - INFO - Price for AAPL: {'price': '216.24001'}
+2024-08-10 20:53:50,489 - exchange.app_logger - INFO - Handling buy order: -5 <class 'int'> of AAPL at 216.24001 <class 'float'> with the value -1081.2000500000001 <class 'float'> for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9 with cash of 100000.0 <class 'float'>
+2024-08-10 20:53:50,489 - exchange.app_logger - INFO - Buy order completed: -5 of AAPL at 216.24001 for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9
+2024-08-10 20:53:50,489 - exchange.app_logger - INFO - Recording history for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9: Buy -5 of AAPL at 216.24001, profit: 0
+2024-08-10 20:53:50,503 - exchange.app_logger - INFO - Order processed successfully for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9: Buy -5 of AAPL at 216.24001
+2024-08-10 20:54:40,155 - exchange.app_logger - INFO - Processing order: Buy 5 of aapl for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9
+2024-08-10 20:54:40,155 - exchange.app_logger - INFO - Fetching price for symbol: AAPL
+2024-08-10 20:54:40,803 - exchange.app_logger - INFO - Price for AAPL: {'price': '216.24001'}
+2024-08-10 20:54:40,803 - exchange.app_logger - INFO - Handling buy order: 5 <class 'int'> of AAPL at 216.24001 <class 'float'> with the value 1081.2000500000001 <class 'float'> for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9 with cash of 101081.20005 <class 'float'>
+2024-08-10 20:54:40,803 - exchange.app_logger - INFO - Buy order completed: 5 of AAPL at 216.24001 for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9
+2024-08-10 20:54:40,803 - exchange.app_logger - INFO - Recording history for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9: Buy 5 of AAPL at 216.24001, profit: 0
+2024-08-10 20:54:40,823 - exchange.app_logger - INFO - Order processed successfully for user 7769b6d3-5f1b-476f-a64e-5e8e1fad97c9: Buy 5 of AAPL at 216.24001
