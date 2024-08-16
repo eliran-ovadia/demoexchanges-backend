@@ -17,22 +17,20 @@ def create_td_client() -> TDClient:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="API key for TwelveData is not set")
     return TDClient(apikey=api_key)
 
-def get_stock_price(symbol: str):
-    logger.info(f"Fetching price for symbol: {symbol}")
+def get_stock_price(symbol: str) -> str:
     api_key = os.getenv("TWELVE_DATA_API_KEY")
     td = TDClient(apikey=api_key)
     try:
         stock = td.price(symbol=symbol).as_json()
-        logger.info(f"Price for {symbol}: {stock}")
     except TwelveDataError as e:
-        logger.error(f"Price not found for symbol: {symbol} - {str(e)}")
+        logger.critical(f"Price not found for symbol: {symbol} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Price for symbol: {symbol} - not found")
     except Exception as e:
-        logger.error(f"Failed to fetch price for symbol: {symbol} - {str(e)}")
+        logger.critical(f"Failed to fetch price for symbol: {symbol} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
     return stock
 
-def get_quote(symbols: str) -> dict:
+def get_quote(symbols: str) -> str:
     td = create_td_client()
     try:
         stock = td.quote(symbol=symbols).as_json()
