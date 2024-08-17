@@ -15,7 +15,7 @@ def create_user(request: schemas.CreateUser, db: Session = check_db) -> str:
 
 @router.get('/getUser', response_model = schemas.User, status_code = status.HTTP_200_OK) # endpoint for admin
 def get_user(email: str, db: Session = check_db, current_user: schemas.TokenData = check_auth) -> schemas.User:
-    return user.get_user(email, db, current_user)
+    return user.find_user(email, db, current_user)
 
 
 @router.patch('/resetPortfolio/', status_code = status.HTTP_200_OK)

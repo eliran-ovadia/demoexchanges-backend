@@ -19,7 +19,7 @@ def fetch_portfolio_data(db: Session, current_user: schemas.TokenData) -> dict:
     return {symbol: {'total_amount': total_amount, 'avg_price': avg_price} for symbol, total_amount, avg_price in result} if result else None
 
 def handle_empty_portfolio(db: Session, current_user: schemas.TokenData) -> dict:
-    user = get_user(db, current_user.id)
+    user = find_user(db, current_user.id, )
 
     balances_dict = {
         'Buying_power': user.cash,
@@ -88,7 +88,7 @@ def parse_price(quote_data: dict) -> float:
         return None
 
 def build_portfolio_response(db: Session, current_user: schemas.TokenData, portfolio_data: list) -> dict:
-    user = get_user(db, current_user.id)
+    user = find_user(db, current_user.id, )
 
     portfolio_value = sum([x['total_value'] for x in portfolio_data])
     total_return = sum([x['total_return'] for x in portfolio_data])

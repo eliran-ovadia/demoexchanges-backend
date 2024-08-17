@@ -1,57 +1,107 @@
-from exchange import models, schemas
-from fastapi import HTTPException, status
 from datetime import datetime
 from sqlalchemy import func
+from exchange import schemas
 from exchange.routers.repository.utils.utils import *
 
-def sell_handler(request: schemas.Order, db: Session, user_id, symbol, price, value, user):
-    user = get_user(db, user_id)
-    value *= -1
-    request.amount *= -1
-        # Calculate total stock amount for the symbol
-    user_total_amount_of_stock = db.query(func.sum(models.Portfolio.amount)).filter(
-            models.Portfolio.user_id == user_id,
-            models.Portfolio.symbol == symbol
-        ).scalar()
-        
-    if user_total_amount_of_stock is None or user_total_amount_of_stock < request.amount:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient stocks for selling")
-        
+
+def sell_handler(request: schemas.Order, db: Session, current_user: schemas.TokenData, symbol: str, price: float, value: float):
+    user = find_user(db, current_user.id, )
+
+    #total user owned stocks
+    total_owned_stock = db.query(func.sum(models.Portfolio.amount)).filter(
+        models.Portfolio.user_id == user.id,
+        models.Portfolio.symbol == symbol
+    ).scalar() or 0
+
+    if total_owned_stock < request.amount:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Short selling is not supported at the moment, you can sell a maximum of {total_owned_stock} stocks")
+
+    # Fetch the portfolio entries for FIFO selling
     portfolio_entries = db.query(models.Portfolio).filter(
-            models.Portfolio.user_id == user_id,
-            models.Portfolio.symbol == symbol
-        ).order_by(models.Portfolio.time_stamp.asc()).all()
-        
-    amount_copy = request.amount
+        models.Portfolio.user_id == user.id,
+        models.Portfolio.symbol == symbol
+    ).order_by(models.Portfolio.time_stamp.asc()).all()
+
+    remaining_amount_to_sell = request.amount
+    total_profit = 0.0
+
     for entry in portfolio_entries:
-        if amount_copy <= 0:
+        if remaining_amount_to_sell <= 0:
             break
-        if entry.amount <= amount_copy:
-            sell_profit += (price - entry.price) * entry.amount
-            amount_copy -= entry.amount
-            db.delete(entry)
-            db.commit()
+
+        if entry.amount <= remaining_amount_to_sell:
+            total_profit += (price - entry.price) * entry.amount
+            remaining_amount_to_sell -= entry.amount
+            db.delete(entry) #delete entire row
         else:
-            sell_profit += (price - entry.price) * amount_copy
-            entry.amount -= amount_copy
-            amount_copy = 0
+            total_profit += (price - entry.price) * remaining_amount_to_sell
+            entry.amount -= remaining_amount_to_sell #delete part of the row
+            remaining_amount_to_sell = 0
+
     user.cash += value
-    timestamp = datetime.now()
-    
-    
-    
 
-def buy_handler(request, db, current_user, user_id, symbol, price, value, user): #check user and user id to be sent
-    user = get_user(db, user_id)
-    if user.cash < 0:
-        logger.error(f"email: {current_user.email} tried to buy with negative cash")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Negavite amount of cash")
+    # insert history row
+    transaction_time = datetime.now()
+    transaction_history = models.History(
+        symbol=symbol,
+        price=price,
+        amount=request.amount,
+        type=request.type,
+        value=value,
+        profit=total_profit,
+        time_stamp=transaction_time,
+        user_id=user.id
+    )
+    db.add(transaction_history)
+    db.commit()
+
+    return schemas.AfterOrder(
+        symbol=symbol,
+        price=price,
+        amount=request.amount,
+        type=request.type,
+        value=value,
+        profit=total_profit
+    )
+
+def buy_handler(request: schemas.Order, db: Session, current_user: schemas.TokenData, symbol: str, price: float, value: float):
+    user = find_user(db, current_user.id, )
+
     if user.cash < value:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insufficient cash for buying")
+        logger.error(f"User {current_user.email} attempted to buy with insufficient cash.")
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Insufficient cash for buying")
 
-    new_portfolio = models.Portfolio(
-            symbol=symbol, amount=request.amount, time_stamp=timestamp, price=price, user_id=user_id
-        )
-    db.add(new_portfolio)
     user.cash -= value
-    timestamp = datetime.now()
+
+    # insert portfolio and history rows
+    transaction_time = datetime.now()
+    new_portfolio_entry = models.Portfolio(
+        symbol=symbol,
+        amount=request.amount,
+        time_stamp=transaction_time,
+        price=price,
+        user_id=user.id
+    )
+    db.add(new_portfolio_entry)
+
+    transaction_history = models.History(
+        symbol=symbol,
+        price=price,
+        amount=request.amount,
+        type=request.type,
+        value=value,
+        profit=0.0,  # No profit for buy order
+        time_stamp=transaction_time,
+        user_id=user.id
+    )
+    db.add(transaction_history)
+    db.commit()
+
+    return schemas.AfterOrder(
+        symbol=symbol,
+        price=price,
+        amount=request.amount,
+        type=request.type,
+        value=value,
+        profit=0.0
+    )

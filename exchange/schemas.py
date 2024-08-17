@@ -1,5 +1,4 @@
 import re
-from typing import List
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
 
@@ -52,7 +51,7 @@ class User(BaseModel):
     email: str
     password: str
     cash: float
-    is_admin: bool
+    is_admin: bool | None = False
 
 class Order(BaseModel):
     symbol: str

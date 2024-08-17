@@ -20,3 +20,4 @@ def order(request: schemas.Order, db: Session = check_db, current_user: schemas.
 @router.get('/getHistory',response_model = List[schemas.History], status_code = status.HTTP_200_OK)
 def getHistory(db: Session = check_db, current_user: schemas.User = check_auth) -> List[schemas.History]:
     return portfolio.getHistory(db, current_user)
+

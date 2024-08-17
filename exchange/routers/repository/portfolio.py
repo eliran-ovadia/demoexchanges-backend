@@ -1,22 +1,21 @@
-from exchange import models, schemas
-from fastapi import HTTPException, status
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *
+from exchange.app_logger import logger
 
-def order(request: schemas.Order, db: Session, current_user: schemas.TokenData):
+
+def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
     symbol = request.symbol.upper()
     if ',' in symbol:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot buy/sell more than one stock at once")
     price = float(get_stock_price(symbol)['price'])
+    print(price)
     value = price * request.amount
-    user = get_user(db, current_user.id)
     if request.amount == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount cannot be 0")
-    
     if request.type == 'Buy':
-        return buy_handler(request, db, current_user, current_user.id, symbol, price, value, user)
+        return buy_handler(request, db, current_user, symbol, price, value)
     else:
-        return sell_handler(request, db, current_user.id, symbol, price, value, user)
+        return sell_handler(request, db, current_user, symbol, price, value)
 
 def getPortfolio(db: Session, current_user: schemas.TokenData) -> dict:
     portfolio_data = fetch_portfolio_data(db, current_user)

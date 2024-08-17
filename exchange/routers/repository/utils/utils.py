@@ -6,11 +6,15 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 import os
 
-def get_user(db: Session, user_id: int) -> models.User:
-    return db.query(models.User).filter(models.User.id == user_id).first()
+def find_user(db: Session, user_id: str = None, email: str = None) -> models.User:
+    if user_id is not None:
+        return db.query(models.User).filter(models.User.id == user_id).first()
+    elif email is not None:
+        return db.query(models.User).filter(models.User.email == email).first()
+    else:
+        raise ValueError("Either user_id or email must be provided.")
 
 #### twelvedata handlers ####
-
 def create_td_client() -> TDClient:
     api_key = os.getenv("TWELVE_DATA_API_KEY")
     if not api_key:
