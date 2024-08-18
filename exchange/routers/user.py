@@ -13,14 +13,9 @@ check_auth = Depends(get_current_user)
 def create_user(request: schemas.CreateUser, db: Session = check_db) -> str:
     return user.create_user(request, db)
 
-@router.get('/getUser', response_model = schemas.User, status_code = status.HTTP_200_OK) # endpoint for admin
-def get_user(email: str, db: Session = check_db, current_user: schemas.TokenData = check_auth) -> schemas.User:
-    return user.find_user(email, db, current_user)
-
-
 @router.patch('/resetPortfolio/', status_code = status.HTTP_200_OK)
-def resetPortfolio(db: Session = check_db, current_user: schemas.TokenData = check_auth) -> str:
-    return user.resetPortfolio(db, current_user)
+def reset_portfolio(db: Session = check_db, current_user: schemas.TokenData = check_auth) -> str:
+    return user.reset_portfolio(db, current_user)
 
 @router.delete('/deleteUser/', status_code = status.HTTP_202_ACCEPTED)
 def delete_user(email: str, db: Session = check_db, current_user: schemas.TokenData = check_auth) -> dict:

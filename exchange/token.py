@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from . import schemas
 import os
 
-load_dotenv()
+load_dotenv() #does not work without it at the moment
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 120))

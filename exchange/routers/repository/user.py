@@ -29,15 +29,7 @@ def create_user(request: schemas.CreateUser, db: Session) -> str:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail = "encountered an error")
     return f"Created a new user with email: {request.email}"
 
-def get_user(email: str, db: Session, current_user: schemas.TokenData) -> schemas.User: # endpoint for admin
-    user_to_return = db.query(models.User).filter(models.User.email == email).first()
-    if not user_to_return:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"user not located in the database")
-    if current_user.is_admin == False:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail = "Needs admin permission to perform this action")
-    return user_to_return
-
-def resetPortfolio(db: Session, current_user: schemas.TokenData) -> str:
+def reset_portfolio(db: Session, current_user: schemas.TokenData) -> str:
     user = find_user(db, user_id=current_user.id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail = f"user not located")

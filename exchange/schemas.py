@@ -2,26 +2,25 @@ import re
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
 
-class ShowPortfolio(BaseModel):
-    symbol: str
-    full_name: str | None = None
-    amount: int
-    exchange: str | None = None
-    open: float | None = None
-    previous_close: float | None = None
-    avg_price: float | None = None
-    last_price: float | None = None
-    total_value: float | None = None
-    bid: float | None = None
-    ask: float | None = None
-    year_range: str | None = None
-    total_return: float | None = None
-    total_return_percent: float | None = None
-    # class Config(): #I dont need it for my version
-    #    orm_mode = True #I dont need it for my version
 
-class market_open(BaseModel): #needs route to be developed
+class MarketOpen(BaseModel): #needs route to be developed
     is_market_open: bool | None = None
+
+class ShowStock(BaseModel):
+    symbol: str
+    full_name: str
+    amount: int
+    exchange: str
+    open: float
+    previous_close: float
+    avg_price: float
+    last_price: float
+    total_value: float
+    bid: float
+    ask: float
+    year_range: str
+    total_return: float
+    total_return_percent: float
 
 class CreateUser(BaseModel):
     name: str
@@ -51,7 +50,7 @@ class User(BaseModel):
     email: str
     password: str
     cash: float
-    is_admin: bool | None = False
+    is_admin: bool
 
 class Order(BaseModel):
     symbol: str
@@ -75,13 +74,13 @@ class Login(BaseModel):
     password: str
 
 class History(BaseModel):
-    symbol: str | None = None
-    price: float | None = None
-    amount: int | None = None
-    type: str | None = None
-    value: float | None = None
-    profit: float | None = None
-    time_stamp: datetime | None = None
+    symbol: str
+    price: float
+    amount: int
+    type: str
+    value: float
+    profit: float
+    time_stamp: datetime
 
 class AfterOrder(BaseModel):
     symbol: str
@@ -90,9 +89,6 @@ class AfterOrder(BaseModel):
     type: str
     value: float
     profit: float
-
-class Quotes(BaseModel): #personal use
-    name: str
 
 #--------------------------Token--------------------------
 class Token(BaseModel):

@@ -1,11 +1,8 @@
-from exchange.app_logger import logger
-from sqlalchemy.orm import Session
 from sqlalchemy import func
-from fastapi import HTTPException, status
-from exchange import models, schemas
+from exchange.schemas import TokenData, ShowStock
 from .utils import *
 
-def fetch_portfolio_data(db: Session, current_user: schemas.TokenData) -> dict:
+def fetch_portfolio_data(db: Session, current_user: TokenData) -> dict:
     # Query the database to get the symbols, total amounts, and average prices for the current user
     result = db.query(
         models.Portfolio.symbol,
@@ -18,7 +15,7 @@ def fetch_portfolio_data(db: Session, current_user: schemas.TokenData) -> dict:
     ).all()
     return {symbol: {'total_amount': total_amount, 'avg_price': avg_price} for symbol, total_amount, avg_price in result} if result else None
 
-def handle_empty_portfolio(db: Session, current_user: schemas.TokenData) -> dict:
+def handle_empty_portfolio(db: Session, current_user: TokenData) -> dict:
     user = find_user(db, current_user.id, )
 
     balances_dict = {
@@ -30,7 +27,7 @@ def handle_empty_portfolio(db: Session, current_user: schemas.TokenData) -> dict
     }
     return dict(balance=balances_dict, portfolio=[])
 
-def fetch_quotes(symbols: list) -> dict:
+def fetch_quotes(symbols: list) -> str | dict:
     try:
         quotes_response = get_quote(",".join(symbols))
     except Exception as e:
@@ -40,7 +37,7 @@ def fetch_quotes(symbols: list) -> dict:
         return {symbols[0]: quotes_response}
     return quotes_response
 
-def process_portfolio_data(portfolio_data: dict, quotes: dict) -> list:
+def process_portfolio_data(portfolio_data: dict, quotes: dict) -> list[ShowStock]:
     detailed_portfolio_data = []
 
     for symbol, data in portfolio_data.items():
@@ -57,24 +54,26 @@ def process_portfolio_data(portfolio_data: dict, quotes: dict) -> list:
         range = quote_data.get('fifty_two_week', {}).get('range', None)
         total_return_percent = (total_return / avg_price) if total_return and avg_price else 0
 
-        detailed_portfolio_data.append({
-            'symbol': symbol,
-            'full_name': quote_data.get('name', None),
-            'amount': total_amount,
-            'exchange': quote_data.get('exchange', None),
-            'open': quote_data.get('open', None),
-            'previous_close': quote_data.get('previous_close', None),
-            'avg_price': avg_price,
-            'last_price': last_price,
-            'total_value': total_value,
-            'bid': quote_data.get('bid', last_price),
-            'ask': quote_data.get('ask', last_price),
-            'year_range': range,
-            'total_return': total_return,
-            'total_return_percent': total_return_percent
-        })
+        stock_data = ShowStock(
+            symbol=symbol,
+            full_name=quote_data.get('name', ''),
+            amount=total_amount,
+            exchange=quote_data.get('exchange', ''),
+            open=quote_data.get('open', 0.0),
+            previous_close=quote_data.get('previous_close', 0.0),
+            avg_price=avg_price,
+            last_price=last_price,
+            total_value=total_value,
+            bid=quote_data.get('bid', last_price),
+            ask=quote_data.get('ask', last_price),
+            year_range=range,
+            total_return=total_return,
+            total_return_percent=total_return_percent
+        )
 
-    detailed_portfolio_data.sort(key=lambda x: x['total_value'], reverse=True)
+        detailed_portfolio_data.append(stock_data)
+
+    detailed_portfolio_data.sort(key=lambda x: x.total_value, reverse=True)
     return detailed_portfolio_data
 
 def parse_price(quote_data: dict) -> float:
@@ -87,12 +86,12 @@ def parse_price(quote_data: dict) -> float:
     except (TypeError, ValueError):
         return None
 
-def build_portfolio_response(db: Session, current_user: schemas.TokenData, portfolio_data: list) -> dict:
-    user = find_user(db, current_user.id, )
+def build_portfolio_response(db: Session, current_user: TokenData, portfolio_data: list[ShowStock]) -> dict:
+    user = find_user(db, current_user.id)
 
-    portfolio_value = sum([x['total_value'] for x in portfolio_data])
-    total_return = sum([x['total_return'] for x in portfolio_data])
-    total_invested = sum([(x['avg_price'] * x['amount']) for x in portfolio_data])
+    portfolio_value = sum([x.total_value for x in portfolio_data])
+    total_return = sum([x.total_return for x in portfolio_data])
+    total_invested = sum([(x.avg_price * x.amount) for x in portfolio_data])
     total_return_percent = (total_return / total_invested) if total_invested > 0 else 0
 
     balances_dict = {

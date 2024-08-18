@@ -17,7 +17,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) 
     else:
         return sell_handler(request, db, current_user, symbol, price, value)
 
-def getPortfolio(db: Session, current_user: schemas.TokenData) -> dict:
+def get_portfolio(db: Session, current_user: schemas.TokenData) -> dict:
     portfolio_data = fetch_portfolio_data(db, current_user)
 
     if not portfolio_data:
@@ -29,7 +29,7 @@ def getPortfolio(db: Session, current_user: schemas.TokenData) -> dict:
 
     return build_portfolio_response(db, current_user, detailed_portfolio_data)
 
-def getHistory(db: Session, current_user: schemas.TokenData) -> list:
+def get_history(db: Session, current_user: schemas.TokenData) -> list:
     history = db.query(models.History).filter(models.History.user_id == current_user.id).order_by(models.History.time_stamp.desc()).all()
     if not history:
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = f"History table is empty")
