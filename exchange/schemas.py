@@ -3,8 +3,9 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator
 
 
-class MarketOpen(BaseModel): #needs route to be developed
+class MarketOpen(BaseModel):  # needs route to be developed
     is_market_open: bool | None = None
+
 
 class ShowStock(BaseModel):
     symbol: str
@@ -18,16 +19,18 @@ class ShowStock(BaseModel):
     total_value: float
     bid: float
     ask: float
-    year_range: str
+    year_range_low: float
+    year_range_high: float
     total_return: float
     total_return_percent: float
+
 
 class CreateUser(BaseModel):
     name: str
     last_name: str
     email: EmailStr
     password: str
-    
+
     @field_validator("password")
     def password_check(cls, v: str):
         if len(v) < 8:
@@ -44,6 +47,7 @@ class CreateUser(BaseModel):
             raise ValueError('Password must not contain the same character three times in a row')
         return v.title()
 
+
 class User(BaseModel):
     id: str
     name: str
@@ -51,6 +55,7 @@ class User(BaseModel):
     password: str
     cash: float
     is_admin: bool
+
 
 class Order(BaseModel):
     symbol: str
@@ -69,9 +74,11 @@ class Order(BaseModel):
             raise ValueError("Amount must be greater than 0")
         return v
 
+
 class Login(BaseModel):
     username: str
     password: str
+
 
 class History(BaseModel):
     symbol: str
@@ -82,6 +89,7 @@ class History(BaseModel):
     profit: float
     time_stamp: datetime
 
+
 class AfterOrder(BaseModel):
     symbol: str
     price: float
@@ -90,10 +98,14 @@ class AfterOrder(BaseModel):
     value: float
     profit: float
 
+
 #--------------------------Token--------------------------
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
+
 
 class TokenData(BaseModel):
     id: str
