@@ -1,5 +1,6 @@
 import bcrypt
 
+
 class Hash():
     @staticmethod
     def bcrypt(password: str) -> str:
