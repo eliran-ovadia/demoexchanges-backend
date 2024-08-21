@@ -57,3 +57,12 @@
 2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_data with data[59:72]
 2024-08-21 12:38:48,117 - multipart.multipart - DEBUG - Calling on_field_end with no data
 2024-08-21 12:38:48,117 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-08-21 20:10:46,050 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 20:10:46,050 - multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_data with data[9:29]
+2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_name with data[30:38]
+2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_data with data[39:54]
+2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_end with no data

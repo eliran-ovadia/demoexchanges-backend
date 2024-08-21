@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, Field
+
 
 
 class MarketOpen(BaseModel):  # needs route to be developed
@@ -8,19 +9,19 @@ class MarketOpen(BaseModel):  # needs route to be developed
 
 
 class ShowStock(BaseModel):
-    symbol: str
-    full_name: str
+    symbol: constr(max_length=10)
+    full_name: constr(max_length=100)
     amount: int
-    exchange: str
-    open: float
-    previous_close: float
-    avg_price: float
-    last_price: float
-    total_value: float
-    bid: float
-    ask: float
-    year_range_low: float
-    year_range_high: float
+    exchange: constr(max_length=10)
+    open: confloat(gt=0)
+    previous_close: confloat(gt=0)
+    avg_price: confloat(gt=0)
+    last_price: confloat(gt=0)
+    total_value: confloat(gt=0)
+    bid: confloat(gt=0)
+    ask: confloat(gt=0)
+    year_range_low: confloat(gt=0)
+    year_range_high: confloat(gt=0)
     total_return: float
     total_return_percent: float
 
@@ -29,12 +30,10 @@ class CreateUser(BaseModel):
     name: str
     last_name: str
     email: EmailStr
-    password: str
+    password: constr(min_length=8)
 
     @field_validator("password")
     def password_check(cls, v: str):
-        if len(v) < 8:
-            raise ValueError('Password must be at least 8 characters long')
         if not re.search(r'[A-Z]', v):
             raise ValueError('Password must contain at least one uppercase letter')
         if not re.search(r'[a-z]', v):
@@ -45,16 +44,17 @@ class CreateUser(BaseModel):
             raise ValueError('Password must contain at least one special character')
         if re.search(r'(.)\1\1', v):
             raise ValueError('Password must not contain the same character three times in a row')
-        return v.title()
+        return v
 
 
 class User(BaseModel):
-    id: str
-    name: str
-    email: str
+    id: constr(min_length=1)
+    name: constr(min_length=1)
+    email: EmailStr
     password: str
-    cash: float
+    cash: confloat(ge=0)
     is_admin: bool
+
 
 
 class Order(BaseModel):
@@ -76,7 +76,7 @@ class Order(BaseModel):
 
 
 class Login(BaseModel):
-    username: str
+    username: EmailStr
     password: str
 
 
@@ -103,12 +103,11 @@ class AfterOrder(BaseModel):
 
 
 class Token(BaseModel):
-    access_token: str
-    token_type: str
-
+    access_token: constr(min_length=1)
+    token_type: constr(min_length=1)
 
 class TokenData(BaseModel):
-    id: str
+    id: constr(min_length=1)
     is_admin: bool
-    email: str
-    name: str
+    email: EmailStr
+    name: constr(min_length=1)
