@@ -7,7 +7,7 @@ from .routers import portfolio, user, authentication
 load_dotenv()
 app = FastAPI()
 
-models.Base.metadata.create_all(engine) #every time we find a new base we create the table for it
+models.Base.metadata.create_all(engine)  # every time we find a new base we create the table for it
 
 app.include_router(authentication.router)
 app.include_router(portfolio.router)
