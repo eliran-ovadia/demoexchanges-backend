@@ -8,12 +8,17 @@ import os
 
 
 def find_user(db: Session, user_id: str = None, email: str = None) -> User:
-    if user_id is not None:
-        return db.query(User).filter(User.id == user_id).first()
-    elif email is not None:
-        return db.query(User).filter(User.email == email).first()
+    if user_id:
+        user = db.query(User).filter(User.id == user_id).first()
+    elif email:
+        user = db.query(User).filter(User.email == email).first()
     else:
         raise ValueError("Either user_id or email must be provided.")
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    return user
 
 
 #### twelvedata handlers ####

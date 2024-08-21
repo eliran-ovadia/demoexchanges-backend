@@ -2,9 +2,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from exchange import models, schemas
 from fastapi import HTTPException, status
-from exchange.app_logger import logger
 from exchange.hashing import Hash
 from uuid import uuid4
+from exchange.app_logger import logger
 from exchange.routers.repository.utils.utils import find_user
 
 
@@ -42,15 +42,27 @@ def reset_portfolio(db: Session, current_user: schemas.TokenData) -> str:
     return "Portfolio is now empty and cash reset to $100,000"
 
 
-def delete_user(email: str, db: Session,
-                current_user: schemas.TokenData) -> dict:  # FIX TO CHECK IF USER IS ADMIN + CHECK USER EMAIL GIVEN BY ADMIN
-    user_to_delete = db.query(models.User).filter(models.User.email == email).first()
-    if not user_to_delete:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found")
-    # Check if the user is an admin
-    if user_to_delete.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin users cannot be deleted")
+def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> dict:
+    if not current_user.is_admin:
+        logger.warning(f"Unauthorized delete attempt by {current_user.email}")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized to delete accounts")
 
-    db.delete(user_to_delete)
-    db.commit()
-    return {"message": f"User with email: {email} - has been deleted"}
+    try:
+        user_to_delete = db.query(models.User).filter(models.User.id == request).one()
+
+        if user_to_delete.is_admin:
+            logger.warning(f"Attempt to delete admin user {user_to_delete.email} by {current_user.email}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin users cannot be deleted")
+
+        db.delete(user_to_delete)
+        db.commit()
+
+        logger.info(f"User {request} deleted by admin {current_user.email}")
+        return {"message": "User has been deleted"}
+
+    except HTTPException as http_exc:
+        logger.warning(f"Failed to delete user {request}: {http_exc.detail}")
+        raise http_exc
+    except Exception as exc:
+        logger.error(f"Unexpected error occurred while trying to delete user {request}: {str(exc)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
