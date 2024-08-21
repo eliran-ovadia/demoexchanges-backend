@@ -8,7 +8,6 @@ def sell_handler(request: schemas.Order, db: Session, current_user: schemas.Toke
                  value: float):
     user = find_user(db, current_user.id, )
 
-    # total user owned stocks
     total_owned_stock = db.query(func.sum(models.Portfolio.amount)).filter(
         models.Portfolio.user_id == user.id,
         models.Portfolio.symbol == symbol
@@ -18,7 +17,6 @@ def sell_handler(request: schemas.Order, db: Session, current_user: schemas.Toke
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Short selling is not supported at the moment, you can sell a maximum of {total_owned_stock} stocks")
 
-    # Fetch the portfolio entries for FIFO selling
     portfolio_entries = db.query(models.Portfolio).filter(
         models.Portfolio.user_id == user.id,
         models.Portfolio.symbol == symbol
@@ -42,7 +40,6 @@ def sell_handler(request: schemas.Order, db: Session, current_user: schemas.Toke
 
     user.cash += value
 
-    # insert history row
     transaction_time = datetime.now()
     transaction_history = models.History(
         symbol=symbol,
@@ -59,11 +56,11 @@ def sell_handler(request: schemas.Order, db: Session, current_user: schemas.Toke
 
     return schemas.AfterOrder(
         symbol=symbol,
-        price=price,
+        price=round(price, 2),
         amount=request.amount,
         type=request.type,
-        value=value,
-        profit=total_profit
+        value=round(value, 2),
+        profit=round(total_profit, 2)
     )
 
 
@@ -103,9 +100,9 @@ def buy_handler(request: schemas.Order, db: Session, current_user: schemas.Token
 
     return schemas.AfterOrder(
         symbol=symbol,
-        price=price,
+        price=round(price, 2),
         amount=request.amount,
         type=request.type,
-        value=value,
+        value=round(value, 2),
         profit=0.0
     )

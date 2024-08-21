@@ -1,0 +1,59 @@
+2024-08-21 11:48:10,282 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 11:48:10,282 - multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-08-21 11:48:10,282 - multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-08-21 11:48:10,282 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 11:48:10,282 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 11:48:10,283 - multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-08-21 11:48:10,283 - multipart.multipart - DEBUG - Calling on_field_data with data[29:49]
+2024-08-21 11:48:10,283 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 11:48:10,283 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 11:48:10,283 - multipart.multipart - DEBUG - Calling on_field_name with data[50:58]
+2024-08-21 11:48:10,283 - multipart.multipart - DEBUG - Calling on_field_data with data[59:72]
+2024-08-21 11:48:10,283 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 11:48:10,284 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-08-21 11:48:46,100 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 11:48:46,382 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-21 11:48:46,385 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 11:48:46,626 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AMD&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-08-21 11:52:44,020 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 11:52:44,232 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-21 11:52:44,235 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 11:52:44,442 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AMD&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-08-21 11:54:47,429 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 11:54:47,653 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-21 11:54:47,656 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 11:54:47,887 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AMD&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-08-21 12:20:23,423 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 12:20:23,756 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-21 12:20:23,756 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 12:20:23,965 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=AMD&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-21 12:27:00,393 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 12:27:00,662 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=AMD&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-21 12:28:15,248 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-21 12:28:15,460 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=AMD&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-21 12:35:17,172 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 12:35:17,172 - multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_data with data[29:49]
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_name with data[50:58]
+2024-08-21 12:35:17,173 - multipart.multipart - DEBUG - Calling on_field_data with data[59:72]
+2024-08-21 12:35:17,175 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 12:35:17,175 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-08-21 12:38:48,115 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_data with data[29:49]
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_name with data[50:58]
+2024-08-21 12:38:48,116 - multipart.multipart - DEBUG - Calling on_field_data with data[59:72]
+2024-08-21 12:38:48,117 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-21 12:38:48,117 - multipart.multipart - DEBUG - Calling on_end with no data

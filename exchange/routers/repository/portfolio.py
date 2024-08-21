@@ -1,11 +1,12 @@
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *
-from exchange.models import History
+from exchange.models import History as modelHistory
+from exchange.schemas import History as schemaHistory
 
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
     symbol = request.symbol.upper()
-    if ',' in symbol:
+    if ',' or ';' or '--' in symbol:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Cannot buy/sell more than one stock at once")
     price = float(get_stock_price(symbol)['price'])
@@ -32,9 +33,23 @@ def get_portfolio(db: Session, current_user: schemas.TokenData) -> dict:
     return build_portfolio_response(db, current_user, detailed_portfolio_data)
 
 
-def get_history(db: Session, current_user: schemas.TokenData) -> list:
-    history = db.query(History).filter(History.user_id == current_user.id).order_by(
-        History.time_stamp.desc()).all()
-    if not history:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"History table is empty")
-    return history
+def get_history(db: Session, current_user: schemas.TokenData) -> list[schemaHistory]:
+    history_array = db.query(modelHistory).filter(modelHistory.user_id == current_user.id).order_by(
+        modelHistory.time_stamp.desc()).all()
+    if not history_array:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No order history")
+
+    history_to_return = []
+    for history in history_array:
+        history_schema = schemaHistory(
+            symbol = history.symbol,
+            price = round(history.price, 2),
+            amount = history.amount,
+            type = history.type,
+            value = round(history.value, 2),
+            profit = round(history.profit, 2),
+            time = history.time_stamp
+        )
+        history_to_return.append(history_schema)
+
+    return history_to_return

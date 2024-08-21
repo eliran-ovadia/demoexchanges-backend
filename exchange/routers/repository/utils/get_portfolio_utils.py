@@ -60,16 +60,14 @@ def process_portfolio_data(portfolio_data: dict, quotes: dict) -> list[ShowStock
 
 
 def create_stock_data(symbol: str, data: dict, quote_data: dict) -> ShowStock:
-    last_price = round(parse_price(quote_data), 2)
     total_amount = data['total_amount']
+    last_price = round(parse_price(quote_data), 2)
+    open_price, previous_close, bid_price, ask_price = extract_prices(quote_data, last_price)
     avg_price = round(data['avg_price'], 2)
-
     total_value = round(last_price * total_amount, 2) if last_price is not None else 0
     total_return = round((last_price - avg_price) * total_amount,
                          2) if last_price is not None and avg_price is not None else 0
     total_return_percent = round((total_return / avg_price) * 100, 2) if total_return and avg_price else 0
-
-    open_price, previous_close, bid_price, ask_price = extract_prices(quote_data, last_price)
     year_range_low, year_range_high = extract_year_range(quote_data)
 
     return ShowStock(
