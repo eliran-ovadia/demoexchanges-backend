@@ -19,6 +19,17 @@ def fetch_portfolio_data(db: Session, current_user: TokenData) -> dict:
             result} if result else None
 
 
+def fetch_quotes(symbols: list) -> dict:
+    try:
+        quotes_response = get_quote(",".join(symbols))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    if len(symbols) == 1:
+        return {symbols[0]: quotes_response}
+    return quotes_response
+
+
 def handle_empty_portfolio(db: Session, current_user: TokenData) -> dict:
     user = find_user(db, current_user.id)
     # in the case of no stock, all values are 0
@@ -30,17 +41,6 @@ def handle_empty_portfolio(db: Session, current_user: TokenData) -> dict:
         'account_value': round(user.cash, 2)
     }
     return dict(balance=balances_dict, portfolio=[])
-
-
-def fetch_quotes(symbols: list) -> str | dict:
-    try:
-        quotes_response = get_quote(",".join(symbols))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-    if len(symbols) == 1:
-        return {symbols[0]: quotes_response}
-    return quotes_response
 
 
 def process_portfolio_data(portfolio_data: dict, quotes: dict) -> list[ShowStock]:
