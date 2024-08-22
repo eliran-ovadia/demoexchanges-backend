@@ -66,3 +66,20 @@
 2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_data with data[39:54]
 2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_field_end with no data
 2024-08-21 20:10:46,051 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-08-22 22:38:20,845 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-22 22:38:20,846 - multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-08-22 22:38:20,847 - multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-08-22 22:38:20,847 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-22 22:38:20,848 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-22 22:38:20,848 - multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-08-22 22:38:20,848 - multipart.multipart - DEBUG - Calling on_field_data with data[29:49]
+2024-08-22 22:38:20,848 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-22 22:38:20,848 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-22 22:38:20,849 - multipart.multipart - DEBUG - Calling on_field_name with data[50:58]
+2024-08-22 22:38:20,849 - multipart.multipart - DEBUG - Calling on_field_data with data[59:72]
+2024-08-22 22:38:20,850 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-22 22:38:20,850 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-08-22 22:39:08,666 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-22 22:39:09,017 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-22 22:39:09,035 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-22 22:39:09,183 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=AMD&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None

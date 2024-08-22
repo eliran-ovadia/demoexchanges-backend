@@ -34,7 +34,7 @@ def handle_empty_portfolio(db: Session, current_user: TokenData) -> dict:
     user = find_user(db, current_user.id)
     # in the case of no stock, all values are 0
     balances_dict = {
-        'Buying_power': round(user.cash, 2),
+        'buying_power': round(user.cash, 2),
         'portfolio_value': 0.00,
         'total_return': 0.00,
         'total_return_percent': 0.00,
@@ -125,7 +125,7 @@ def build_portfolio_response(db: Session, current_user: TokenData, portfolio_dat
     total_return_percent = round((total_return / total_invested) * 100, 2) if total_invested > 0 else 0
 
     balances_dict = {
-        'Buying_power': round(user.cash, 2),
+        'buying_power': round(user.cash, 2),
         'portfolio_value': portfolio_value,
         'total_return': total_return,
         'total_return_percent': total_return_percent,
