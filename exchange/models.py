@@ -42,3 +42,9 @@ class Portfolio(Base):
     time_stamp = Column(DateTime)
 
     creator = relationship("User", back_populates="portfolio")
+
+
+class MarketStatus(Base):
+    __tablename__ = 'market_status'
+    exchange_name = Column(String, primary_key=True)
+    is_market_open = Column(Boolean)

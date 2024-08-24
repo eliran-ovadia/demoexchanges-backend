@@ -1,7 +1,7 @@
 from exchange.app_logger import logger
 from twelvedata import TDClient
 from twelvedata.exceptions import TwelveDataError
-from exchange.models import User
+from exchange.models import User, MarketStatus
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 import os
@@ -21,6 +21,17 @@ def find_user(db: Session, user_id: str = None, email: str = None) -> User:
     return user
 
 
+def market_status_update(quotes: dict, db: Session):
+    market = db.query(MarketStatus).filter(MarketStatus.exchange_name == 'NYSE').first()
+    print("\n\n\n\n")
+    print(market)
+    print("\n\n\n\n")
+    if 'symbol' not in quotes:
+        market.is_market_open = quotes[0]['is_market_open']
+    else:
+        market.is_market_open = quotes['is_market_open']
+
+
 #### twelvedata handlers ####
 
 def create_td_client() -> TDClient:
@@ -32,7 +43,7 @@ def create_td_client() -> TDClient:
     return TDClient(apikey=api_key)
 
 
-def get_stock_price(symbol: str) -> dict:
+def get_stock_price(symbol: str, db: Session) -> dict:
     td = create_td_client()
     try:
         stock = td.price(symbol=symbol).as_json()
@@ -42,10 +53,12 @@ def get_stock_price(symbol: str) -> dict:
     except Exception as e:
         logger.critical(f"Failed to fetch price for symbol: {symbol} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    market_status_update(stock, db)
     return stock
 
 
-def get_quote(symbols: str) -> dict:
+def get_quote(symbols: str, db: Session) -> dict:
     td = create_td_client()
     try:
         stocks = td.quote(symbol=symbols).as_json()
@@ -56,4 +69,7 @@ def get_quote(symbols: str) -> dict:
     except Exception as e:
         logger.critical(f"Failed to fetch quote for symbols: {symbols} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    market_status_update(stocks, db)
+
     return stocks

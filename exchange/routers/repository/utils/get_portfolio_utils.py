@@ -19,9 +19,9 @@ def fetch_portfolio_data(db: Session, current_user: TokenData) -> dict:
             result} if result else None
 
 
-def fetch_quotes(symbols: list) -> dict:
+def fetch_quotes(symbols: list, db: Session) -> dict:
     try:
-        quotes_response = get_quote(",".join(symbols))
+        quotes_response = get_quote(",".join(symbols), db)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 

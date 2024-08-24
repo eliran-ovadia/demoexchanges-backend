@@ -26,6 +26,6 @@ def get_history(db: Session = check_db, current_user: TokenData = check_auth) ->
     return portfolio.get_history(db, current_user)
 
 
-@router.get('/parsedQuote', response_model=dict, status_code=status.HTTP_200_OK)
-def get_parsed_quote(request: str, current_user: TokenData = check_auth) -> RawQuote:
-    return portfolio.get_parsed_quote(request)
+@router.get('/parsedQuote', response_model=RawQuote, status_code=status.HTTP_200_OK)
+def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenData = check_auth) -> RawQuote:
+    return portfolio.get_parsed_quote(request, db)

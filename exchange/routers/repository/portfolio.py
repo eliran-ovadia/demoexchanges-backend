@@ -4,13 +4,14 @@ from exchange.models import History as modelHistory
 from exchange.schemas import History as schemaHistory
 from exchange.schemas import RawQuote
 from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
+from sqlalchemy.orm import Session
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
     symbol = request.symbol.upper()
     if ',' or ';' or '--' in symbol:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Cannot buy/sell more than one stock at once")
-    price = float(get_stock_price(symbol)['price'])
+    price = float(get_stock_price(symbol, db)['price'])
     print(price)
     value = price * request.amount
     if request.amount == 0:
@@ -28,7 +29,7 @@ def get_portfolio(db: Session, current_user: schemas.TokenData) -> dict:
         return handle_empty_portfolio(db, current_user)  # If no stocks, return balance with zeroes
 
     symbols = list(portfolio_data.keys())
-    quotes = fetch_quotes(symbols)
+    quotes = fetch_quotes(symbols, db)
     detailed_portfolio_data = process_portfolio_data(portfolio_data, quotes)
 
     return build_portfolio_response(db, current_user, detailed_portfolio_data)
@@ -56,8 +57,8 @@ def get_history(db: Session, current_user: schemas.TokenData) -> list[schemaHist
     return history_to_return
 
 
-def get_parsed_quote(request: str) -> RawQuote | dict:
-    raw_quotes = get_quote(request)
+def get_parsed_quote(request: str, db: Session) -> RawQuote | dict:
+    raw_quotes = get_quote(request, db)
 
     parsed_quotes_to_return = {}
     if 'symbol' in raw_quotes:  # Check for single dictionary
