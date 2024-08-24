@@ -5,6 +5,7 @@ from exchange.schemas import AfterOrder, History, TokenData, Order, RawQuote
 from sqlalchemy.orm import Session
 from .repository import portfolio
 from exchange.oauth2 import get_current_user
+from ..models import MarketStatus
 
 router = APIRouter(tags=['portfolio'], prefix="/api")
 check_db = Depends(database.get_db)
@@ -29,3 +30,8 @@ def get_history(db: Session = check_db, current_user: TokenData = check_auth) ->
 @router.get('/parsedQuote', response_model=RawQuote, status_code=status.HTTP_200_OK)
 def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenData = check_auth) -> RawQuote:
     return portfolio.get_parsed_quote(request, db)
+
+
+@router.get('/marketStatus', response_model=MarketStatus, status_code=status.HTTP_200_OK)
+def fetch_market_status(db: Session = check_db, current_user: TokenData = check_auth) -> MarketStatus:
+    return portfolio.fetch_market_status(db)

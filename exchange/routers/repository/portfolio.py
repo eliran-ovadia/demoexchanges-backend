@@ -1,10 +1,12 @@
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *
 from exchange.models import History as modelHistory
+from exchange.models import MarketStatus
 from exchange.schemas import History as schemaHistory
 from exchange.schemas import RawQuote
 from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
 from sqlalchemy.orm import Session
+
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
     symbol = request.symbol.upper()
@@ -69,3 +71,10 @@ def get_parsed_quote(request: str, db: Session) -> RawQuote | dict:
             parsed_quotes_to_return[symbol] = parsed_quote
 
     return parsed_quotes_to_return
+
+
+def fetch_market_status(db: Session) -> MarketStatus:
+    market = db.query(MarketStatus).filter(MarketStatus.exchange_name == 'NYSE').first()
+    if not market:
+        raise HTTPException(status_code=404, detail="Market status not found")
+    return market

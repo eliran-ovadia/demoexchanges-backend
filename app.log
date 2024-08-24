@@ -74,3 +74,20 @@
 2024-08-24 20:12:14,804 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=AMD&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
 2024-08-24 20:12:24,236 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
 2024-08-24 20:12:24,469 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=AMD&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-24 20:20:19,755 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_data with data[29:49]
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_name with data[50:58]
+2024-08-24 20:20:19,761 - multipart.multipart - DEBUG - Calling on_field_data with data[59:72]
+2024-08-24 20:20:19,762 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-08-24 20:20:19,762 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-08-24 20:20:36,755 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-24 20:20:37,039 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-08-24 20:20:37,045 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-08-24 20:20:37,310 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=AMD&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
