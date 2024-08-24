@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, Field
+from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, PositiveInt
 
 
 
@@ -59,7 +59,7 @@ class User(BaseModel):
 
 class Order(BaseModel):
     symbol: str
-    amount: int
+    amount: PositiveInt
     type: str
 
     @field_validator('type')
@@ -70,10 +70,9 @@ class Order(BaseModel):
 
     @field_validator('amount')
     def validate_amount(cls, v):
-        if v <= 0:
-            raise ValueError("Amount must be greater than 0")
+        if v > 10_000:
+            raise ValueError("Cannot buy more than 10,000 stocks a once")
         return v
-
 
 class Login(BaseModel):
     username: EmailStr
