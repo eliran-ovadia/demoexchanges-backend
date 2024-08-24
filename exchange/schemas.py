@@ -3,14 +3,31 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, PositiveInt
 
 
+class RawQuote(BaseModel):
+    symbol: constr(max_length=4)
+    full_name: constr(max_length=50)
+    exchange: constr(max_length=10)
+    currency: constr(max_length=6)
+    open: confloat(gt=0)
+    high: confloat(gt=0)
+    low: confloat(gt=0)
+    close: confloat(gt=0)
+    volume: int
+    change: float
+    percent_change: float
+    avg_volume: int
+    year_range_high: confloat(gt=0)
+    year_range_low: confloat(gt=0)
+
+
 
 class MarketOpen(BaseModel):  # needs route to be developed
     is_market_open: bool | None = None
 
 
 class ShowStock(BaseModel):
-    symbol: constr(max_length=10)
-    full_name: constr(max_length=100)
+    symbol: constr(max_length=4)
+    full_name: constr(max_length=30)
     amount: int
     exchange: constr(max_length=10)
     open: confloat(gt=0)

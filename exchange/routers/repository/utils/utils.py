@@ -48,7 +48,7 @@ def get_stock_price(symbol: str) -> dict:
 def get_quote(symbols: str) -> dict:
     td = create_td_client()
     try:
-        stock = td.quote(symbol=symbols).as_json()
+        stocks = td.quote(symbol=symbols).as_json()
     except TwelveDataError as e:
         logger.critical(f"Quote not found for symbols: {symbols} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -56,4 +56,4 @@ def get_quote(symbols: str) -> dict:
     except Exception as e:
         logger.critical(f"Failed to fetch quote for symbols: {symbols} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-    return stock
+    return stocks

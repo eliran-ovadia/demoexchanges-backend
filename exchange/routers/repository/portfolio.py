@@ -2,7 +2,8 @@ from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *
 from exchange.models import History as modelHistory
 from exchange.schemas import History as schemaHistory
-
+from exchange.schemas import RawQuote
+from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
     symbol = request.symbol.upper()
@@ -53,3 +54,17 @@ def get_history(db: Session, current_user: schemas.TokenData) -> list[schemaHist
         history_to_return.append(history_schema)
 
     return history_to_return
+
+
+def get_parsed_quote(request: str) -> RawQuote | dict:
+    raw_quotes = get_quote(request)
+
+    parsed_quotes_to_return = {}
+    if 'symbol' in raw_quotes:  # Check for single dictionary
+        parsed_quotes_to_return = process_single_quote(raw_quotes).model_dump()
+    else:
+        for symbol, raw_quote in raw_quotes.items():
+            parsed_quote = process_single_quote(raw_quote)
+            parsed_quotes_to_return[symbol] = parsed_quote
+
+    return parsed_quotes_to_return
