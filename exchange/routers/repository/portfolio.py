@@ -77,4 +77,4 @@ def fetch_market_status(db: Session) -> MarketStatus:
     market = db.query(MarketStatus).filter(MarketStatus.exchange_name == 'NYSE').first()
     if not market:
         raise HTTPException(status_code=404, detail="Market status not found")
-    return market
+    return market.is_market_open

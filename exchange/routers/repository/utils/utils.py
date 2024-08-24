@@ -23,7 +23,6 @@ def find_user(db: Session, user_id: str = None, email: str = None) -> User:
 
 def market_status_update(quotes: dict, db: Session):
     market = db.query(MarketStatus).filter(MarketStatus.exchange_name == 'NYSE').first()
-    print(market)
     if 'symbol' not in quotes:
         market.is_market_open = quotes[0]['is_market_open']
     else:

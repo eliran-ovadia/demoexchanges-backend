@@ -32,6 +32,6 @@ def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenDa
     return portfolio.get_parsed_quote(request, db)
 
 
-@router.get('/marketStatus', response_model=MarketStatus, status_code=status.HTTP_200_OK)
+@router.get('/marketStatus', response_model=bool, status_code=status.HTTP_200_OK)
 def fetch_market_status(db: Session = check_db, current_user: TokenData = check_auth) -> MarketStatus:
     return portfolio.fetch_market_status(db)
