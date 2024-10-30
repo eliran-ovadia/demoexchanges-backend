@@ -10,12 +10,12 @@ from sqlalchemy.orm import Session
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
     symbol = request.symbol.upper()
-    if ',' or ';' or '--' in symbol:
+    if ',' in symbol:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Cannot buy/sell more than one stock at once")
-    price = float(get_stock_price(symbol, db)['price'])
-    print(price)
+    price = get_stock_price(symbol, db)
     value = price * request.amount
+
     if request.amount == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount cannot be 0")
     if request.type == 'Buy':
@@ -52,19 +52,19 @@ def get_history(db: Session, current_user: schemas.TokenData) -> list[schemaHist
             type = history.type,
             value = round(history.value, 2),
             profit = round(history.profit, 2),
-            time = history.time_stamp
+            time_stamp = history.time_stamp
         )
         history_to_return.append(history_schema)
 
     return history_to_return
 
 
-def get_parsed_quote(request: str, db: Session) -> RawQuote | dict:
+def get_parsed_quote(request: str, db: Session) -> dict:
     raw_quotes = get_quote(request, db)
 
     parsed_quotes_to_return = {}
     if 'symbol' in raw_quotes:  # Check for single dictionary
-        parsed_quotes_to_return = process_single_quote(raw_quotes).model_dump()
+        parsed_quotes_to_return = process_single_quote(raw_quotes)
     else:
         for symbol, raw_quote in raw_quotes.items():
             parsed_quote = process_single_quote(raw_quote)

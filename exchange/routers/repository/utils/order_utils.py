@@ -6,7 +6,7 @@ from exchange.routers.repository.utils.utils import *
 
 def sell_handler(request: schemas.Order, db: Session, current_user: schemas.TokenData, symbol: str, price: float,
                  value: float):
-    user = find_user(db, current_user.id, )
+    user = find_user(db, current_user.id)
 
     total_owned_stock = db.query(func.sum(models.Portfolio.amount)).filter(
         models.Portfolio.user_id == user.id,

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 import os
 
 
-def find_user(db: Session, user_id: str = None, email: str = None) -> User:
+def find_user(db: Session, user_id: str = None, email: str = None) -> User | bool:
     if user_id:
         user = db.query(User).filter(User.id == user_id).first()
     elif email:
@@ -16,19 +16,22 @@ def find_user(db: Session, user_id: str = None, email: str = None) -> User:
         raise ValueError("Either user_id or email must be provided.")
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        return False
 
     return user
 
 
-def market_status_update(quotes: dict, db: Session):
+def market_status_update(quotes: dict, db: Session) -> bool:
     market = db.query(MarketStatus).filter(MarketStatus.exchange_name == 'NYSE').first()
-    if 'symbol' not in quotes:
-        market.is_market_open = quotes[0]['is_market_open']
+    if 'is_market_open' in quotes:
+        market.is_market_open = quotes.get('is_market_open')
+        db.commit()
+        return quotes.get('is_market_open')
     else:
-        market.is_market_open = quotes['is_market_open']
-
-
+        first_stock = next(iter(quotes.values())) # get the first element in the dict
+        market.is_market_open = first_stock.get('is_market_open') # apply to database
+        db.commit()
+        return first_stock.get('is_market_open')
 
 #### twelvedata handlers ####
 
@@ -41,7 +44,7 @@ def create_td_client() -> TDClient:
     return TDClient(apikey=api_key)
 
 
-def get_stock_price(symbol: str, db: Session) -> dict:
+def get_stock_price(symbol: str, db: Session) -> float: # passing Session argument to update market status db
     td = create_td_client()
     try:
         stock = td.price(symbol=symbol).as_json()
@@ -52,11 +55,11 @@ def get_stock_price(symbol: str, db: Session) -> dict:
         logger.critical(f"Failed to fetch price for symbol: {symbol} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    market_status_update(stock, db)
-    return stock
+    # market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
+    return float(stock.get('price'))
 
 
-def get_quote(symbols: str, db: Session) -> dict:
+def get_quote(symbols: str, db: Session) -> dict: # passing Session argument to update market status db
     td = create_td_client()
     try:
         stocks = td.quote(symbol=symbols).as_json()
