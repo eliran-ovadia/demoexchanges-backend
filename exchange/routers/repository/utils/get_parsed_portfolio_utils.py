@@ -1,5 +1,3 @@
-from spyder.plugins.completion.decorators import request
-
 from exchange.schemas import RawQuote
 
 

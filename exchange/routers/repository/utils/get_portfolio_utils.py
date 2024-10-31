@@ -1,20 +1,21 @@
 from sqlalchemy import func
 from exchange.models import Portfolio
-from exchange.schemas import TokenData, ShowStock
+from exchange.schemas import TokenData, ShowStock, Pagination
 from .utils import *
 
 
-def fetch_portfolio_data(db: Session, current_user: TokenData) -> dict:
+def fetch_portfolio_data(db: Session, current_user: TokenData, page: int, page_size: int) -> dict | None:
     # Query the database to get the symbols, total amounts, and average prices for the current user
-    result = db.query(
+    result = (db.query(
         Portfolio.symbol,
         func.sum(Portfolio.amount).label('total_amount'),
         func.avg(Portfolio.price).label('avg_price')
-    ).filter(
-        Portfolio.user_id == current_user.id
-    ).group_by(
-        Portfolio.symbol
-    ).all()
+    ).filter(Portfolio.user_id == current_user.id)
+    .group_by(Portfolio.symbol)
+    .order_by(Portfolio.symbol.desc()) # will add sorting option later
+    .offset((page - 1) * page_size)
+    .limit(page_size)
+    .all())
     return {symbol: {'total_amount': total_amount, 'avg_price': avg_price} for symbol, total_amount, avg_price in
             result} if result else None
 
@@ -32,13 +33,18 @@ def fetch_quotes(symbols: list, db: Session) -> dict:
 
 def handle_empty_portfolio(db: Session, current_user: TokenData) -> dict:
     user = find_user(db, current_user.id)
+    # query the amount of stocks here to save db access twice
+    # fetch_portfolio_data will just return None if it cannot find any stocks in the requested page
+    total_stocks = db.query(Portfolio).filter(Portfolio.user_id == current_user.id).group_by(Portfolio.symbol).count()
+
     # in the case of no stock, all values are 0
     balances_dict = {
         'buying_power': round(user.cash, 2),
         'portfolio_value': 0.00,
         'total_return': 0.00,
         'total_return_percent': 0.00,
-        'account_value': round(user.cash, 2)
+        'account_value': round(user.cash, 2),
+        'total_stocks': total_stocks
     }
     return dict(balance=balances_dict, portfolio=[])
 

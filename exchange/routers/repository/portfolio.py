@@ -3,6 +3,7 @@ from exchange.routers.repository.utils.order_utils import *
 from exchange.models import History as modelHistory
 from exchange.models import MarketStatus
 from exchange.schemas import History as schemaHistory
+from exchange.schemas import Pagination
 from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
 from sqlalchemy.orm import Session
 from typing import Dict, Any
@@ -24,8 +25,8 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) 
         return sell_handler(request, db, current_user, symbol, price, value)
 
 
-def get_portfolio(db: Session, current_user: schemas.TokenData) -> dict:
-    portfolio_data = fetch_portfolio_data(db, current_user)
+def get_portfolio(db: Session, current_user: schemas.TokenData, page: int, page_size: int) -> dict:
+    portfolio_data = fetch_portfolio_data(db, current_user, page, page_size)
 
     if not portfolio_data:
         return handle_empty_portfolio(db, current_user)  # If no stocks, return balance with zeroes

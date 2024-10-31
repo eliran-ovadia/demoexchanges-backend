@@ -28,7 +28,7 @@ class MarketOpen(BaseModel):  # needs route to be developed
 
 class ShowStock(BaseModel):
     symbol: constr(max_length=4)
-    full_name: constr(max_length=30)
+    full_name: constr(max_length=50)
     amount: int
     exchange: constr(max_length=10)
     open: confloat(gt=0)
