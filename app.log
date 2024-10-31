@@ -463,3 +463,165 @@
 2024-10-30 17:58:34,756 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=asml&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
 2024-10-30 17:58:40,529 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
 2024-10-30 17:58:40,762 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=asml%2Camd&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:33:56,309 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_data with data[29:47]
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_name with data[48:56]
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_data with data[57:70]
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 17:33:56,310 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2024-10-31 17:34:05,041 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:34:05,329 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:34:05,422 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=aapl&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:34:13,751 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:34:13,954 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=aapl%2Casml&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:34:34,128 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:34:34,342 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /quote?symbol=nvda%2Caapl%2Casml&interval=1day&dp=5&timezone=Exchange&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:14,511 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:14,730 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:15,176 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:15,376 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:15,420 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:15,643 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:15,679 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:15,891 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:16,028 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:16,232 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:16,659 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:16,869 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:17,242 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:17,438 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:17,773 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:17,973 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:35:19,183 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:19,397 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:19,397 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 9 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:19,819 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:20,049 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:20,050 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 10 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:22,382 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:22,578 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:22,579 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 11 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:23,075 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:23,294 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:23,294 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 12 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:23,617 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:23,825 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:23,825 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 13 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:24,147 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:24,368 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:24,368 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 14 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:24,687 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:24,917 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:24,917 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 15 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:25,257 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:25,476 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:25,476 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 16 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:25,840 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:26,057 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:26,058 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 17 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:26,413 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:26,613 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:26,613 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 18 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:26,964 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:27,178 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:27,179 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 19 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:27,552 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:27,766 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:27,766 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 20 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:28,137 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:28,335 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:28,336 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 21 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:28,653 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:28,888 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:28,888 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 22 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:29,167 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:29,386 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:29,387 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 23 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:29,670 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:29,893 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:29,894 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 24 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:30,197 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:30,421 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:30,421 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 25 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:30,733 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:30,967 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:30,967 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 26 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:31,301 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:31,512 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:31,512 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 27 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:31,737 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:31,975 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:31,976 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 28 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:32,119 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:32,328 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:32,329 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 29 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:32,475 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:32,672 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:32,672 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 30 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:32,813 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:33,036 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:33,041 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 31 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:33,134 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:33,325 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:33,325 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 32 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:33,462 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:33,662 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:33,662 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 33 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:35:33,808 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:35:34,006 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=AAPL&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:35:34,006 - exchange.app_logger - CRITICAL - Price not found for symbol: AAPL - You have run out of API credits for the current minute. 34 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:36:28,892 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:29,094 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:30,306 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:30,505 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:30,969 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:31,163 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:31,582 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:31,799 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:32,206 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:32,424 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:32,837 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:33,055 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:33,444 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:33,665 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:34,112 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:34,318 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 21
+2024-10-31 17:36:34,700 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:34,909 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:36:34,909 - exchange.app_logger - CRITICAL - Price not found for symbol: ASML - You have run out of API credits for the current minute. 9 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 17:36:35,282 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
+2024-10-31 17:36:35,563 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /price?symbol=ASML&dp=5&prepost=false&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-10-31 17:36:35,563 - exchange.app_logger - CRITICAL - Price not found for symbol: ASML - You have run out of API credits for the current minute. 10 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-10-31 18:06:23,613 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 18:06:23,613 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_data with data[29:47]
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_name with data[48:56]
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_data with data[57:70]
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 18:06:23,614 - python_multipart.multipart - DEBUG - Calling on_end with no data
+2024-10-31 18:06:54,363 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_data with data[29:47]
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_name with data[48:56]
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_data with data[57:70]
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-10-31 18:06:54,364 - python_multipart.multipart - DEBUG - Calling on_end with no data

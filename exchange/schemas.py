@@ -1,7 +1,11 @@
 import re
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, PositiveInt
+from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, PositiveInt, Field
 
+
+class Pagination(BaseModel):
+    page: int = Field(1, ge=1, description="Page number (must be 1 or greater)")
+    page_size: int = Field(10, ge=1, le=100, description="Number of items per page (must be between 1 and 100)")
 
 class RawQuote(BaseModel):
     symbol: constr(max_length=4)
@@ -19,11 +23,8 @@ class RawQuote(BaseModel):
     year_range_high: confloat(gt=0)
     year_range_low: confloat(gt=0)
 
-
-
 class MarketOpen(BaseModel):  # needs route to be developed
     is_market_open: bool | None = None
-
 
 class ShowStock(BaseModel):
     symbol: constr(max_length=4)
@@ -41,7 +42,6 @@ class ShowStock(BaseModel):
     year_range_high: confloat(gt=0)
     total_return: float
     total_return_percent: float
-
 
 class CreateUser(BaseModel):
     name: str
@@ -63,7 +63,6 @@ class CreateUser(BaseModel):
             raise ValueError('Password must not contain the same character three times in a row')
         return v
 
-
 class User(BaseModel):
     id: constr(min_length=1)
     name: constr(min_length=1)
@@ -71,8 +70,6 @@ class User(BaseModel):
     password: str
     cash: confloat(ge=0)
     is_admin: bool
-
-
 
 class Order(BaseModel):
     symbol: str
@@ -95,7 +92,6 @@ class Login(BaseModel):
     username: EmailStr
     password: str
 
-
 class History(BaseModel):
     symbol: str
     price: float
@@ -105,7 +101,6 @@ class History(BaseModel):
     profit: float
     time_stamp: datetime
 
-
 class AfterOrder(BaseModel):
     symbol: str
     price: float
@@ -114,9 +109,7 @@ class AfterOrder(BaseModel):
     value: float
     profit: float
 
-
 #--------------------------Token--------------------------
-
 
 class Token(BaseModel):
     access_token: constr(min_length=1)

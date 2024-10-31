@@ -1,7 +1,7 @@
-from typing import List
+from typing import Dict, Any
 from fastapi import APIRouter, Depends, status
 from exchange import database
-from exchange.schemas import AfterOrder, History, TokenData, Order, RawQuote
+from exchange.schemas import AfterOrder, History, TokenData, Order, Pagination
 from sqlalchemy.orm import Session
 from .repository import portfolio
 from exchange.oauth2 import get_current_user
@@ -22,9 +22,12 @@ def order(request: Order, db: Session = check_db, current_user: TokenData = chec
     return portfolio.order(request, db, current_user)
 
 
-@router.get('/getHistory',response_model=List[History], status_code=status.HTTP_200_OK) #change to Dict
-def get_history(db: Session = check_db, current_user: TokenData = check_auth) -> List[History]:
-    return portfolio.get_history(db, current_user)
+@router.post('/getHistory', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
+def get_history(pagination: Pagination,
+                db: Session = check_db,
+                current_user: TokenData = check_auth
+                ) -> Dict[str, Any]:
+    return portfolio.get_history(db, current_user, pagination.page, pagination.page_size)
 
 
 @router.get('/parsedQuote', response_model=dict, status_code=status.HTTP_200_OK)

@@ -3,9 +3,9 @@ from exchange.routers.repository.utils.order_utils import *
 from exchange.models import History as modelHistory
 from exchange.models import MarketStatus
 from exchange.schemas import History as schemaHistory
-from exchange.schemas import RawQuote
 from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
 from sqlalchemy.orm import Session
+from typing import Dict, Any
 
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
@@ -37,26 +37,42 @@ def get_portfolio(db: Session, current_user: schemas.TokenData) -> dict:
     return build_portfolio_response(db, current_user, detailed_portfolio_data)
 
 
-def get_history(db: Session, current_user: schemas.TokenData) -> list[schemaHistory]:
-    history_array = db.query(modelHistory).filter(modelHistory.user_id == current_user.id).order_by(
-        modelHistory.time_stamp.desc()).all()
+def get_history(db: Session, current_user: schemas.TokenData, page: int, page_size: int) -> Dict[str, Any]:
+    total_items = db.query(modelHistory).filter(modelHistory.user_id == current_user.id).count()
+
+    if not total_items:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No order history")
+    history_array = (
+        db.query(modelHistory)
+        .filter(modelHistory.user_id == current_user.id)
+        .order_by(modelHistory.time_stamp.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+
     if not history_array:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No order history")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No records for this page, there are {total_items} records total for the account")
 
-    history_to_return = []
-    for history in history_array:
-        history_schema = schemaHistory(
-            symbol = history.symbol,
-            price = round(history.price, 2),
-            amount = history.amount,
-            type = history.type,
-            value = round(history.value, 2),
-            profit = round(history.profit, 2),
-            time_stamp = history.time_stamp
+    history_to_return = [
+        schemaHistory(
+            symbol=history.symbol,
+            price=round(history.price, 2),
+            amount=history.amount,
+            type=history.type,
+            value=round(history.value, 2),
+            profit=round(history.profit, 2),
+            time_stamp=history.time_stamp,
         )
-        history_to_return.append(history_schema)
+        for history in history_array
+    ]
 
-    return history_to_return
+    return {
+        "total_items": total_items,
+        "page": page,
+        "page_size": page_size,
+        "history": history_to_return,
+    }
 
 
 def get_parsed_quote(request: str, db: Session) -> dict:
