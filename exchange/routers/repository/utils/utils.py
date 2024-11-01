@@ -74,3 +74,19 @@ def get_quote(symbols: str, db: Session) -> dict: # passing Session argument to 
     market_status_update(stocks, db)
 
     return stocks
+
+
+def get_search_result(prompt: str):
+    OUTPUT_SIZE = 70 #sweet spot before filtering
+    td = create_td_client()
+    try:
+        results = td.symbol_search(symbol=str(prompt), outputsize=OUTPUT_SIZE).as_json()
+    except TwelveDataError as e:
+        logger.critical(f"search result not found for the search prompt: {prompt} - {str(e)}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"result for the search prompt: {prompt} not found")
+    except Exception as e:
+        logger.critical(f"Failed to find results for search prompt: {prompt} - {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    return results

@@ -38,3 +38,14 @@ def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenDa
 @router.get('/marketStatus', response_model=bool, status_code=status.HTTP_200_OK)
 def fetch_market_status(db: Session = check_db, current_user: TokenData = check_auth) -> MarketStatus:
     return portfolio.fetch_market_status(db)
+
+
+@router.post('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
+def stock_search(pagination: Pagination, prompt: str, current_user: TokenData = check_auth) -> Dict[str, Any]:
+    return portfolio.stock_search(prompt, pagination.page, pagination.page_size)
+
+
+#watchlist
+
+
+#market_movers

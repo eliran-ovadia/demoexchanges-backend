@@ -3,7 +3,6 @@ from exchange.routers.repository.utils.order_utils import *
 from exchange.models import History as modelHistory
 from exchange.models import MarketStatus
 from exchange.schemas import History as schemaHistory
-from exchange.schemas import Pagination
 from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
 from sqlalchemy.orm import Session
 from typing import Dict, Any
@@ -72,7 +71,7 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
         "total_items": total_items,
         "page": page,
         "page_size": page_size,
-        "history": history_to_return,
+        "history": history_to_return, # how does it work with a - ',' ?
     }
 
 
@@ -95,3 +94,18 @@ def fetch_market_status(db: Session) -> MarketStatus:
     if not market:
         raise HTTPException(status_code=404, detail="Market status not found")
     return market.is_market_open
+
+
+def stock_search(prompt: str, page: int, page_size: int) -> Dict[str, Any]:
+    unfiltered_results = get_search_result(prompt)
+
+    filtered_results = [result for result in unfiltered_results if
+                        result["exchange"] == "NYSE" or result["exchange"] == "NASDAQ"]
+
+    total_results = len(filtered_results)
+
+    return {"total_results": total_results,
+            "page": page,
+            "page_size": page_size,
+            "results": filtered_results[(page - 1) * page_size: page * page_size]
+            }
