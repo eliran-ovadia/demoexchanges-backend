@@ -11,9 +11,8 @@ router = APIRouter(tags=['portfolio'], prefix="/api")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
-
-@router.post('/getPortfolio', response_model=dict, status_code=status.HTTP_200_OK)
-def get_portfolio(pagination: Pagination, db: Session = check_db, current_user: TokenData = check_auth) -> dict:
+@router.get('/getPortfolio', response_model=dict, status_code=status.HTTP_200_OK)
+def get_portfolio(pagination: Pagination = Depends(), db: Session = check_db, current_user: TokenData = check_auth) -> dict:
     return portfolio.get_portfolio(db, current_user, pagination.page, pagination.page_size)
 
 
@@ -22,8 +21,8 @@ def order(request: Order, db: Session = check_db, current_user: TokenData = chec
     return portfolio.order(request, db, current_user)
 
 
-@router.post('/getHistory', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
-def get_history(pagination: Pagination,
+@router.get('/getHistory', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
+def get_history(pagination: Pagination = Depends(),
                 db: Session = check_db,
                 current_user: TokenData = check_auth
                 ) -> Dict[str, Any]:
@@ -40,8 +39,8 @@ def fetch_market_status(db: Session = check_db, current_user: TokenData = check_
     return portfolio.fetch_market_status(db)
 
 
-@router.post('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
-def stock_search(pagination: Pagination, prompt: str, current_user: TokenData = check_auth) -> Dict[str, Any]:
+@router.get('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
+def stock_search(prompt: str, pagination: Pagination = Depends(), current_user: TokenData = check_auth) -> Dict[str, Any]:
     return portfolio.stock_search(prompt, pagination.page, pagination.page_size)
 
 
