@@ -1,6 +1,6 @@
 from sqlalchemy import func
 from exchange.models import Portfolio
-from exchange.schemas import TokenData, ShowStock, Pagination
+from exchange.schemas import TokenData, ShowStock
 from .utils import *
 
 

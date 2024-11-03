@@ -1,8 +1,10 @@
+from sqlalchemy.exc import IntegrityError
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *
 from exchange.models import History as modelHistory
 from exchange.models import MarketStatus
 from exchange.schemas import History as schemaHistory
+from exchange.schemas import Stock
 from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
 from sqlalchemy.orm import Session
 from typing import Dict, Any
@@ -109,3 +111,43 @@ def stock_search(prompt: str, page: int, page_size: int) -> Dict[str, Any]:
             "page_size": page_size,
             "results": filtered_results[(page - 1) * page_size: page * page_size]
             }
+
+
+def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
+    item = models.WatchlistItem(symbol=request.symbol, user_id=current_user.id)
+    db.add(item)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Stock symbol '{request.symbol}' is already in your watchlist."
+        )
+
+
+def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
+    item = (db.query(models.WatchlistItem)
+            .filter(models.WatchlistItem.symbol == request.symbol , models.WatchlistItem.user_id == current_user.id)
+            .first())
+
+    if not item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Stock symbol '{request.symbol}' is not in your watchlist."
+        )
+
+    db.delete(item)
+    db.commit()
+
+
+def get_watchlist(db: Session, page: int, page_size: int, current_user: schemas.TokenData) -> list[str]:
+    watchlist = (db.query(models.WatchlistItem).filter(models.WatchlistItem.user_id == current_user.id)
+                 .offset((page - 1) * page_size)
+                 .limit(page_size)
+                 .all())
+
+    watchlist_to_return = [item.symbol for item in watchlist]
+
+    return watchlist_to_return

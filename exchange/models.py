@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, DateTime, UniqueConstraint
 from .database import Base
 from sqlalchemy.orm import relationship
 
@@ -15,6 +15,7 @@ class User(Base):
 
     history = relationship("History", back_populates="creator", cascade="all, delete-orphan")
     portfolio = relationship("Portfolio", back_populates="creator", cascade="all, delete-orphan")
+    watchlist_items = relationship("WatchlistItem", back_populates="user", cascade="all, delete-orphan")
 
 
 class History(Base):
@@ -42,6 +43,17 @@ class Portfolio(Base):
     time_stamp = Column(DateTime)
 
     creator = relationship("User", back_populates="portfolio")
+
+
+class WatchlistItem(Base):
+    __tablename__ = 'watchlist_items'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String, ForeignKey('users.id'), nullable=False)
+    symbol = Column(String, nullable=False)
+
+    user = relationship("User", back_populates="watchlist_items")
+
+    __table_args__ = (UniqueConstraint('user_id', 'symbol', name='_user_symbol_uc'),)
 
 
 class MarketStatus(Base):

@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from fastapi import APIRouter, Depends, status
 from exchange import database
-from exchange.schemas import AfterOrder, TokenData, Order, Pagination
+from exchange.schemas import AfterOrder, TokenData, Order, Pagination, Stock
 from sqlalchemy.orm import Session
 from .repository import portfolio
 from exchange.oauth2 import get_current_user
@@ -12,7 +12,9 @@ check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
 @router.get('/getPortfolio', response_model=dict, status_code=status.HTTP_200_OK)
-def get_portfolio(pagination: Pagination = Depends(), db: Session = check_db, current_user: TokenData = check_auth) -> dict:
+def get_portfolio(pagination: Pagination = Depends(),
+                  db: Session = check_db,
+                  current_user: TokenData = check_auth) -> dict:
     return portfolio.get_portfolio(db, current_user, pagination.page, pagination.page_size)
 
 
@@ -44,7 +46,29 @@ def stock_search(prompt: str, pagination: Pagination = Depends(), current_user: 
     return portfolio.stock_search(prompt, pagination.page, pagination.page_size)
 
 
-#watchlist
+@router.post('/addToWatchlist', status_code=status.HTTP_200_OK)
+def add_to_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):
+    return portfolio.add_to_watchlist(request, db, current_user)
+
+@router.post('/deleteFromWatchlist', status_code=status.HTTP_200_OK)
+def delete_from_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):
+    return portfolio.delete_from_watchlist(request, db, current_user)
 
 
-#market_movers
+@router.get('/getWatchlist', response_model=list[str], status_code=status.HTTP_200_OK)
+def get_watchlist(pagination: Pagination = Depends(),
+                  db: Session = check_db,
+                  current_user: TokenData = check_auth) -> list[str]:
+    return portfolio.get_watchlist(db, pagination.page, pagination.page_size, current_user)
+
+
+#movers
+
+
+#sentiment
+
+
+#splitz
+
+
+#dividends

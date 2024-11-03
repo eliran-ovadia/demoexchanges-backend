@@ -7,6 +7,16 @@ class Pagination(BaseModel):
     page: int = Field(1, ge=1, description="Page number (must be 1 or greater)")
     page_size: int = Field(10, ge=1, le=100, description="Number of items per page (must be between 1 and 100)")
 
+class Stock(BaseModel):
+    symbol: str = Field(..., description="Stock symbol")
+
+    @field_validator("symbol")
+    def uppercase_symbol_and_length(cls, v):
+        v = v.upper()  # Convert to uppercase
+        if not (3 <= len(v) <= 4 and v.isalpha()):
+            raise ValueError("Symbol must be 3 or 4 alphabetic characters")
+        return v
+
 class RawQuote(BaseModel):
     symbol: constr(max_length=4)
     full_name: constr(max_length=50)
@@ -72,7 +82,7 @@ class User(BaseModel):
     is_admin: bool
 
 class Order(BaseModel):
-    symbol: str
+    symbol: str #convert to Stock schema?
     amount: PositiveInt
     type: str
 
