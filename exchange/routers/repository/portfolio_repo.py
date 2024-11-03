@@ -1,12 +1,14 @@
 from sqlalchemy.exc import IntegrityError
+from exchange.clients_methods import get_stock_price, get_search_result
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *
 from exchange.models import History as modelHistory
 from exchange.models import MarketStatus
 from exchange.schemas import History as schemaHistory
 from exchange.schemas import Stock
-from exchange.routers.repository.utils.get_parsed_portfolio_utils import process_single_quote
+from exchange.routers.repository.utils.process_raw_quote import process_single_quote
 from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
 from typing import Dict, Any
 
 
@@ -15,7 +17,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) 
     if ',' in symbol:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Cannot buy/sell more than one stock at once")
-    price = get_stock_price(symbol, db)
+    price = get_stock_price(symbol)
     value = price * request.amount
 
     if request.amount == 0:

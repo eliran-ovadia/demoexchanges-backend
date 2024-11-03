@@ -10,3 +10,4 @@ twelvedata[pandas,matplotlib,plotly,websocket-client]
 pydantic[email]
 python-dotenv
 jose
+polygon-api-client

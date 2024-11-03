@@ -235,3 +235,4 @@
 2024-11-01 17:50:29,464 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /technical_indicators?format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
 2024-11-01 17:50:29,466 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.twelvedata.com:443
 2024-11-01 17:50:29,604 - urllib3.connectionpool - DEBUG - https://api.twelvedata.com:443 "GET /symbol_search?symbol=as&outputsize=70&format=JSON&apikey=375f5ab7748a4ddb807d4c810bae5cf2&source=python HTTP/11" 200 None
+2024-11-03 23:22:54,160 - exchange.app_logger - CRITICAL - Quote not found for symbols: ASML,AMD - You have run out of API credits for the current minute. 10 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
