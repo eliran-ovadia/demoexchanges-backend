@@ -29,6 +29,12 @@ def stock_search(prompt: str,
     return info_repo.stock_search(prompt, pagination.page, pagination.page_size)
 
 
-#movers
+@router.get('/marketMovers', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
+def market_movers(current_user: TokenData = check_auth) -> Dict[str, Any]:
+    return info_repo.market_movers()
 
-#sentiment
+#sentiment here or/ad in parsed quote
+
+#upgrade market status - add redundancy
+
+#try to refactor market movers (for url requests)

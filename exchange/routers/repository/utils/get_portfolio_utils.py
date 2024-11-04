@@ -1,5 +1,6 @@
 from sqlalchemy import func
 
+from exchange.app_logger import logger
 from exchange.clients_methods import get_quote
 from exchange.models import Portfolio
 from exchange.schemas import TokenData, ShowStock

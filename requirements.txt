@@ -3,6 +3,7 @@ uvicorn
 sqlalchemy
 passlib
 bcrypt
+requests
 python-jose[cryptography]
 python-multipart
 setuptools
