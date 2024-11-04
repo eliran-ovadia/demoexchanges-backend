@@ -31,21 +31,6 @@ def get_history(pagination: Pagination = Depends(),
     return portfolio_repo.get_history(db, current_user, pagination.page, pagination.page_size)
 
 
-@router.get('/parsedQuote', response_model=dict, status_code=status.HTTP_200_OK)
-def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenData = check_auth) -> dict:
-    return portfolio_repo.get_parsed_quote(request, db)
-
-
-@router.get('/marketStatus', response_model=bool, status_code=status.HTTP_200_OK)
-def fetch_market_status(db: Session = check_db, current_user: TokenData = check_auth) -> MarketStatus:
-    return portfolio_repo.fetch_market_status(db)
-
-
-@router.get('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
-def stock_search(prompt: str, pagination: Pagination = Depends(), current_user: TokenData = check_auth) -> Dict[str, Any]:
-    return portfolio_repo.stock_search(prompt, pagination.page, pagination.page_size)
-
-
 @router.post('/addToWatchlist', status_code=status.HTTP_200_OK)
 def add_to_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):
     return portfolio_repo.add_to_watchlist(request, db, current_user)
@@ -60,12 +45,6 @@ def get_watchlist(pagination: Pagination = Depends(),
                   db: Session = check_db,
                   current_user: TokenData = check_auth) -> list[str]:
     return portfolio_repo.get_watchlist(db, pagination.page, pagination.page_size, current_user)
-
-
-#movers
-
-
-#sentiment
 
 
 #splitz
