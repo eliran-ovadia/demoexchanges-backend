@@ -6,6 +6,7 @@ from exchange.schemas import History as schemaHistory
 from exchange.schemas import Stock
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from typing import Dict, Any
 
 
@@ -74,6 +75,20 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
         "page_size": page_size,
         "history": history_to_return # there was a ',' here...
     }
+
+
+def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
+    item = models.WatchlistItem(symbol=request.symbol, user_id=current_user.id)
+    db.add(item)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Stock symbol '{request.symbol}' is already in your watchlist."
+        )
 
 
 def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):

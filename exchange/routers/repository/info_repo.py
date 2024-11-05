@@ -1,10 +1,7 @@
-from sqlalchemy.exc import IntegrityError
 from exchange.app_logger import logger as log
-from exchange.clients_methods import get_search_result
+from exchange.clients_methods import get_search_result, get_sentiment
 from exchange.routers.repository.utils.get_portfolio_utils import *
-from exchange.routers.repository.utils.order_utils import *
 from exchange.models import MarketStatus
-from exchange.schemas import Stock
 from exchange.routers.repository.utils.process_raw_quote import process_single_quote
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
@@ -50,20 +47,6 @@ def stock_search(prompt: str, page: int, page_size: int) -> Dict[str, Any]:
             }
 
 
-def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
-    item = models.WatchlistItem(symbol=request.symbol, user_id=current_user.id)
-    db.add(item)
-
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Stock symbol '{request.symbol}' is already in your watchlist."
-        )
-
-
 def market_movers():
     api_key = get_api_key("ALPHA_VANTAGE_API_KEY")
     url = f'https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={api_key}'
@@ -97,11 +80,8 @@ def market_movers():
     return useful_data
 
 
-
-
-
-
-
-
-
-
+def stock_sentiment(symbol: str) -> list:
+    raw_sentiment = get_sentiment(symbol)
+    if not raw_sentiment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Sentiment not found for {symbol}")
+    return raw_sentiment

@@ -1,9 +1,11 @@
+from logging import exception
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from twelvedata.exceptions import TwelveDataError
 from exchange.app_logger import logger
 from exchange.routers.repository.utils.utils import market_status_update
-from .clients import get_td_client, get_polygon_client
+from .clients import get_td_client, get_polygon_client, get_finnhub_client
 
 # NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
 def get_stock_price(symbol: str) -> float:
@@ -51,3 +53,13 @@ def get_search_result(prompt: str):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     return results
+
+def get_sentiment(symbol: str) -> list:
+    fn = get_finnhub_client()
+    try:
+        sentiment = fn.recommendation_trends(symbol)
+    except exception as e:
+        logger.critical(f"sentiment call is not working: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="could not get sentiment at the moment")
+    return sentiment
