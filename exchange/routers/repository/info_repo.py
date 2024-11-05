@@ -80,8 +80,8 @@ def market_movers():
     return useful_data
 
 
-def stock_sentiment(symbol: str) -> list:
+def stock_sentiment(symbol: str) -> Dict[str, Any]:
     raw_sentiment = get_sentiment(symbol)
     if not raw_sentiment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Sentiment not found for {symbol}")
-    return raw_sentiment
+    return raw_sentiment[0]

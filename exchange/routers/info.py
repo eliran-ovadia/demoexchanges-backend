@@ -33,8 +33,8 @@ def stock_search(prompt: str,
 def market_movers(current_user: TokenData = check_auth) -> Dict[str, Any]:
     return info_repo.market_movers()
 
-@router.get('/stockSentiment', response_model=list, status_code=status.HTTP_200_OK)
-def stock_sentiment(symbol: str, current_user: TokenData = check_auth) -> list:
+@router.get('/stockSentiment', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
+def stock_sentiment(symbol: str, current_user: TokenData = check_auth) -> Dict[str, Any]:
     return info_repo.stock_sentiment(symbol)
 
 #add peers route
