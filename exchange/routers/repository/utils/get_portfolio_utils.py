@@ -17,24 +17,24 @@ def fetch_portfolio_data(db: Session,
         func.sum(Portfolio.amount).label('total_amount'),
         func.avg(Portfolio.price).label('avg_price')
     ).filter(Portfolio.user_id == current_user.id)
-    .group_by(Portfolio.symbol)
-    .order_by(Portfolio.symbol.desc()) # will add sorting option later
-    .offset((page - 1) * page_size)
-    .limit(page_size)
-    .all())
+              .group_by(Portfolio.symbol)
+              .order_by(Portfolio.symbol.desc())  # will add sorting option later
+              .offset((page - 1) * page_size)
+              .limit(page_size)
+              .all())
 
     total_stocks = (db.query(
         Portfolio.symbol,
         func.sum(Portfolio.amount).label('total_amount'),
         func.avg(Portfolio.price).label('avg_price')
     ).filter(Portfolio.user_id == current_user.id)
-              .group_by(Portfolio.symbol)
-              .order_by(Portfolio.symbol.desc())  # will add sorting option later
-              .count())
+                    .group_by(Portfolio.symbol)
+                    .order_by(Portfolio.symbol.desc())  # will add sorting option later
+                    .count())
 
     return (total_stocks, {symbol: {'total_amount': total_amount,
                                     'avg_price': avg_price} for symbol, total_amount, avg_price in
-            result} if result else None)
+                           result} if result else None)
 
 
 def fetch_quotes(symbols: list, db: Session) -> dict:
@@ -143,7 +143,6 @@ def build_portfolio_response(db: Session,
                              current_user: TokenData,
                              portfolio_data: list[ShowStock],
                              total_stocks: int) -> dict:
-
     user = find_user(db, current_user.id)
 
     portfolio_value = round(sum([x.total_value for x in portfolio_data]), 2)
@@ -157,6 +156,6 @@ def build_portfolio_response(db: Session,
         'total_return': total_return,
         'total_return_percent': total_return_percent,
         'account_value': round(user.cash + portfolio_value, 2),
-        'total_stocks':  total_stocks
+        'total_stocks': total_stocks
     }
     return dict(balance=balances_dict, portfolio=portfolio_data)

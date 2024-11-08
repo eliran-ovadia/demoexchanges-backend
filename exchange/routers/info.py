@@ -13,6 +13,7 @@ router = APIRouter(tags=['info'], prefix="/api")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
+
 @router.get('/parsedQuote', response_model=dict, status_code=status.HTTP_200_OK)
 def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenData = check_auth) -> dict:
     return info_repo.get_parsed_quote(request, db)
@@ -34,12 +35,13 @@ def stock_search(prompt: str,
 def market_movers(current_user: TokenData = check_auth) -> Dict[str, Any]:
     return info_repo.market_movers()
 
+
 @router.get('/stockSentiment', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
 def stock_sentiment(symbol: str, current_user: TokenData = check_auth) -> Dict[str, Any]:
     return info_repo.stock_sentiment(symbol)
 
-#add peers route
+# add peers route
 
-#upgrade market status - add redundancy
+# upgrade market status - add redundancy
 
-#try to refactor market movers (for url requests)
+# try to refactor market movers (for url requests)

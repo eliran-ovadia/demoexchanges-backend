@@ -8,6 +8,7 @@ class Pagination(BaseModel):
     page: int = Field(1, ge=1, description="Page number (must be 1 or greater)")
     page_size: int = Field(10, ge=1, le=100, description="Number of items per page (must be between 1 and 100)")
 
+
 class Stock(BaseModel):
     symbol: str = Field(..., description="Stock symbol")
 
@@ -17,6 +18,7 @@ class Stock(BaseModel):
         if not (3 <= len(v) <= 4 and v.isalpha()):
             raise ValueError("Symbol must be 3 or 4 alphabetic characters")
         return v
+
 
 class RawQuote(BaseModel):
     symbol: constr(max_length=4)
@@ -34,8 +36,10 @@ class RawQuote(BaseModel):
     year_range_high: confloat(gt=0)
     year_range_low: confloat(gt=0)
 
+
 class MarketOpen(BaseModel):  # needs route to be developed
     is_market_open: bool | None = None
+
 
 class ShowStock(BaseModel):
     symbol: constr(max_length=4)
@@ -53,6 +57,7 @@ class ShowStock(BaseModel):
     year_range_high: confloat(gt=0)
     total_return: float
     total_return_percent: float
+
 
 class CreateUser(BaseModel):
     name: str
@@ -74,6 +79,7 @@ class CreateUser(BaseModel):
             raise ValueError('Password must not contain the same character three times in a row')
         return v
 
+
 class User(BaseModel):
     id: constr(min_length=1)
     name: constr(min_length=1)
@@ -82,8 +88,9 @@ class User(BaseModel):
     cash: confloat(ge=0)
     is_admin: bool
 
+
 class Order(BaseModel):
-    symbol: str #convert to Stock schema?
+    symbol: str  # convert to Stock schema?
     amount: PositiveInt
     type: str
 
@@ -99,9 +106,11 @@ class Order(BaseModel):
             raise ValueError("Cannot buy more than 10,000 stocks a once")
         return v
 
+
 class Login(BaseModel):
     username: EmailStr
     password: str
+
 
 class History(BaseModel):
     symbol: str
@@ -112,6 +121,7 @@ class History(BaseModel):
     profit: float
     time_stamp: datetime
 
+
 class AfterOrder(BaseModel):
     symbol: str
     price: float
@@ -120,11 +130,13 @@ class AfterOrder(BaseModel):
     value: float
     profit: float
 
-#--------------------------Token--------------------------
+
+# --------------------------Token--------------------------
 
 class Token(BaseModel):
     access_token: constr(min_length=1)
     token_type: constr(min_length=1)
+
 
 class TokenData(BaseModel):
     id: constr(min_length=1)

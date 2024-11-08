@@ -50,7 +50,7 @@ def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> d
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized to delete accounts")
 
     try:
-        user_to_delete = find_user(db, email = request)
+        user_to_delete = find_user(db, email=request)
 
         if user_to_delete.is_admin:
             logger.warning(f"Attempt to delete admin user {user_to_delete.email} by {current_user.email}")

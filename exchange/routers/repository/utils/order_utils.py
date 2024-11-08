@@ -17,7 +17,8 @@ def sell_handler(request: schemas.Order, db: Session, current_user: schemas.Toke
 
     if total_owned_stock < request.amount:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=f"Short selling is not supported at the moment, you can sell a maximum of {total_owned_stock} stocks")
+                            detail=f"""Short selling is not supported at the moment,
+                                        you can sell a maximum of {total_owned_stock} stocks""")
 
     portfolio_entries = db.query(models.Portfolio).filter(
         models.Portfolio.user_id == user.id,
@@ -34,10 +35,10 @@ def sell_handler(request: schemas.Order, db: Session, current_user: schemas.Toke
         if entry.amount <= remaining_amount_to_sell:
             total_profit += (price - entry.price) * entry.amount
             remaining_amount_to_sell -= entry.amount
-            db.delete(entry)  #delete entire row
+            db.delete(entry)  # delete entire row
         else:
             total_profit += (price - entry.price) * remaining_amount_to_sell
-            entry.amount -= remaining_amount_to_sell  #delete part of the row
+            entry.amount -= remaining_amount_to_sell  # delete part of the row
             remaining_amount_to_sell = 0
 
     user.cash += value
@@ -75,23 +76,15 @@ def buy_handler(request: schemas.Order, db: Session, current_user: schemas.Token
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="Insufficient cash for buying")
 
     user.cash -= value
-
-    # insert portfolio and history rows
+    # Insert portfolio and history rows
     transaction_time = datetime.now()
-    new_portfolio_entry = models.Portfolio(
-        symbol=symbol,
-        amount=request.amount,
-        time_stamp=transaction_time,
+    new_portfolio_entry = models.Portfolio(symbol=symbol,amount=request.amount,time_stamp=transaction_time,
         price=price,
         user_id=user.id
     )
     db.add(new_portfolio_entry)
 
-    transaction_history = models.History(
-        symbol=symbol,
-        price=price,
-        amount=request.amount,
-        type=request.type,
+    transaction_history = models.History(symbol=symbol,price=price,amount=request.amount,type=request.type,
         value=value,
         profit=0.0,  # No profit for buy order
         time_stamp=transaction_time,
@@ -100,11 +93,7 @@ def buy_handler(request: schemas.Order, db: Session, current_user: schemas.Token
     db.add(transaction_history)
     db.commit()
 
-    return schemas.AfterOrder(
-        symbol=symbol,
-        price=round(price, 2),
-        amount=request.amount,
-        type=request.type,
+    return schemas.AfterOrder(symbol=symbol,price=round(price, 2),amount=request.amount,type=request.type,
         value=round(value, 2),
         profit=0.0
     )

@@ -12,6 +12,7 @@ router = APIRouter(tags=['portfolio'], prefix="/api")
 check_db = Depends(database.get_db)
 check_auth = Depends(get_current_user)
 
+
 @router.get('/getPortfolio', response_model=dict, status_code=status.HTTP_200_OK)
 def get_portfolio(pagination: Pagination = Depends(),
                   db: Session = check_db,
@@ -35,6 +36,7 @@ def get_history(pagination: Pagination = Depends(),
 @router.post('/addToWatchlist', status_code=status.HTTP_200_OK)
 def add_to_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):
     return portfolio_repo.add_to_watchlist(request, db, current_user)
+
 
 @router.post('/deleteFromWatchlist', status_code=status.HTTP_200_OK)
 def delete_from_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):

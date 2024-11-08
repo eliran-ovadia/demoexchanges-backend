@@ -21,6 +21,6 @@ def reset_portfolio(db: Session = check_db, current_user: TokenData = check_auth
     return user_repo.reset_portfolio(db, current_user)
 
 
-@router.delete('/deleteUser/',response_model=str, status_code=status.HTTP_200_OK)
+@router.delete('/deleteUser/', response_model=str, status_code=status.HTTP_200_OK)
 def delete_user(request: str, db: Session = check_db, current_user: TokenData = check_auth) -> dict:
     return user_repo.delete_user(request, db, current_user)

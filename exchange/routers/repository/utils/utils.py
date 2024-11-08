@@ -28,8 +28,8 @@ def market_status_update(quotes: dict, db: Session) -> bool:
         db.commit()
         return quotes.get('is_market_open')
     else:
-        first_stock = next(iter(quotes.values())) # get the first element in the dict
-        market.is_market_open = first_stock.get('is_market_open') # apply to database
+        first_stock = next(iter(quotes.values()))  # get the first element in the dict
+        market.is_market_open = first_stock.get('is_market_open')  # apply to database
         db.commit()
         return first_stock.get('is_market_open')
 

@@ -24,7 +24,7 @@ def get_stock_price(symbol: str) -> float:
     return float(stock.get('price'))
 
 
-def get_quote(symbols: str, db: Session) -> dict: # passing Session argument to update market status db
+def get_quote(symbols: str, db: Session) -> dict:  # passing Session argument to update market status db
     td = get_td_client()
     try:
         stocks = td.quote(symbol=symbols).as_json()
@@ -43,7 +43,7 @@ def get_quote(symbols: str, db: Session) -> dict: # passing Session argument to 
 
 def get_search_result(prompt: str):
     td = get_td_client()
-    OUTPUT_SIZE = 70 #sweet spot before filtering
+    OUTPUT_SIZE = 70  # sweet spot before filtering
     try:
         results = td.symbol_search(symbol=str(prompt), outputsize=OUTPUT_SIZE).as_json()
     except TwelveDataError as e:
@@ -55,6 +55,7 @@ def get_search_result(prompt: str):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     return results
+
 
 def get_sentiment(symbol: str) -> list:
     fn = get_finnhub_client()

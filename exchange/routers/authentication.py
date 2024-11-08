@@ -7,7 +7,7 @@ from exchange.hashing import Hash
 from exchange.models import User
 from exchange.schemas import Token
 
-router = APIRouter(tags = ['Authentication'])
+router = APIRouter(tags=['Authentication'])
 check_db = Depends(database.get_db)
 
 

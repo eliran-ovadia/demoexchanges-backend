@@ -52,7 +52,8 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
     )
 
     if not history_array:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No records for this page, there are {total_items} records total for the account")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"No records for this page, there are {total_items} records total for the account")
 
     history_to_return = [
         schemaHistory(
@@ -71,7 +72,7 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
         "total_items": total_items,
         "page": page,
         "page_size": page_size,
-        "history": history_to_return # there was a ',' here...
+        "history": history_to_return  # there was a ',' here...
     }
 
 
@@ -91,7 +92,7 @@ def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenDat
 
 def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
     item = (db.query(models.WatchlistItem)
-            .filter(models.WatchlistItem.symbol == request.symbol , models.WatchlistItem.user_id == current_user.id)
+            .filter(models.WatchlistItem.symbol == request.symbol, models.WatchlistItem.user_id == current_user.id)
             .first())
 
     if not item:
