@@ -4,7 +4,6 @@ from exchange import database
 from exchange.schemas import AfterOrder, TokenData, Order, Pagination, Stock
 from sqlalchemy.orm import Session
 from exchange.oauth2 import get_current_user
-from ..models import MarketStatus
 from .repository import portfolio_repo
 
 router = APIRouter(tags=['portfolio'], prefix="/api")
@@ -45,9 +44,3 @@ def get_watchlist(pagination: Pagination = Depends(),
                   db: Session = check_db,
                   current_user: TokenData = check_auth) -> list[str]:
     return portfolio_repo.get_watchlist(db, pagination.page, pagination.page_size, current_user)
-
-
-#splitz
-
-
-#dividends

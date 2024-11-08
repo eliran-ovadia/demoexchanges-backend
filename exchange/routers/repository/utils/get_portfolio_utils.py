@@ -1,13 +1,14 @@
 from sqlalchemy import func
-
-from exchange.app_logger import logger
+from typing import Tuple, Any, Dict, Optional
 from exchange.clients_methods import get_quote
 from exchange.models import Portfolio
 from exchange.schemas import TokenData, ShowStock
 from .utils import *
 
 
-def fetch_portfolio_data(db: Session, current_user: TokenData, page: int, page_size: int) -> dict | None:
+def fetch_portfolio_data(db: Session,
+                         current_user: TokenData,
+                         page: int, page_size: int) -> Optional[Tuple[int, Dict[str, Any]]] | None:
     # Query the database to get the symbols, total amounts, and average prices for the current user
     result = (db.query(
         Portfolio.symbol,
@@ -19,8 +20,19 @@ def fetch_portfolio_data(db: Session, current_user: TokenData, page: int, page_s
     .offset((page - 1) * page_size)
     .limit(page_size)
     .all())
-    return {symbol: {'total_amount': total_amount, 'avg_price': avg_price} for symbol, total_amount, avg_price in
-            result} if result else None
+
+    total_stocks = (db.query(
+        Portfolio.symbol,
+        func.sum(Portfolio.amount).label('total_amount'),
+        func.avg(Portfolio.price).label('avg_price')
+    ).filter(Portfolio.user_id == current_user.id)
+              .group_by(Portfolio.symbol)
+              .order_by(Portfolio.symbol.desc())  # will add sorting option later
+              .count())
+
+    return (total_stocks, {symbol: {'total_amount': total_amount,
+                                    'avg_price': avg_price} for symbol, total_amount, avg_price in
+            result} if result else None)
 
 
 def fetch_quotes(symbols: list, db: Session) -> dict:
@@ -125,7 +137,11 @@ def parse_price(quote_data: dict) -> float | None:
         return None
 
 
-def build_portfolio_response(db: Session, current_user: TokenData, portfolio_data: list[ShowStock]) -> dict:
+def build_portfolio_response(db: Session,
+                             current_user: TokenData,
+                             portfolio_data: list[ShowStock],
+                             total_stocks: int) -> dict:
+
     user = find_user(db, current_user.id)
 
     portfolio_value = round(sum([x.total_value for x in portfolio_data]), 2)
@@ -138,6 +154,7 @@ def build_portfolio_response(db: Session, current_user: TokenData, portfolio_dat
         'portfolio_value': portfolio_value,
         'total_return': total_return,
         'total_return_percent': total_return_percent,
-        'account_value': round(user.cash + portfolio_value, 2)
+        'account_value': round(user.cash + portfolio_value, 2),
+        'total_stocks':  total_stocks
     }
     return dict(balance=balances_dict, portfolio=portfolio_data)

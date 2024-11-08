@@ -27,7 +27,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) 
 
 
 def get_portfolio(db: Session, current_user: schemas.TokenData, page: int, page_size: int) -> dict:
-    portfolio_data = fetch_portfolio_data(db, current_user, page, page_size)
+    total_stocks, portfolio_data = fetch_portfolio_data(db, current_user, page, page_size)
 
     if not portfolio_data:
         return handle_empty_portfolio(db, current_user)  # If no stocks, return balance with zeroes
@@ -36,7 +36,7 @@ def get_portfolio(db: Session, current_user: schemas.TokenData, page: int, page_
     quotes = fetch_quotes(symbols, db)
     detailed_portfolio_data = process_portfolio_data(portfolio_data, quotes)
 
-    return build_portfolio_response(db, current_user, detailed_portfolio_data)
+    return build_portfolio_response(db, current_user, detailed_portfolio_data, total_stocks)
 
 
 def get_history(db: Session, current_user: schemas.TokenData, page: int, page_size: int) -> Dict[str, Any]:
