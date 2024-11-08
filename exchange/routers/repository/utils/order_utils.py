@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from sqlalchemy import func
+
 from exchange import schemas, models
 from exchange.routers.repository.utils.utils import *
 

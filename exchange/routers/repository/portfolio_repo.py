@@ -1,13 +1,11 @@
+from sqlalchemy.exc import IntegrityError
+
 from exchange.clients_methods import get_stock_price
+from exchange.models import History as modelHistory
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *
-from exchange.models import History as modelHistory
 from exchange.schemas import History as schemaHistory
 from exchange.schemas import Stock
-from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
-from sqlalchemy.exc import IntegrityError
-from typing import Dict, Any
 
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:

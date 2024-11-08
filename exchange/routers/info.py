@@ -1,12 +1,13 @@
 from typing import Dict, Any
-from fastapi import APIRouter, Depends, status
-from exchange import database
-from exchange.schemas import TokenData, Pagination
-from sqlalchemy.orm import Session
-from exchange.oauth2 import get_current_user
-from ..models import MarketStatus
-from .repository import info_repo
 
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+
+from exchange import database
+from exchange.oauth2 import get_current_user
+from exchange.schemas import TokenData, Pagination
+from .repository import info_repo
+from ..models import MarketStatus
 
 router = APIRouter(tags=['info'], prefix="/api")
 check_db = Depends(database.get_db)

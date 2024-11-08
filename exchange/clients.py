@@ -1,9 +1,9 @@
-from twelvedata import TDClient
-from polygon import RESTClient
 from finnhub import Client as FinnhubClient
+from polygon import RESTClient
+from twelvedata import TDClient
+
 from exchange.app_logger import logger
 from .routers.repository.utils.utils import get_api_key
-
 
 td = None
 pg = None

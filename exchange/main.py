@@ -1,5 +1,6 @@
-from fastapi import FastAPI
 from dotenv import load_dotenv
+from fastapi import FastAPI
+
 from . import models
 from .database import engine
 from .routers import portfolio, user, authentication, info

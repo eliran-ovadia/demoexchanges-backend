@@ -1,9 +1,11 @@
 from typing import Dict, Any
+
 from fastapi import APIRouter, Depends, status
-from exchange import database
-from exchange.schemas import AfterOrder, TokenData, Order, Pagination, Stock
 from sqlalchemy.orm import Session
+
+from exchange import database
 from exchange.oauth2 import get_current_user
+from exchange.schemas import AfterOrder, TokenData, Order, Pagination, Stock
 from .repository import portfolio_repo
 
 router = APIRouter(tags=['portfolio'], prefix="/api")

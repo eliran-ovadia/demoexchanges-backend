@@ -1,10 +1,12 @@
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from exchange import models, schemas
-from fastapi import HTTPException, status
-from exchange.hashing import Hash
 from uuid import uuid4
+
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from exchange import models, schemas
 from exchange.app_logger import logger
+from exchange.hashing import Hash
 from exchange.routers.repository.utils.utils import find_user
 
 

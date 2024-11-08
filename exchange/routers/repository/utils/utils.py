@@ -1,8 +1,10 @@
-from exchange.models import User, MarketStatus
-from sqlalchemy.orm import Session
-from ....app_logger import logger
-from fastapi import HTTPException, status
 import os
+
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+
+from exchange.models import User, MarketStatus
+from ....app_logger import logger
 
 
 def find_user(db: Session, user_id: str = None, email: str = None) -> User | bool:

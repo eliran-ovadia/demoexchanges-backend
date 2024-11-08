@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends , status
-from exchange import database
-from exchange.schemas import TokenData, CreateUser
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from .repository import user_repo
-from exchange.oauth2 import get_current_user
 
+from exchange import database
+from exchange.oauth2 import get_current_user
+from exchange.schemas import TokenData, CreateUser
+from .repository import user_repo
 
 router = APIRouter(tags=['users'], prefix='/api')
 check_db = Depends(database.get_db)
