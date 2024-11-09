@@ -61,3 +61,9 @@ class MarketStatus(Base):
     __tablename__ = 'market_status'
     exchange_name = Column(String, primary_key=True)
     is_market_open = Column(Boolean)
+
+
+class lastSplitDate(Base):
+    __tablename__ = 'last_split_date'
+    id = Column(Integer, primary_key=True, index=True)
+    last_split_check = Column(DateTime)

@@ -3,11 +3,13 @@ from polygon import RESTClient
 from twelvedata import TDClient
 
 from exchange.app_logger import logger
-from .routers.repository.utils.utils import get_api_key
+from exchange.routers.repository.utils.client_methods_utils import get_api_key
 
 td = None
 pg = None
 fh = None
+
+
 
 
 def get_td_client() -> TDClient:
