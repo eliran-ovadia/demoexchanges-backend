@@ -2,11 +2,12 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from . import models
+from .app_events import lifespan
 from .database import engine
 from .routers import portfolio, user, authentication, info
 
 load_dotenv()
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)  # Lifespan for app events with apscheduler
 
 models.Base.metadata.create_all(engine)  # every time we find a new base we create the table for it
 

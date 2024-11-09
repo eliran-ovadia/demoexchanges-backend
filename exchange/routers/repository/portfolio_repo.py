@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 
-from exchange.clients_methods import get_stock_price
+from exchange.clients_functions import get_stock_price
 from exchange.models import History as modelHistory
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.order_utils import *

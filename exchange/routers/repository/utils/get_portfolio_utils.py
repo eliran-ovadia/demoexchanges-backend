@@ -2,7 +2,7 @@ from typing import Tuple, Any, Dict, Optional
 
 from sqlalchemy import func
 
-from exchange.clients_methods import get_quote
+from exchange.clients_functions import get_quote
 from exchange.models import Portfolio
 from exchange.schemas import TokenData, ShowStock
 from .utils import *

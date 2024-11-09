@@ -10,8 +10,6 @@ pg = None
 fh = None
 
 
-
-
 def get_td_client() -> TDClient:
     global td
     if td is None:
