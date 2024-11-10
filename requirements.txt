@@ -13,3 +13,4 @@ python-dotenv
 jose
 polygon-api-client
 finnhub-python
+apscheduler

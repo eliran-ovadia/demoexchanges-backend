@@ -78,22 +78,22 @@ def buy_handler(request: schemas.Order, db: Session, current_user: schemas.Token
     user.cash -= value
     # Insert portfolio and history rows
     transaction_time = datetime.now()
-    new_portfolio_entry = models.Portfolio(symbol=symbol,amount=request.amount,time_stamp=transaction_time,
-        price=price,
-        user_id=user.id
-    )
+    new_portfolio_entry = models.Portfolio(symbol=symbol, amount=request.amount, time_stamp=transaction_time,
+                                           price=price,
+                                           user_id=user.id
+                                           )
     db.add(new_portfolio_entry)
 
-    transaction_history = models.History(symbol=symbol,price=price,amount=request.amount,type=request.type,
-        value=value,
-        profit=0.0,  # No profit for buy order
-        time_stamp=transaction_time,
-        user_id=user.id
-    )
+    transaction_history = models.History(symbol=symbol, price=price, amount=request.amount, type=request.type,
+                                         value=value,
+                                         profit=0.0,  # No profit for buy order
+                                         time_stamp=transaction_time,
+                                         user_id=user.id
+                                         )
     db.add(transaction_history)
     db.commit()
 
-    return schemas.AfterOrder(symbol=symbol,price=round(price, 2),amount=request.amount,type=request.type,
-        value=round(value, 2),
-        profit=0.0
-    )
+    return schemas.AfterOrder(symbol=symbol, price=round(price, 2), amount=request.amount, type=request.type,
+                              value=round(value, 2),
+                              profit=0.0
+                              )

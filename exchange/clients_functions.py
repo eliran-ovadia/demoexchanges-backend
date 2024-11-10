@@ -1,15 +1,14 @@
 from logging import exception
 
-from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
 from twelvedata.exceptions import TwelveDataError
 
-from exchange.app_logger import logger
+from exchange.routers.repository.utils.client_methods_utils import *
 from exchange.routers.repository.utils.utils import market_status_update
-from .clients import get_td_client, get_finnhub_client
+from .clients import get_td_client, get_finnhub_client, get_polygon_client
 
 
 # NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
+# Twelve data fetch - stock price data
 def get_stock_price(symbol: str) -> float:
     td = get_td_client()
     try:
@@ -24,6 +23,7 @@ def get_stock_price(symbol: str) -> float:
     return float(stock.get('price'))
 
 
+# Twelve data fetch - quote raw data
 def get_quote(symbols: str, db: Session) -> dict:  # passing Session argument to update market status db
     td = get_td_client()
     try:
@@ -41,6 +41,7 @@ def get_quote(symbols: str, db: Session) -> dict:  # passing Session argument to
     return stocks
 
 
+# Twelve data fetch - search result raw data
 def get_search_result(prompt: str):
     td = get_td_client()
     OUTPUT_SIZE = 70  # sweet spot before filtering
@@ -57,6 +58,7 @@ def get_search_result(prompt: str):
     return results
 
 
+# Finnhub fetch - stock sentiment raw data
 def get_sentiment(symbol: str) -> list:
     fn = get_finnhub_client()
     try:
@@ -66,3 +68,31 @@ def get_sentiment(symbol: str) -> list:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="could not get sentiment at the moment")
     return sentiment
+
+
+# Polygon fetch - split logic
+def apply_splits(db: Session):
+    current_time = datetime.now()
+    previous_split_date = get_last_split_date(db, current_time)
+    delta_time = current_time - previous_split_date
+    delta_days = delta_time.days
+
+    if delta_days > 0:
+        formatted_last_split_date = previous_split_date.strftime("%Y-%m-%d")
+        formatted_now = current_time.strftime("%Y-%m-%d")
+        unique_symbol_list = get_unique_stocks_list(db)
+        pg = get_polygon_client()
+
+        for symbol in unique_symbol_list:
+            response = pg.list_splits(reverse_split=True, sort='execution_date', order='desc', ticker=symbol,
+                                      execution_date_gt=formatted_last_split_date,
+                                      execution_date_lte=formatted_now)
+            if not response["results"]:
+                continue
+
+            for split in response.get('results', []):
+                split_handler(db, split, symbol)
+
+        last_split_date_row = db.query(lastSplitDate).first()
+        last_split_date_row.last_split_check = current_time
+        db.commit()
