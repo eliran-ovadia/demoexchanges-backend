@@ -84,13 +84,15 @@ def apply_splits(db: Session):
         pg = get_polygon_client()
 
         for symbol in unique_symbol_list:
-            response = pg.list_splits(reverse_split=True, sort='execution_date', order='desc', ticker=symbol,
-                                      execution_date_gt=formatted_last_split_date,
-                                      execution_date_lte=formatted_now)
-            if not response["results"]:
+            # Convert the generator to a list and access the first item
+            response = next(pg.list_splits(reverse_split=True, sort='execution_date', order='desc', ticker=symbol,
+                                           execution_date_gt=formatted_last_split_date,
+                                           execution_date_lte=formatted_now), None)
+            # Check if response is None or results are empty
+            if not response or not response.get('results'):
                 continue
 
-            for split in response.get('results', []):
+            for split in response['results']:
                 split_handler(db, split, symbol)
 
         last_split_date_row = db.query(lastSplitDate).first()
