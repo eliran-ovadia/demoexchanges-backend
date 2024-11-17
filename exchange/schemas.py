@@ -15,8 +15,8 @@ class Stock(BaseModel):
     @field_validator("symbol")
     def uppercase_symbol_and_length(cls, v):
         v = v.upper()  # Convert to uppercase
-        if not (3 <= len(v) <= 4 and v.isalpha()):
-            raise ValueError("Symbol must be 3 or 4 alphabetic characters")
+        if not (1 <= len(v) <= 4 and v.isalpha()):
+            raise ValueError("Symbol must be between 1 and 4 alphabetic characters")
         return v
 
 
