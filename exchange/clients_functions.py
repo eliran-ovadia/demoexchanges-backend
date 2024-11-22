@@ -4,13 +4,13 @@ from twelvedata.exceptions import TwelveDataError
 
 from exchange.routers.repository.utils.client_methods_utils import *
 from exchange.routers.repository.utils.utils import market_status_update
-from .clients import get_td_client, get_finnhub_client, get_polygon_client
+from .clients import ClientManager
 
 
 # NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
 # Twelve data fetch - stock price data
 def get_stock_price(symbol: str) -> float:
-    td = get_td_client()
+    td = ClientManager.get_td_client()
     try:
         stock = td.price(symbol=symbol).as_json()
     except TwelveDataError as e:
@@ -25,7 +25,7 @@ def get_stock_price(symbol: str) -> float:
 
 # Twelve data fetch - quote raw data
 def get_quote(symbols: str, db: Session) -> dict:  # passing Session argument to update market status db
-    td = get_td_client()
+    td = ClientManager.get_td_client()
     try:
         stocks = td.quote(symbol=symbols).as_json()
     except TwelveDataError as e:
@@ -43,7 +43,7 @@ def get_quote(symbols: str, db: Session) -> dict:  # passing Session argument to
 
 # Twelve data fetch - search result raw data
 def get_search_result(prompt: str):
-    td = get_td_client()
+    td = ClientManager.get_td_client()
     OUTPUT_SIZE = 70  # sweet spot before filtering
     try:
         results = td.symbol_search(symbol=str(prompt), outputsize=OUTPUT_SIZE).as_json()
@@ -60,7 +60,7 @@ def get_search_result(prompt: str):
 
 # Finnhub fetch - stock sentiment raw data
 def get_sentiment(symbol: str) -> list:
-    fn = get_finnhub_client()
+    fn = ClientManager.get_finnhub_client()
     try:
         sentiment = fn.recommendation_trends(symbol)
     except exception as e:
@@ -81,7 +81,7 @@ def apply_splits(db: Session):
         formatted_last_split_date = previous_split_date.strftime("%Y-%m-%d")
         formatted_now = current_time.strftime("%Y-%m-%d")
         unique_symbol_list = get_unique_stocks_list(db)
-        pg = get_polygon_client()
+        pg = ClientManager.get_polygon_client()
 
         for symbol in unique_symbol_list:
             # Convert the generator to a list and access the first item

@@ -37,7 +37,7 @@ class RawQuote(BaseModel):
     year_range_low: confloat(gt=0)
 
 
-class MarketOpen(BaseModel):  # needs route to be developed
+class MarketOpen(BaseModel):  # Needs route to be developed
     is_market_open: bool | None = None
 
 
