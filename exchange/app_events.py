@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 
+from .clients import ClientManager
 from .database import get_db
 from .scheduler_manager import start_scheduler, stop_scheduler, add_job
 from .split_scheduler import run_startup_split, run_daily_split
-from .clients import ClientManager
 
 
 @asynccontextmanager

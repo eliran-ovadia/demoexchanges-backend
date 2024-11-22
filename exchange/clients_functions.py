@@ -1,7 +1,9 @@
 from logging import exception
 
+from fastapi import HTTPException, status
 from twelvedata.exceptions import TwelveDataError
 
+from exchange.app_logger import logger
 from exchange.routers.repository.utils.client_methods_utils import *
 from exchange.routers.repository.utils.utils import market_status_update
 from .clients import ClientManager
@@ -20,23 +22,31 @@ def get_stock_price(symbol: str) -> float:
         logger.critical(f"Failed to fetch price for symbol: {symbol} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    return float(stock.get('price'))
+    return float(stock.get('price', 0.0))
 
 
 # Twelve data fetch - quote raw data
-def get_quote(symbols: str, db: Session) -> dict:  # passing Session argument to update market status db
+def get_quote(symbols: str, db: Session) -> dict:
     td = ClientManager.get_td_client()
     try:
         stocks = td.quote(symbol=symbols).as_json()
     except TwelveDataError as e:
-        logger.critical(f"Quote not found for symbols: {symbols} - {str(e)}")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Quote for one of the symbols: {symbols} not found")
+        logger.error(f"Quote not found for symbols: {symbols} - {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Quote for one of the symbols: {symbols} not found"
+        )
     except Exception as e:
-        logger.critical(f"Failed to fetch quote for symbols: {symbols} - {str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        logger.critical(f"Unexpected error fetching quote for symbols: {symbols} - {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error occurred while fetching quotes"
+        )
 
-    market_status_update(stocks, db)
+    try:
+        market_status_update(stocks, db)
+    except Exception as e:
+        logger.warning(f"Failed to update market status for symbols: {symbols}. Error: {e}")
 
     return stocks
 

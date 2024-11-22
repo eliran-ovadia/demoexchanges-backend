@@ -1,24 +1,9 @@
 import math
-import os
 from datetime import datetime
 
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from exchange.app_logger import logger
 from exchange.models import lastSplitDate, Portfolio
-
-
-def get_api_key(client: str) -> str:  # API key extractor from env file
-    api_key = os.getenv(client)
-    if not api_key:
-        logger.error(f"API key for {client} is not set.")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"API key for {client} is missing"
-        )
-
-    return api_key
 
 
 def get_last_split_date(db: Session, current_time: datetime) -> datetime:

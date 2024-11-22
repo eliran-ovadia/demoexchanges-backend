@@ -4,19 +4,30 @@ from exchange.app_logger import logger as log
 from exchange.clients import get_api_key
 from exchange.clients_functions import get_search_result, get_sentiment
 from exchange.routers.repository.utils.get_portfolio_utils import *
-from exchange.routers.repository.utils.process_raw_quote import process_single_quote
+from exchange.routers.repository.utils.quote_parser import QuoteParser
 
 
 def get_parsed_quote(request: str, db: Session) -> dict:
     raw_quotes = get_quote(request, db)
-
     parsed_quotes_to_return = {}
-    if 'symbol' in raw_quotes:  # Check for single dictionary
-        parsed_quotes_to_return = process_single_quote(raw_quotes)
-    else:
+
+    if isinstance(raw_quotes, dict) and 'symbol' in raw_quotes:  # Enters when the response is a single dictionary
+        try:
+            parser = QuoteParser(**raw_quotes)
+            parsed_quotes_to_return = parser.to_parsed_quote()
+        except Exception as e:
+            logger.error(f"Error processing single quote: {raw_quotes}. Error: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error processing stock quote"
+            )
+    else:  # Multiple quotes
         for symbol, raw_quote in raw_quotes.items():
-            parsed_quote = process_single_quote(raw_quote)
-            parsed_quotes_to_return[symbol] = parsed_quote
+            try:
+                parser = QuoteParser(**raw_quote)
+                parsed_quotes_to_return[symbol] = parser.to_parsed_quote()
+            except Exception as e:
+                logger.warning(f"Error processing quote for symbol {symbol}. Skipping. Error: {e}")
 
     return parsed_quotes_to_return
 

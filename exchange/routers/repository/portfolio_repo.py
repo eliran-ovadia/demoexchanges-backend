@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
 from exchange.clients_functions import get_stock_price

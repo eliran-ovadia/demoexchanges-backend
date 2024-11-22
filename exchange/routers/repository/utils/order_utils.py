@@ -1,8 +1,10 @@
 from datetime import datetime
 
+from fastapi import HTTPException, status
 from sqlalchemy import func
 
 from exchange import schemas, models
+from exchange.app_logger import logger
 from exchange.routers.repository.utils.utils import *
 
 

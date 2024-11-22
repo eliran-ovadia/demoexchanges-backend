@@ -20,7 +20,7 @@ class Stock(BaseModel):
         return v
 
 
-class RawQuote(BaseModel):
+class ParsedRawQuote(BaseModel):
     symbol: constr(max_length=4)
     full_name: constr(max_length=50)
     exchange: constr(max_length=10)
