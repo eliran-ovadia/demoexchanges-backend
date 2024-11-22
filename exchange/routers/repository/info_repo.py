@@ -4,6 +4,7 @@ from exchange.app_logger import logger as log
 from exchange.clients_functions import get_search_result, get_sentiment
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.quote_parser import QuoteParser
+from exchange.clients import ClientManager
 
 
 def get_parsed_quote(request: str, db: Session) -> dict:
@@ -54,7 +55,7 @@ def stock_search(prompt: str, page: int, page_size: int) -> Dict[str, Any]:
 
 
 def market_movers():
-    api_key = get_api_key("ALPHA_VANTAGE_API_KEY")
+    api_key = ClientManager.get_api_key("ALPHA_VANTAGE_API_KEY")
     url = f'https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={api_key}'
     try:
         response = requests.get(url)
