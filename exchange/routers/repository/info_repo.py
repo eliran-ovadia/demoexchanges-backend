@@ -1,7 +1,6 @@
 import requests
 
 from exchange.app_logger import logger as log
-from exchange.clients import get_api_key
 from exchange.clients_functions import get_search_result, get_sentiment
 from exchange.routers.repository.utils.get_portfolio_utils import *
 from exchange.routers.repository.utils.quote_parser import QuoteParser
