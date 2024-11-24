@@ -4,9 +4,9 @@ from fastapi import HTTPException, status
 from twelvedata.exceptions import TwelveDataError
 
 from exchange.app_logger import logger
-from exchange.routers.repository.utils.client_methods_utils import *
+from exchange.routers.repository.utils.apply_splits_utils import *
 from exchange.routers.repository.utils.utils import market_status_update
-from .clients import ClientManager
+from .client_manager import ClientManager
 
 
 # NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
