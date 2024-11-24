@@ -17,7 +17,7 @@ def get_stock_price(symbol: str) -> float:
         stock = td.price(symbol=symbol).as_json()
     except TwelveDataError as e:
         logger.critical(f"Price not found for symbol: {symbol} - {str(e)}")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Price for symbol: {symbol} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"info for symbol: {symbol} not found")
     except Exception as e:
         logger.critical(f"Failed to fetch price for symbol: {symbol} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

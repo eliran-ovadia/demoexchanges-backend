@@ -38,7 +38,7 @@ def add_to_watchlist(request: Stock = Depends(), db: Session = check_db, current
     return portfolio_repo.add_to_watchlist(request, db, current_user)
 
 
-@router.post('/deleteFromWatchlist', status_code=status.HTTP_200_OK)
+@router.delete('/deleteFromWatchlist', status_code=status.HTTP_200_OK)
 def delete_from_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):
     return portfolio_repo.delete_from_watchlist(request, db, current_user)
 

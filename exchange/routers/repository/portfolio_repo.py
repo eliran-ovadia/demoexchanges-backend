@@ -72,11 +72,12 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
         "total_items": total_items,
         "page": page,
         "page_size": page_size,
-        "history": history_to_return  # there was a ',' here...
+        "history": history_to_return
     }
 
 
 def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
+    raise_if_not_stock = get_stock_price(request.symbol)
     item = models.WatchlistItem(symbol=request.symbol, user_id=current_user.id)
     db.add(item)
 
@@ -102,7 +103,14 @@ def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.Tok
         )
 
     db.delete(item)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"An error occurred while attempting to delete {item}."
+        )
 
 
 def get_watchlist(db: Session, page: int, page_size: int, current_user: schemas.TokenData) -> list[str]:
