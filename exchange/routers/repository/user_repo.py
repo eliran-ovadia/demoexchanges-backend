@@ -10,7 +10,7 @@ from exchange.hashing import Hash
 from exchange.routers.repository.utils.utils import find_user
 
 
-def create_user(request: schemas.CreateUser, db: Session) -> str:
+def create_user(request: schemas.CreateUser, db: Session) -> dict[str, str]:
     if find_user(db, email=request.email):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email is already taken")
     new_user = models.User(
@@ -30,10 +30,10 @@ def create_user(request: schemas.CreateUser, db: Session) -> str:
         db.rollback()
         logger.debug(f"a new user with email {request.email} errored at creation")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="encountered an error")
-    return f"Created a new user with email: {request.email}"
+    return {"message": f"Created a new user with email: {request.email}"}
 
 
-def reset_portfolio(db: Session, current_user: schemas.TokenData) -> str:
+def reset_portfolio(db: Session, current_user: schemas.TokenData) -> dict[str, str]:
     user = find_user(db, user_id=current_user.id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"user not located")
@@ -41,10 +41,9 @@ def reset_portfolio(db: Session, current_user: schemas.TokenData) -> str:
     db.query(models.History).filter(models.History.user_id == user.id).delete()
     user.cash = 100_000
     db.commit()
-    return "Portfolio is now empty and cash reset to $100,000"
+    return {"message": "Portfolio is now empty and cash reset to $100,000"}
 
-
-def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> dict:
+def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> dict[str, str]:
     if not current_user.is_admin:
         logger.warning(f"Unauthorized delete attempt by {current_user.email}")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized to delete accounts")
