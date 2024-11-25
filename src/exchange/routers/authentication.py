@@ -3,9 +3,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from src.exchange.Auth import token
+from src.exchange.Auth.hashing import Hash
 from src.exchange.database.db_conn import get_db
 from src.exchange.database.models import User
-from src.exchange.hashing import Hash
 from src.exchange.schemas import Token
 
 router = APIRouter(tags=['Authentication'])

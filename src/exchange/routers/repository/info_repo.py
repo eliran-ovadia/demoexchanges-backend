@@ -17,7 +17,7 @@ def get_parsed_quote(request: str, db: Session) -> dict:
     raw_quotes = get_quote(request, db)
     parsed_quotes_to_return = {}
 
-    if isinstance(raw_quotes, dict) and 'symbol' in raw_quotes:  # Enters when the response is a single dictionary
+    if isinstance(raw_quotes, dict) and 'symbol' in raw_quotes:  # For single quote
         try:
             parser = QuoteParser(**raw_quotes)
             parsed_quotes_to_return = parser.to_parsed_quote()
@@ -27,7 +27,7 @@ def get_parsed_quote(request: str, db: Session) -> dict:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Error processing stock quote"
             )
-    else:  # Multiple quotes
+    else:  # For multiple quotes
         for symbol, raw_quote in raw_quotes.items():
             try:
                 parser = QuoteParser(**raw_quote)

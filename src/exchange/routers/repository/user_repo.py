@@ -5,9 +5,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from src.exchange import schemas
+from src.exchange.Auth.hashing import Hash
 from src.exchange.app_logger import logger
 from src.exchange.database import models
-from src.exchange.hashing import Hash
 from src.exchange.routers.repository.utils.utils import find_user
 
 
