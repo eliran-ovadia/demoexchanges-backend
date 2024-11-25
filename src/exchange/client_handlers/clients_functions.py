@@ -1,12 +1,14 @@
 from logging import exception
 
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 from twelvedata.exceptions import TwelveDataError
-
-from exchange.app_logger import logger
-from exchange.routers.repository.utils.apply_splits_utils import *
-from exchange.routers.repository.utils.utils import market_status_update
+from datetime import datetime
+from src.exchange.routers.repository.utils.utils import market_status_update
 from .client_manager import ClientManager
+from ..app_logger import logger
+from src.exchange.split_logic.splits_logic import get_last_split_date, get_unique_stocks_list, split_handler
+from src.exchange.database.models import lastSplitDate
 
 
 # NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price

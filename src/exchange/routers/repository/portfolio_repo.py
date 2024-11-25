@@ -1,11 +1,14 @@
+from typing import Any
+
 from sqlalchemy.exc import IntegrityError
 
-from exchange.clients_functions import get_stock_price
-from exchange.models import History as modelHistory
-from exchange.routers.repository.utils.get_portfolio_utils import *
-from exchange.routers.repository.utils.order_utils import *
-from exchange.schemas import History as schemaHistory
-from exchange.schemas import Stock
+from src.exchange.client_handlers.clients_functions import get_stock_price
+from src.exchange.database.models import History as modelHistory
+from src.exchange.routers.repository.utils.order_utils import *
+from src.exchange.schemas import History as schemaHistory
+from src.exchange.schemas import Stock
+from .utils.get_portfolio_utils import fetch_portfolio_data, handle_empty_portfolio, fetch_quotes, \
+    process_portfolio_data, build_portfolio_response
 
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
@@ -37,7 +40,7 @@ def get_portfolio(db: Session, current_user: schemas.TokenData, page: int, page_
     return build_portfolio_response(db, current_user, detailed_portfolio_data, total_stocks)
 
 
-def get_history(db: Session, current_user: schemas.TokenData, page: int, page_size: int) -> Dict[str, Any]:
+def get_history(db: Session, current_user: schemas.TokenData, page: int, page_size: int) -> dict[str, Any]:
     total_items = db.query(modelHistory).filter(modelHistory.user_id == current_user.id).count()
 
     if not total_items:

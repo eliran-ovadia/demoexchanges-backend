@@ -1,10 +1,16 @@
-import requests
+from typing import Any
 
-from exchange.app_logger import logger as log
-from exchange.client_manager import ClientManager
-from exchange.clients_functions import get_search_result, get_sentiment
-from exchange.routers.repository.utils.get_portfolio_utils import *
-from exchange.routers.repository.utils.quote_parser import QuoteParser
+import requests
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+
+from src.exchange.app_logger import logger
+from src.exchange.app_logger import logger as log
+from src.exchange.client_handlers.client_manager import ClientManager
+from src.exchange.client_handlers.clients_functions import get_quote
+from src.exchange.client_handlers.clients_functions import get_search_result, get_sentiment
+from src.exchange.client_handlers.quote_parser import QuoteParser
+from src.exchange.database.models import MarketStatus
 
 
 def get_parsed_quote(request: str, db: Session) -> dict:
@@ -39,7 +45,7 @@ def fetch_market_status(db: Session) -> MarketStatus:
     return market.is_market_open
 
 
-def stock_search(prompt: str, page: int, page_size: int) -> Dict[str, Any]:
+def stock_search(prompt: str, page: int, page_size: int) -> dict[str, Any]:
     unfiltered_results = get_search_result(prompt)
 
     filtered_results = [result for result in unfiltered_results if
@@ -88,7 +94,7 @@ def market_movers():
     return useful_data
 
 
-def stock_sentiment(symbol: str) -> Dict[str, Any]:
+def stock_sentiment(symbol: str) -> dict[str, Any]:
     raw_sentiment = get_sentiment(symbol)
     if not raw_sentiment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Sentiment not found for {symbol}")

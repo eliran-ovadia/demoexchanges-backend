@@ -3,14 +3,14 @@ from typing import Dict, Any
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from exchange import database
-from exchange.oauth2 import get_current_user
-from exchange.schemas import TokenData, Pagination
+from src.exchange.Auth.oauth2 import get_current_user
+from src.exchange.database.db_conn import get_db
+from src.exchange.database.models import MarketStatus
+from src.exchange.schemas import TokenData, Pagination
 from .repository import info_repo
-from ..models import MarketStatus
 
 router = APIRouter(tags=['info'], prefix="/api")
-check_db = Depends(database.get_db)
+check_db = Depends(get_db)
 check_auth = Depends(get_current_user)
 
 

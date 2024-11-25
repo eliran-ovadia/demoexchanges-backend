@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 
-from exchange.app_logger import logger
+from src.exchange.app_logger import logger
 
 
 class QuoteParser:

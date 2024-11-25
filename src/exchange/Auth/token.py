@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from jose import JWTError, jwt
 
-from . import schemas
+from src.exchange import schemas
 
 load_dotenv()  # does not work without it at the moment
 SECRET_KEY = os.getenv("SECRET_KEY")

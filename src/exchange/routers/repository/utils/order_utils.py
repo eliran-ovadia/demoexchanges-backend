@@ -3,9 +3,10 @@ from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy import func
 
-from exchange import schemas, models
-from exchange.app_logger import logger
-from exchange.routers.repository.utils.utils import *
+from src.exchange import schemas
+from src.exchange.app_logger import logger
+from src.exchange.database import models
+from src.exchange.routers.repository.utils.utils import *
 
 
 ##################### Sell logic #####################

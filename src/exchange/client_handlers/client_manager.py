@@ -6,7 +6,7 @@ from finnhub import Client as FinnhubClient
 from polygon import RESTClient
 from twelvedata import TDClient
 
-from exchange.app_logger import logger
+from src.exchange.app_logger import logger
 
 
 class ClientManager:

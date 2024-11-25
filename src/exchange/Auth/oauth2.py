@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from . import token
-from .schemas import TokenData
+from src.exchange.Auth import token
+from src.exchange.schemas import TokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

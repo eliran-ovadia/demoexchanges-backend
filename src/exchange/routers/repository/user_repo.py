@@ -4,10 +4,11 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from exchange import models, schemas
-from exchange.app_logger import logger
-from exchange.hashing import Hash
-from exchange.routers.repository.utils.utils import find_user
+from src.exchange import schemas
+from src.exchange.app_logger import logger
+from src.exchange.database import models
+from src.exchange.hashing import Hash
+from src.exchange.routers.repository.utils.utils import find_user
 
 
 def create_user(request: schemas.CreateUser, db: Session) -> dict[str, str]:
@@ -42,6 +43,7 @@ def reset_portfolio(db: Session, current_user: schemas.TokenData) -> dict[str, s
     user.cash = 100_000
     db.commit()
     return {"message": "Portfolio is now empty and cash reset to $100,000"}
+
 
 def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> dict[str, str]:
     if not current_user.is_admin:

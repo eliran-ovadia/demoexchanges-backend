@@ -1,10 +1,11 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
-from . import models
-from .app_events import lifespan
-from .database import engine
-from .routers import portfolio, user, authentication, info
+from src.exchange.background_tasks.app_events import lifespan
+from src.exchange.database.db_conn import engine
+from src.exchange.routers import authentication, info
+from .database import models
+from .routers import portfolio, user
 
 load_dotenv()
 app = FastAPI(lifespan=lifespan)  # Lifespan for app events with apscheduler

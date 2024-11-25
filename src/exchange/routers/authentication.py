@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from exchange import database, token
-from exchange.hashing import Hash
-from exchange.models import User
-from exchange.schemas import Token
+from src.exchange.Auth import token
+from src.exchange.database.db_conn import get_db
+from src.exchange.database.models import User
+from src.exchange.hashing import Hash
+from src.exchange.schemas import Token
 
 router = APIRouter(tags=['Authentication'])
-check_db = Depends(database.get_db)
+check_db = Depends(get_db)
 
 
 @router.post('/token')

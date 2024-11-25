@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from exchange.app_logger import logger
+from src.exchange.app_logger import logger
 
 scheduler = BackgroundScheduler()
 

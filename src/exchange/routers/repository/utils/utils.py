@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from exchange.models import User, MarketStatus
+from src.exchange.database.models import User, MarketStatus
 
 
 def find_user(db: Session, user_id: str = None, email: str = None) -> User | bool:
