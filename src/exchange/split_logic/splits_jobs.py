@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.exchange.client_handlers.clients_functions import apply_splits
+from src.exchange.client_handlers.client_requests import apply_splits
 
 
 def run_daily_split(db: Session):

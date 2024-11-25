@@ -25,10 +25,10 @@ def fetch_market_status(db: Session = check_db, current_user: TokenData = check_
 
 
 @router.get('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
-def stock_search(prompt: str,
+def stock_search(request: str,
                  pagination: Pagination = Depends(),
                  current_user: TokenData = check_auth) -> Dict[str, Any]:
-    return info_repo.stock_search(prompt, pagination.page, pagination.page_size)
+    return info_repo.stock_search(request, pagination.page, pagination.page_size)
 
 
 @router.get('/marketMovers', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)

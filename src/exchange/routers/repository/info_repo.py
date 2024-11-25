@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 from src.exchange.app_logger import logger
 from src.exchange.app_logger import logger as log
 from src.exchange.client_handlers.client_manager import ClientManager
-from src.exchange.client_handlers.clients_functions import get_quote
-from src.exchange.client_handlers.clients_functions import get_search_result, get_sentiment
-from src.exchange.client_handlers.quote_parser import QuoteParser
+from src.exchange.client_handlers.client_requests import get_quote
+from src.exchange.client_handlers.client_requests import get_search_result, get_sentiment
+from src.exchange.client_handlers.client_response_models.quote_parser import QuoteParser
 from src.exchange.database.models import MarketStatus
 
 
@@ -45,8 +45,8 @@ def fetch_market_status(db: Session) -> MarketStatus:
     return market.is_market_open
 
 
-def stock_search(prompt: str, page: int, page_size: int) -> dict[str, Any]:
-    unfiltered_results = get_search_result(prompt)
+def stock_search(request: str, page: int, page_size: int) -> dict[str, Any]:
+    unfiltered_results = get_search_result(request)
 
     filtered_results = [result for result in unfiltered_results if
                         result["exchange"] == "NYSE" or result["exchange"] == "NASDAQ"]

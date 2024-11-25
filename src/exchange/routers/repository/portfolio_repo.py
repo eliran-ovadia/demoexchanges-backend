@@ -2,7 +2,7 @@ from typing import Any
 
 from sqlalchemy.exc import IntegrityError
 
-from src.exchange.client_handlers.clients_functions import get_stock_price
+from src.exchange.client_handlers.client_requests import get_stock_price
 from src.exchange.database.models import History as modelHistory
 from src.exchange.routers.repository.utils.order_utils import *
 from src.exchange.schemas import History as schemaHistory
