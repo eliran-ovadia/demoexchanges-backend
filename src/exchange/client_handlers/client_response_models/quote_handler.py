@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from src.exchange.app_logger import logger
 
 
-class QuoteParser:
+class QuoteHandler:
     def __init__(self, symbol=None, name=None, exchange=None, currency=None, open=None, high=None, low=None, close=None,
                  volume=None, change=None, percent_change=None, average_volume=None, fifty_two_week=None, **kwargs):
         self.symbol = symbol

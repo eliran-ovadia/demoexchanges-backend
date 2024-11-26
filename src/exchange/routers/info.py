@@ -9,6 +9,7 @@ from src.exchange.database.models import MarketStatus
 from src.exchange.schemas import TokenData, Pagination
 from .repository import info_repo
 
+
 router = APIRouter(tags=['info'], prefix="/api")
 check_db = Depends(get_db)
 check_auth = Depends(get_current_user)
@@ -27,8 +28,8 @@ def fetch_market_status(db: Session = check_db, current_user: TokenData = check_
 @router.get('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
 def stock_search(request: str,
                  pagination: Pagination = Depends(),
-                 current_user: TokenData = check_auth) -> Dict[str, Any]:
-    return info_repo.stock_search(request, pagination.page, pagination.page_size)
+                 current_user: TokenData = check_auth,) -> Dict[str, Any]:
+    return info_repo.stock_search(request, pagination.page,pagination.page_size)
 
 
 @router.get('/marketMovers', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)

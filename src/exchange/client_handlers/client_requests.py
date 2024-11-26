@@ -57,7 +57,7 @@ def get_quote(symbols: str, db: Session) -> dict:
 # Twelve data fetch - search result raw data
 def get_search_result(prompt: str):
     td = ClientManager.get_td_client()
-    OUTPUT_SIZE = 70  # sweet spot before filtering
+    OUTPUT_SIZE = 50  # sweet spot before filtering
     try:
         results = td.symbol_search(symbol=str(prompt), outputsize=OUTPUT_SIZE).as_json()
     except TwelveDataError as e:

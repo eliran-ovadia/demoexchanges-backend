@@ -9,7 +9,8 @@ from src.exchange.app_logger import logger as log
 from src.exchange.client_handlers.client_manager import ClientManager
 from src.exchange.client_handlers.client_requests import get_quote
 from src.exchange.client_handlers.client_requests import get_search_result, get_sentiment
-from src.exchange.client_handlers.client_response_models.quote_parser import QuoteParser
+from src.exchange.client_handlers.client_response_models.quote_handler import QuoteHandler
+from src.exchange.client_handlers.client_response_models.search_handler import SearchHandler, get_search_handler
 from src.exchange.database.models import MarketStatus
 
 
@@ -19,7 +20,7 @@ def get_parsed_quote(request: str, db: Session) -> dict:
 
     if isinstance(raw_quotes, dict) and 'symbol' in raw_quotes:  # For single quote
         try:
-            parser = QuoteParser(**raw_quotes)
+            parser = QuoteHandler(**raw_quotes)
             parsed_quotes_to_return = parser.to_parsed_quote()
         except Exception as e:
             logger.error(f"Error processing single quote: {raw_quotes}. Error: {e}")
@@ -30,7 +31,7 @@ def get_parsed_quote(request: str, db: Session) -> dict:
     else:  # For multiple quotes
         for symbol, raw_quote in raw_quotes.items():
             try:
-                parser = QuoteParser(**raw_quote)
+                parser = QuoteHandler(**raw_quote)
                 parsed_quotes_to_return[symbol] = parser.to_parsed_quote()
             except Exception as e:
                 logger.warning(f"Error processing quote for symbol {symbol}. Skipping. Error: {e}")
@@ -44,21 +45,9 @@ def fetch_market_status(db: Session) -> MarketStatus:
         raise HTTPException(status_code=404, detail="Market status not found")
     return market.is_market_open
 
-
-def stock_search(request: str, page: int, page_size: int) -> dict[str, Any]:
-    unfiltered_results = get_search_result(request)
-
-    filtered_results = [result for result in unfiltered_results if
-                        result["exchange"] == "NYSE" or result["exchange"] == "NASDAQ"]
-
-    total_results = len(filtered_results)
-
-    return {"total_results": total_results,
-            "page": page,
-            "page_size": page_size,
-            "results": filtered_results[(page - 1) * page_size: page * page_size]
-            }
-
+def stock_search(request: str, page: int, page_size: int):
+    search_handler: SearchHandler = get_search_handler(request=request)
+    return search_handler.search(page=page, page_size=page_size)
 
 def market_movers():
     api_key = ClientManager.get_api_key("ALPHA_VANTAGE_API_KEY")
