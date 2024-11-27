@@ -9,6 +9,8 @@ from twelvedata import TDClient
 from src.exchange.app_logger import logger
 
 
+# ClientManager is using the @classMethod decorator to act as a singleton
+# Those will be the only instances of client objects
 class ClientManager:
     _td_instance = None
     _pg_instance = None

@@ -13,7 +13,7 @@ def get_last_split_date(db: Session, current_time: datetime) -> datetime:
         row = lastSplitDate(last_split_check=current_time)
         db.add(row)
         try:
-            db.commit()  # Atomic action
+            db.commit()
         except Exception as e:
             db.rollback()
             logger.critical(f"Database commit failed when trying to update split table: {e}")

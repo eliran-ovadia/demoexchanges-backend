@@ -8,7 +8,7 @@ from src.exchange.app_logger import logger
 from src.exchange.app_logger import logger as log
 from src.exchange.client_handlers.client_manager import ClientManager
 from src.exchange.client_handlers.client_requests import get_quote
-from src.exchange.client_handlers.client_requests import get_search_result, get_sentiment
+from src.exchange.client_handlers.client_requests import get_sentiment
 from src.exchange.client_handlers.client_response_models.quote_handler import QuoteHandler
 from src.exchange.client_handlers.client_response_models.search_handler import SearchHandler, get_search_handler
 from src.exchange.database.models import MarketStatus
@@ -45,9 +45,11 @@ def fetch_market_status(db: Session) -> MarketStatus:
         raise HTTPException(status_code=404, detail="Market status not found")
     return market.is_market_open
 
+
 def stock_search(request: str, page: int, page_size: int):
     search_handler: SearchHandler = get_search_handler(request=request)
     return search_handler.search(page=page, page_size=page_size)
+
 
 def market_movers():
     api_key = ClientManager.get_api_key("ALPHA_VANTAGE_API_KEY")

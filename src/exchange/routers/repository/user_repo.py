@@ -41,7 +41,14 @@ def reset_portfolio(db: Session, current_user: schemas.TokenData) -> dict[str, s
     db.query(models.Portfolio).filter(models.Portfolio.user_id == user.id).delete()
     db.query(models.History).filter(models.History.user_id == user.id).delete()
     user.cash = 100_000
-    db.commit()
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred while attempting to reset the portfolio."
+        )
     return {"message": "Portfolio is now empty and cash reset to $100,000"}
 
 
@@ -58,7 +65,14 @@ def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> d
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin users cannot be deleted")
 
         db.delete(user_to_delete)
-        db.commit()
+        try:
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"An error occurred while attempting to delete {user_to_delete.email}"
+            )
 
         logger.info(f"User {request} deleted by admin {current_user.email}")
         return {"message": "User has been deleted"}

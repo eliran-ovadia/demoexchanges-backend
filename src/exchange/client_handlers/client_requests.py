@@ -1,13 +1,10 @@
-from datetime import datetime
 from logging import exception
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from twelvedata.exceptions import TwelveDataError
 
-from src.exchange.database.models import lastSplitDate
 from src.exchange.routers.repository.utils.utils import market_status_update
-from src.exchange.split_logic.splits_logic import get_last_split_date, get_unique_stocks_list, split_handler
 from .client_manager import ClientManager
 from ..app_logger import logger
 
@@ -57,7 +54,7 @@ def get_quote(symbols: str, db: Session) -> dict:
 # Twelve data fetch - search result raw data
 def get_search_result(prompt: str):
     td = ClientManager.get_td_client()
-    OUTPUT_SIZE = 50  # sweet spot before filtering
+    OUTPUT_SIZE = 70  # sweet spot before filtering
     try:
         results = td.symbol_search(symbol=str(prompt), outputsize=OUTPUT_SIZE).as_json()
     except TwelveDataError as e:
@@ -81,33 +78,3 @@ def get_sentiment(symbol: str) -> list:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="could not get sentiment at the moment")
     return sentiment
-
-
-# Polygon fetch - split logic
-def apply_splits(db: Session):
-    current_time = datetime.now()
-    previous_split_date = get_last_split_date(db, current_time)
-    delta_time = current_time - previous_split_date
-    delta_days = delta_time.days
-
-    if delta_days > 0:
-        formatted_last_split_date = previous_split_date.strftime("%Y-%m-%d")
-        formatted_now = current_time.strftime("%Y-%m-%d")
-        unique_symbol_list = get_unique_stocks_list(db)
-        pg = ClientManager.get_polygon_client()
-
-        for symbol in unique_symbol_list:
-            # Convert the generator to a list and access the first item
-            response = next(pg.list_splits(reverse_split=True, sort='execution_date', order='desc', ticker=symbol,
-                                           execution_date_gt=formatted_last_split_date,
-                                           execution_date_lte=formatted_now), None)
-            # Check if response is None or results are empty
-            if not response or not response.get('results'):
-                continue
-
-            for split in response['results']:
-                split_handler(db, split, symbol)
-
-        last_split_date_row = db.query(lastSplitDate).first()
-        last_split_date_row.last_split_check = current_time
-        db.commit()

@@ -43,8 +43,8 @@ def delete_from_watchlist(request: Stock = Depends(), db: Session = check_db, cu
     return portfolio_repo.delete_from_watchlist(request, db, current_user)
 
 
-@router.get('/getWatchlist', response_model=list[str], status_code=status.HTTP_200_OK)
+@router.get('/getWatchlist', response_model=dict[str, list], status_code=status.HTTP_200_OK)
 def get_watchlist(pagination: Pagination = Depends(),
                   db: Session = check_db,
-                  current_user: TokenData = check_auth) -> list[str]:
+                  current_user: TokenData = check_auth) -> dict[str, list]:
     return portfolio_repo.get_watchlist(db, pagination.page, pagination.page_size, current_user)

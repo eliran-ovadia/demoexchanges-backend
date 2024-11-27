@@ -111,12 +111,12 @@ def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.Tok
     except IntegrityError:
         db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while attempting to delete {item}."
         )
 
 
-def get_watchlist(db: Session, page: int, page_size: int, current_user: schemas.TokenData) -> list[str]:
+def get_watchlist(db: Session, page: int, page_size: int, current_user: schemas.TokenData) -> dict[str, list]:
     watchlist = (db.query(models.WatchlistItem).filter(models.WatchlistItem.user_id == current_user.id)
                  .offset((page - 1) * page_size)
                  .limit(page_size)
@@ -124,4 +124,4 @@ def get_watchlist(db: Session, page: int, page_size: int, current_user: schemas.
 
     watchlist_to_return = [item.symbol for item in watchlist]
 
-    return watchlist_to_return
+    return {"watchlist": watchlist_to_return}

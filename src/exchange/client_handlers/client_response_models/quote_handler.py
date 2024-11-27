@@ -6,6 +6,7 @@ from src.exchange.app_logger import logger
 class QuoteHandler:
     def __init__(self, symbol=None, name=None, exchange=None, currency=None, open=None, high=None, low=None, close=None,
                  volume=None, change=None, percent_change=None, average_volume=None, fifty_two_week=None, **kwargs):
+
         self.symbol = symbol
         self.name = name
         self.exchange = exchange
@@ -21,7 +22,6 @@ class QuoteHandler:
         self.fifty_two_week = fifty_two_week
         self.fifty_two_week_high = fifty_two_week.get('high', None)
         self.fifty_two_week_low = fifty_two_week.get('low', None)
-
 
     def to_parsed_quote(self) -> dict:
         try:
@@ -40,7 +40,8 @@ class QuoteHandler:
                 "avg_volume": int(self.average_volume),
                 "year_range_high": round(float(self.fifty_two_week.get("high", 0)), 2) if self.fifty_two_week.get(
                     "high") else None,
-                "year_range_low": round(float(self.fifty_two_week.get("low", 0)), 2) if self.fifty_two_week.get("low") else None,
+                "year_range_low": round(float(self.fifty_two_week.get("low", 0)), 2) if self.fifty_two_week.get(
+                    "low") else None,
             }
 
             # Logging for Debug - log missing keys

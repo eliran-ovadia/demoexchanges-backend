@@ -1,8 +1,11 @@
-from typing import Any
-from src.exchange.client_handlers.client_requests import get_search_result
 from functools import lru_cache
+from typing import Any
+
+from src.exchange.client_handlers.client_requests import get_search_result
+
 
 class SearchHandler:
+
     def __init__(self, request: str = ''):
         self.search_results = get_search_result(request)
         self.filtered_results = None  # Cache
@@ -26,7 +29,8 @@ class SearchHandler:
             "results": paginated_results,
         }
 
-# Factory cache
+
+# Factory cache - use LRU to swap entries
 @lru_cache(maxsize=100)
 def get_search_handler(request: str = '') -> SearchHandler:
     return SearchHandler(request)
