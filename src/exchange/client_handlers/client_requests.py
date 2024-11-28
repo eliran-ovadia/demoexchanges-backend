@@ -78,3 +78,14 @@ def get_sentiment(symbol: str) -> list:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="could not get sentiment at the moment")
     return sentiment
+
+
+def get_all_stocks(*, country='USA') -> list:
+    td = ClientManager.get_td_client()
+    try:
+        stocks = td.get_stocks_list(country=country).as_json()
+    except TwelveDataError as e:
+        logger.error(f"failed to fetch all {country} stocks: {str(e)}")
+    except Exception as e:
+        logger.critical(f"Unexpected error fetching all {country} stocks: {str(e)}")
+    return stocks

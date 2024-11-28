@@ -163,3 +163,7 @@
 2024-11-24 15:51:53,784 - exchange.app_logger - CRITICAL - Price not found for symbol: AMD - You have run out of API credits for the current minute. 9 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
 2024-11-24 15:52:29,944 - exchange.app_logger - CRITICAL - Price not found for symbol: AMD - You have run out of API credits for the current minute. 9 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
 2024-11-24 15:53:11,041 - exchange.app_logger - CRITICAL - Price not found for symbol: AMD - You have run out of API credits for the current minute. 9 API credits were used, with the current limit being 8. Wait for the next minute or consider switching to a higher tier plan at https://twelvedata.com/pricing
+2024-11-28 18:30:08,698 - src.exchange.app_logger - CRITICAL - An error occurred while saving all USA stocks to database: (sqlite3.IntegrityError) UNIQUE constraint failed: us_stocks.symbol
+[SQL: INSERT INTO us_stocks (symbol, name, currency, exchange, mic_code, country, type, figi_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id]
+[parameters: ('A', 'Agilent Technologies, Inc.', 'USD', 'NYSE', 'XNYS', 'United States', 'Common Stock', 'BBG000C2V541')]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)

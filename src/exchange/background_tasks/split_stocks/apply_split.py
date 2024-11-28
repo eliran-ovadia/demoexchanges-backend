@@ -2,9 +2,10 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
+from src.exchange.background_tasks.split_stocks.split_logic import get_last_split_date, get_unique_stocks_list, \
+    split_handler
 from src.exchange.client_handlers.client_manager import ClientManager
-from src.exchange.database.models import lastSplitDate
-from src.exchange.split_logic.splits_logic import get_last_split_date, get_unique_stocks_list, split_handler
+from src.exchange.database.models import LastSplitDate
 
 
 def apply_splits(db: Session):
@@ -31,6 +32,6 @@ def apply_splits(db: Session):
             for split in response['results']:
                 split_handler(db, split, symbol)
 
-        last_split_date_row = db.query(lastSplitDate).first()
+        last_split_date_row = db.query(LastSplitDate).first()
         last_split_date_row.last_split_check = current_time
         db.commit()

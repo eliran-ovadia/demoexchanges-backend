@@ -4,13 +4,13 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from src.exchange.app_logger import logger
-from src.exchange.database.models import lastSplitDate, Portfolio
+from src.exchange.database.models import LastSplitDate, Portfolio
 
 
 def get_last_split_date(db: Session, current_time: datetime) -> datetime:
-    row = db.query(lastSplitDate).first()
+    row = db.query(LastSplitDate).first()
     if row is None:  # Handle a new empty table with no rows, in case of table delete
-        row = lastSplitDate(last_split_check=current_time)
+        row = LastSplitDate(last_split_check=current_time)
         db.add(row)
         try:
             db.commit()

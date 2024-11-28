@@ -63,7 +63,20 @@ class MarketStatus(Base):
     is_market_open = Column(Boolean)
 
 
-class lastSplitDate(Base):
+class LastSplitDate(Base):
     __tablename__ = 'last_split_date'
     id = Column(Integer, primary_key=True, index=True)
     last_split_check = Column(DateTime)
+
+
+class UsStocks(Base):
+    __tablename__ = 'us_stocks'
+    id = Column(Integer, primary_key=True, index=True)
+    symbol = Column(String, nullable=False, unique=True)
+    name = Column(String)
+    currency = Column(String)
+    exchange = Column(String)
+    mic_code = Column(String)
+    country = Column(String)
+    type = Column(String)
+    figi_code = Column(String)
