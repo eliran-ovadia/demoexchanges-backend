@@ -9,6 +9,7 @@ from src.exchange.schemas import History as schemaHistory
 from src.exchange.schemas import Stock
 from .utils.get_portfolio_utils import fetch_portfolio_data, handle_empty_portfolio, fetch_quotes, \
     process_portfolio_data, build_portfolio_response
+from src.exchange.routers.repository.utils.watchlist_utils import WatchlistHandler
 
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
@@ -80,48 +81,14 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
 
 
 def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
-    raise_if_not_stock = get_stock_price(request.symbol)
-    item = models.WatchlistItem(symbol=request.symbol, user_id=current_user.id)
-    db.add(item)
-
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Stock symbol '{request.symbol}' is already in your watchlist."
-        )
-
+    handler = WatchlistHandler(db, current_user.id)
+    return handler.add_to_watchlist(request.symbol)
 
 def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
-    item = (db.query(models.WatchlistItem)
-            .filter(models.WatchlistItem.symbol == request.symbol, models.WatchlistItem.user_id == current_user.id)
-            .first())
-
-    if not item:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Stock symbol '{request.symbol}' is not in your watchlist."
-        )
-
-    db.delete(item)
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred while attempting to delete {item}."
-        )
+    handler = WatchlistHandler(db, current_user.id)
+    return handler.delete_from_watchlist(request.symbol)
 
 
 def get_watchlist(db: Session, page: int, page_size: int, current_user: schemas.TokenData) -> dict[str, list]:
-    watchlist = (db.query(models.WatchlistItem).filter(models.WatchlistItem.user_id == current_user.id)
-                 .offset((page - 1) * page_size)
-                 .limit(page_size)
-                 .all())
-
-    watchlist_to_return = [item.symbol for item in watchlist]
-
-    return {"watchlist": watchlist_to_return}
+    handler = WatchlistHandler(db, current_user.id)
+    return handler.get_watchlist(page, page_size)
