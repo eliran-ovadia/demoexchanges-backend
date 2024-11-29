@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
 from src.exchange.app_logger import logger
-from src.exchange.client_handlers.client_requests import get_all_stocks
 from src.exchange.database.models import UsStocks
+from src.exchange.external_client_handlers.client_requests import get_all_stocks
 
 
 class FetchStocks:

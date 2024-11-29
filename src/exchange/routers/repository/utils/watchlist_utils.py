@@ -1,11 +1,11 @@
 from http.client import HTTPException
 
+from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 
-from src.exchange.database.models import WatchlistItem, UsStocks
 from src.exchange.database.db_conn import get_db
+from src.exchange.database.models import WatchlistItem, UsStocks
 
 
 class WatchlistHandler:

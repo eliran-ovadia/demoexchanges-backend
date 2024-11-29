@@ -3,8 +3,8 @@ from typing import Tuple, Any, Dict, Optional
 from fastapi import HTTPException, status
 from sqlalchemy import func
 
-from src.exchange.client_handlers.client_requests import get_quote
 from src.exchange.database.models import Portfolio
+from src.exchange.external_client_handlers.client_requests import get_quote
 from src.exchange.schemas import TokenData, ShowStock
 from .utils import *
 
