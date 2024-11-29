@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from src.exchange.background_tasks.split_stocks.split_logic import get_last_split_date, get_unique_stocks_list, \
     split_handler
-from src.exchange.client_handlers.client_manager import ClientManager
+from src.exchange.external_client_handlers.client_manager import ClientManager
 from src.exchange.database.models import LastSplitDate
 
 

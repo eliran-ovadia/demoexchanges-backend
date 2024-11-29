@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Any
 
-from src.exchange.client_handlers.client_requests import get_search_result
+from src.exchange.external_client_handlers.client_requests import get_search_result
 
 
 class SearchHandler:

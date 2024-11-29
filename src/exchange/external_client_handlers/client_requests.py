@@ -1,5 +1,5 @@
 from logging import exception
-
+import requests
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from twelvedata.exceptions import TwelveDataError
@@ -89,3 +89,19 @@ def get_all_stocks(*, country='USA') -> list:
     except Exception as e:
         logger.critical(f"Unexpected error fetching all {country} stocks: {str(e)}")
     return stocks
+
+def get_market_movers() -> dict:
+    api_key = ClientManager.get_api_key("ALPHA_VANTAGE_API_KEY")
+    url = f'https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={api_key}'
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # raise if not 200
+        json_response = response.json()
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"alphavantage TOP_GAINERS_LOSERS call failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"cannot access market movers at the moment"
+        )
+    return json_response

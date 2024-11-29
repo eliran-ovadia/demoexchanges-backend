@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.exchange.background_tasks.fetch_us_stocks.fetch_us_stocks import update_stock_list
 from src.exchange.background_tasks.scheduler_manager import SchedulerManager
 from src.exchange.background_tasks.split_stocks.split_jobs import split_stocks
-from src.exchange.client_handlers.client_manager import ClientManager
+from src.exchange.external_client_handlers.client_manager import ClientManager
 from src.exchange.database.db_conn import get_db
 
 
