@@ -2,13 +2,13 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
-from src.exchange.background_tasks.split_stocks.split_logic import get_last_split_date, get_unique_stocks_list, \
+from src.exchange.background_tasks.split_stocks.split_utils import get_last_split_date, get_unique_stocks_list, \
     split_handler
-from src.exchange.external_client_handlers.client_manager import ClientManager
 from src.exchange.database.models import LastSplitDate
+from src.exchange.external_client_handlers.client_manager import ClientManager
 
 
-def apply_splits(db: Session):
+def split_stocks(db: Session):
     current_time = datetime.now()
     previous_split_date = get_last_split_date(db, current_time)
     delta_time = current_time - previous_split_date

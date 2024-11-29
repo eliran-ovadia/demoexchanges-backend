@@ -1,4 +1,5 @@
 from logging import exception
+
 import requests
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -104,4 +105,18 @@ def get_market_movers() -> dict:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"cannot access market movers at the moment"
         )
-    return json_response
+    if 'most_actively_traded' not in json_response or 'last_updated' not in json_response:
+        logger.critical(
+            "alphavantage TOP_GAINERS_LOSERS call is not containing *most_actively_traded* or *last_updated*")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"cannot access market movers at the moment"
+        )
+    useful_data = {
+        'last_updated': json_response['last_updated'],
+        'stocks': sorted([stock for stock in json_response['most_actively_traded'] if float(stock['price']) > 1],
+                         key=lambda x: int(x['volume']),
+                         reverse=True
+                         )
+    }
+    return useful_data

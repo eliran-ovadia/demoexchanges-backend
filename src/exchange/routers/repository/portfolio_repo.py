@@ -1,15 +1,13 @@
 from typing import Any
 
-from sqlalchemy.exc import IntegrityError
-
-from src.exchange.external_client_handlers.client_requests import get_stock_price
 from src.exchange.database.models import History as modelHistory
+from src.exchange.external_client_handlers.client_requests import get_stock_price
 from src.exchange.routers.repository.utils.order_utils import *
+from src.exchange.routers.repository.utils.watchlist_utils import WatchlistHandler
 from src.exchange.schemas import History as schemaHistory
 from src.exchange.schemas import Stock
 from .utils.get_portfolio_utils import fetch_portfolio_data, handle_empty_portfolio, fetch_quotes, \
     process_portfolio_data, build_portfolio_response
-from src.exchange.routers.repository.utils.watchlist_utils import WatchlistHandler
 
 
 def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) -> schemas.AfterOrder:
