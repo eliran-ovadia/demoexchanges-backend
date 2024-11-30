@@ -85,6 +85,7 @@ def get_sentiment(symbol: str) -> dict:
 
 def get_all_stocks(*, country='USA') -> list:
     td = ClientManager.get_td_client()
+    stocks = []
     try:
         stocks = td.get_stocks_list(country=country).as_json()
     except TwelveDataError as e:
