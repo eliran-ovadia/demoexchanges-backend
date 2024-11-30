@@ -13,9 +13,9 @@ from src.exchange.external_client_handlers.client_response_models.search_handler
 from src.exchange.external_client_handlers.client_response_models.sentiment_handler import SentimentHandler, \
     get_sentiment_handler
 
-
+# This function can handle one of multiple symbol requests, with the help of QuoteHandler
 def get_parsed_quote(request: str, db: Session) -> dict:
-    raw_quotes = get_quote(request, db)
+    raw_quotes = get_quote(request, db) # Just fetching from twelvedata without manipulating the response
     parsed_quotes_to_return = {}
 
     if isinstance(raw_quotes, dict) and 'symbol' in raw_quotes:  # For single quote

@@ -53,7 +53,7 @@ class WatchlistHandler:
                 self.db.rollback()
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"An error occurred while attempting to delete {self.request}."
+                    detail=f"An error occurred while attempting to delete {request}."
                 )
             return {'message': 'Stock deleted successfully from your watchlist'}
 
