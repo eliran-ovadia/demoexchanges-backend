@@ -4,13 +4,14 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.exchange.app_logger import logger
-from src.exchange.background_tasks.fetch_market_movers.market_movers_manager import MarketMoversManager
 from src.exchange.database.models import MarketStatus
 from src.exchange.external_client_handlers.client_requests import get_quote
-from src.exchange.external_client_handlers.client_requests import get_sentiment
+from src.exchange.external_client_handlers.client_response_models.market_movers_handler import MarketMoversManager
 from src.exchange.external_client_handlers.client_response_models.quote_handler import QuoteHandler
 from src.exchange.external_client_handlers.client_response_models.search_handler import SearchHandler, \
     get_search_handler
+from src.exchange.external_client_handlers.client_response_models.sentiment_handler import SentimentHandler, \
+    get_sentiment_handler
 
 
 def get_parsed_quote(request: str, db: Session) -> dict:
@@ -53,8 +54,7 @@ def stock_search(request: str, page: int, page_size: int):
 def market_movers():
     return MarketMoversManager.get_market_movers()
 
-def stock_sentiment(symbol: str) -> dict[str, Any]:
-    raw_sentiment = get_sentiment(symbol)
-    if not raw_sentiment:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Sentiment not found for {symbol}")
-    return raw_sentiment[0]
+
+def stock_sentiment(request: str) -> dict[str, Any]:
+    sentiment_handler: SentimentHandler = get_sentiment_handler(request)
+    return sentiment_handler.get_sentiment()

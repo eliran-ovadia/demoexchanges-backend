@@ -7,20 +7,14 @@ from src.exchange.external_client_handlers.client_requests import get_search_res
 class SearchHandler:
 
     def __init__(self, request: str = ''):
-        self.search_results = get_search_result(request)
-        self.filtered_results = None  # Cache
+        self.search_results: list = get_search_result(request)
+        self.paginated_results = None
 
     def search(self, page: int, page_size: int) -> dict[str, Any]:
-        if self.filtered_results is None:
-            self.filtered_results = [
-                result for result in self.search_results
-                if result["exchange"] in {"NYSE", "NASDAQ"}
-            ]
-
-        total_results = len(self.filtered_results)
+        total_results = len(self.paginated_results)
         start_index = (page - 1) * page_size
         end_index = page * page_size
-        paginated_results = self.filtered_results[start_index:end_index]
+        paginated_results = self.paginated_results[start_index:end_index]
 
         return {
             "total_results": total_results,

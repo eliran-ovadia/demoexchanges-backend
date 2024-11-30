@@ -82,6 +82,7 @@ def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenDat
     handler = WatchlistHandler(db, current_user.id)
     return handler.add_to_watchlist(request.symbol)
 
+
 def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
     handler = WatchlistHandler(db, current_user.id)
     return handler.delete_from_watchlist(request.symbol)

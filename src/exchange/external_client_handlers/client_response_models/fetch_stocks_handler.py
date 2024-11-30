@@ -5,7 +5,7 @@ from src.exchange.database.models import UsStocks
 from src.exchange.external_client_handlers.client_requests import get_all_stocks
 
 
-class FetchStocks:
+class FetchStocksHandler:
     def __init__(self):
         self.new_stock_data: list = get_all_stocks()
 
