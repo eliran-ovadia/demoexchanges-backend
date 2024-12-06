@@ -5,12 +5,12 @@ from sqlalchemy.orm import Session
 
 from src.exchange.database.models import MarketStatus
 from src.exchange.external_client_handlers.client_response_models.market_movers_handler import MarketMoversManager
-from src.exchange.external_client_handlers.client_response_models.quote_handler import QuoteHandler, \
-    get_cached_quotes
+from src.exchange.external_client_handlers.client_response_models.quote_handler import get_cached_quotes
 from src.exchange.external_client_handlers.client_response_models.search_handler import SearchHandler, \
     get_search_handler
 from src.exchange.external_client_handlers.client_response_models.sentiment_handler import SentimentHandler, \
     get_sentiment_handler
+
 
 # This function can handle one of multiple symbol requests, with the help of QuoteHandler
 def get_parsed_quote(request: str, db: Session) -> dict[str, Any]:
