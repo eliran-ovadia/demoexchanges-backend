@@ -8,6 +8,7 @@ from twelvedata.exceptions import TwelveDataError
 from src.exchange.routers.repository.utils.utils import market_status_update
 from .client_manager import ClientManager
 from ..app_logger import logger
+from ..database.db_conn import get_db
 
 
 # NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
@@ -26,8 +27,7 @@ def get_stock_price(symbol: str) -> float:
     return float(stock.get('price', 0.0))
 
 
-# Twelve data fetch - quote raw data
-def get_quote(symbols: str, db: Session) -> dict:
+def get_quote(symbols: str, db: Session = get_db()) -> dict:
     td = ClientManager.get_td_client()
     try:
         stocks = td.quote(symbol=symbols).as_json()

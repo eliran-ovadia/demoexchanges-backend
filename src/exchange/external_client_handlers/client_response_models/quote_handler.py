@@ -1,8 +1,10 @@
 from cachetools import TTLCache
-from typing import Optional
+from typing import Optional, Any
 from fastapi import HTTPException, status
-from src.exchange.app_logger import logger
+from polygon.rest.models import Quote
 
+from src.exchange.app_logger import logger
+from src.exchange.external_client_handlers.client_requests import get_quote
 
 quote_cache = TTLCache(maxsize=1000, ttl=20)
 
@@ -66,12 +68,16 @@ class QuoteHandler:
             )
 
 
-def get_cached_quote_handler(symbol: str, **kwargs) -> QuoteHandler:
-    if symbol in quote_cache: # Cache hit
-        return quote_cache[symbol]
+def get_cached_quotes(symbols: str) -> dict[str, Any]:
+    symbols_list = set(symbols.split(","))
+    quotes_to_return = {}
+    for symbol in symbols_list:
+        # Cache hit
+        if symbol in quote_cache:
+            quotes_to_return[symbol] = quote_cache[symbol]
+        # Cache miss
+        else:
+            handler = QuoteHandler(**get_quote(symbol))
+            quote_cache[symbol] = quotes_to_return[symbol] = handler.to_parsed_quote()
 
-    # Cache miss
-    fetched_data = {"symbol": symbol, **kwargs}
-    handler = QuoteHandler(**fetched_data)
-    quote_cache[symbol] = handler
-    return handler
+    return quotes_to_return
