@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from twelvedata.exceptions import TwelveDataError
 
 from .client_manager import ClientManager
-from .client_response_models.market_status_handler import get_cached_market_status
 from ..app_logger import logger
 from ..database.db_conn import get_db
 
@@ -121,4 +120,15 @@ def get_market_movers() -> dict:
 
 
 def get_market_status() -> dict:
-    return get_cached_market_status()
+    fn = ClientManager.get_finnhub_client()
+    try:
+        current_status = fn.market_status(exchange="US")
+    except Exception as e:
+        logger.critical(f"Failed to fetch market status: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not fetch market status at the moment"
+        )
+    if 'isOpen' not in current_status:
+        logger.critical("Market status response does not contain the 'isOpen' key.")
+    return current_status

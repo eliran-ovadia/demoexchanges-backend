@@ -3,13 +3,12 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
-from src.exchange.external_client_handlers.client_response_models.market_status_handler import \
-    get_cached_market_status
 from src.exchange.external_client_handlers.client_response_models.quote_handler import get_cached_quotes
 from src.exchange.external_client_handlers.client_response_models.search_handler import SearchHandler, \
     get_search_handler
 from src.exchange.external_client_handlers.client_response_models.sentiment_handler import SentimentHandler, \
     get_sentiment_handler
+from src.exchange.main import app
 
 
 # This function can handle one of multiple symbol requests, with the help of QuoteHandler
@@ -18,7 +17,7 @@ def get_parsed_quote(request: str, db: Session) -> dict[str, Any]:
 
 
 def market_status(db: Session) -> dict[str, Any]:
-    return get_cached_market_status()
+    return app.state.market_status
 
 
 def stock_search(request: str, page: int, page_size: int):
