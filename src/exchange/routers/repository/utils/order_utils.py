@@ -6,6 +6,7 @@ from sqlalchemy import func
 from src.exchange import schemas
 from src.exchange.database import models
 from src.exchange.routers.repository.utils.utils import *
+from src.exchange.app_logger import logger
 
 
 ##################### Sell logic #####################

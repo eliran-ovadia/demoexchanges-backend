@@ -8,7 +8,7 @@ from src.exchange.database.db_conn import get_db
 from src.exchange.database.models import WatchlistItem, UsStocks
 
 
-class WatchlistHandler:
+class WatchlistManager:
 
     def __init__(self, db: Session = get_db(), user_id: str = ''):
         self.db = db

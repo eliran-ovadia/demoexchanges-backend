@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from src.exchange.external_client_handlers.client_requests import get_market_status
 
 
-class MarketStatusHandler:
+class MarketStatusModel:
     def __init__(self, exchange: Optional[str] = None, holiday: Optional[str] = None, isOpen: Optional[bool] = None,
                  session: Optional[str] = None, **kwargs) -> None:
         self.exchange = exchange
@@ -23,5 +23,5 @@ class MarketStatusHandler:
 
 
 def refresh_market_status(app: FastAPI) -> None:
-    handler = MarketStatusHandler(**get_market_status())
+    handler = MarketStatusModel(**get_market_status())
     app.state.market_status = handler.get_market_status()

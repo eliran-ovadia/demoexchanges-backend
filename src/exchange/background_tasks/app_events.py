@@ -10,7 +10,7 @@ from src.exchange.background_tasks.scheduler_manager import SchedulerManager
 from src.exchange.background_tasks.split_stocks.split_stocks import split_stocks
 from src.exchange.database.db_conn import get_db
 from src.exchange.external_client_handlers.client_manager import ClientManager
-from src.exchange.external_client_handlers.client_response_models.market_status_handler import refresh_market_status
+from src.exchange.external_client_handlers.client_response_models.market_status_model import refresh_market_status
 
 
 @asynccontextmanager

@@ -3,7 +3,7 @@ from typing import Any
 from src.exchange.database.models import History as modelHistory
 from src.exchange.external_client_handlers.client_requests import get_stock_price
 from src.exchange.routers.repository.utils.order_utils import *
-from src.exchange.routers.repository.utils.watchlist_utils import WatchlistHandler
+from src.exchange.routers.repository.utils.watchlist_manager import WatchlistManager
 from src.exchange.schemas import History as schemaHistory
 from src.exchange.schemas import Stock
 from .utils.get_portfolio_utils import fetch_portfolio_data, handle_empty_portfolio, fetch_quotes, \
@@ -79,15 +79,15 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
 
 
 def add_to_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
-    handler = WatchlistHandler(db, current_user.id)
+    handler = WatchlistManager(db, current_user.id)
     return handler.add_to_watchlist(request.symbol)
 
 
 def delete_from_watchlist(request: Stock, db: Session, current_user: schemas.TokenData):
-    handler = WatchlistHandler(db, current_user.id)
+    handler = WatchlistManager(db, current_user.id)
     return handler.delete_from_watchlist(request.symbol)
 
 
 def get_watchlist(db: Session, page: int, page_size: int, current_user: schemas.TokenData) -> dict[str, list]:
-    handler = WatchlistHandler(db, current_user.id)
+    handler = WatchlistManager(db, current_user.id)
     return handler.get_watchlist(page, page_size)
