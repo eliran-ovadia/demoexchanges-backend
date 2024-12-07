@@ -8,7 +8,7 @@ from src.exchange.background_tasks.scheduler_manager import SchedulerManager
 from src.exchange.background_tasks.split_stocks.split_stocks import split_stocks
 from src.exchange.database.db_conn import get_db
 from src.exchange.external_client_handlers.client_manager import ClientManager
-from src.exchange.external_client_handlers.client_response_models.market_movers_handler import MarketMoversManager
+from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
 
 
 @asynccontextmanager
@@ -17,12 +17,7 @@ async def lifespan(app: FastAPI):
     core_functions_scheduler = SchedulerManager()
     core_functions_scheduler.start()
 
-    ########  run startup tasks ########
-    db: Session = next(get_db())  # To pass for split functions
-    split_stocks(db)
-    update_stock_list(db)  # On DB
-    MarketMoversManager.update_market_movers()  # On RAM
-
+    db: Session = next(get_db())  # To pass for split functions: will soon be removed for on memory data instead of DB
     ########  add jobs to the schedular ########
     core_functions_scheduler.add_job(lambda: split_stocks(db), trigger="interval", days=1)
     core_functions_scheduler.add_job(ClientManager.reset_clients, trigger="interval", days=1)

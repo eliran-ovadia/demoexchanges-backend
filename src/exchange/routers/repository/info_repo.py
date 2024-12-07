@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from src.exchange.database.models import MarketStatus
-from src.exchange.external_client_handlers.client_response_models.market_movers_handler import MarketMoversManager
+from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
 from src.exchange.external_client_handlers.client_response_models.quote_handler import get_cached_quotes
 from src.exchange.external_client_handlers.client_response_models.search_handler import SearchHandler, \
     get_search_handler
