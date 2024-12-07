@@ -46,11 +46,11 @@ def get_quote(symbols: str, db: Session = get_db()) -> dict:
 
 
 # Twelve data fetch - search result raw data
-def get_search_result(prompt: str) -> list:
+# output_size=120 - sweet spot to get the most relevant results
+def get_search_result(prompt: str, output_size=120) -> list:
     td = ClientManager.get_td_client()
-    OUTPUT_SIZE = 70  # sweet spot before filtering
     try:
-        results = td.symbol_search(symbol=str(prompt), outputsize=OUTPUT_SIZE).as_json()
+        results = td.symbol_search(symbol=str(prompt), outputsize=output_size).as_json()
     except TwelveDataError as e:
         logger.critical(f"search result not found for the search prompt: {prompt} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -58,12 +58,11 @@ def get_search_result(prompt: str) -> list:
     except Exception as e:
         logger.critical(f"Failed to find results for search prompt: {prompt} - {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return [result for result in results if result["exchange"] in {"NYSE", "NASDAQ"}]
+    return results
 
 
 # Finnhub fetch - stock sentiment raw data
-def get_sentiment(symbol: str) -> dict:
+def get_sentiment(symbol: str) -> list:
     fn = ClientManager.get_finnhub_client()
     try:
         sentiment = fn.recommendation_trends(symbol)
@@ -73,7 +72,7 @@ def get_sentiment(symbol: str) -> dict:
                             detail="could not get sentiment at the moment")
     if not sentiment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Please request sentiment to a valid symbol")
-    return sentiment[0]
+    return sentiment
 
 
 def get_all_stocks(*, country='USA') -> list:
