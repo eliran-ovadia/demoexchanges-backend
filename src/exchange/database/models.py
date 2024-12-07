@@ -57,12 +57,6 @@ class WatchlistItem(Base):
     __table_args__ = (UniqueConstraint('user_id', 'symbol', name='_user_symbol_uc'),)
 
 
-class MarketStatus(Base):
-    __tablename__ = 'market_status'
-    exchange_name = Column(String, primary_key=True)
-    is_market_open = Column(Boolean)
-
-
 class LastSplitDate(Base):
     __tablename__ = 'last_split_date'
     id = Column(Integer, primary_key=True, index=True)

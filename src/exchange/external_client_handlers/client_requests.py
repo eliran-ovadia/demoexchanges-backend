@@ -5,8 +5,8 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from twelvedata.exceptions import TwelveDataError
 
-from src.exchange.routers.repository.utils.utils import market_status_update
 from .client_manager import ClientManager
+from .client_response_models.market_status_handler import get_cached_market_status
 from ..app_logger import logger
 from ..database.db_conn import get_db
 
@@ -43,12 +43,6 @@ def get_quote(symbols: str, db: Session = get_db()) -> dict:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error occurred while fetching quotes"
         )
-
-    try:
-        market_status_update(stocks, db)
-    except Exception as e:
-        logger.warning(f"Failed to update market status for symbols: {symbols}. Error: {e}")
-
     return stocks
 
 
@@ -124,3 +118,7 @@ def get_market_movers() -> dict:
                          )
     }
     return useful_data
+
+
+def get_market_status() -> dict:
+    return get_cached_market_status()

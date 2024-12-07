@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
-from src.exchange.database.models import MarketStatus
 from src.exchange.schemas import TokenData, Pagination
 from .repository import info_repo
 
@@ -19,9 +18,9 @@ def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenDa
     return info_repo.get_parsed_quote(request, db)
 
 
-@router.get('/marketStatus', response_model=bool, status_code=status.HTTP_200_OK)
-def fetch_market_status(db: Session = check_db, current_user: TokenData = check_auth) -> MarketStatus:
-    return info_repo.fetch_market_status(db)
+@router.get('/marketStatus', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+def market_status(db: Session = check_db, current_user: TokenData = check_auth) -> dict:
+    return info_repo.market_status(db)
 
 
 @router.get('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)

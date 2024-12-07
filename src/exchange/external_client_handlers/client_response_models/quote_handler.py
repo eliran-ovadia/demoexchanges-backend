@@ -11,10 +11,10 @@ quote_cache = TTLCache(maxsize=1000, ttl=20)
 
 class SingleQuoteModel:
     def __init__(self, symbol: Optional[str] = None, name: Optional[str] = None, exchange: Optional[str] = None,
-                 currency: Optional[str] = None, open: Optional[float] = None, high: Optional[float] = None,
-                 low: Optional[float] = None, close: Optional[float] = None, volume: Optional[int] = None,
-                 change: Optional[float] = None, percent_change: Optional[float] = None,
-                 average_volume: Optional[int] = None,
+                 currency: Optional[str] = None, open: Optional[str] = None, high: Optional[str] = None,
+                 low: Optional[str] = None, close: Optional[float] = None, volume: Optional[str] = None,
+                 change: Optional[str] = None, percent_change: Optional[str] = None,
+                 average_volume: Optional[str] = None,
                  fifty_two_week: Optional[dict] = None, **kwargs):
         self.symbol = symbol
         self.name = name
@@ -93,18 +93,14 @@ def get_cached_quotes(symbols: str) -> dict[str, Any]:
     symbols_list = set(symbols.upper().split(","))
     quotes_to_return = {}
     missed_symbols = []
-    for symbol in symbols_list: # Cache hit
+    for symbol in symbols_list:  # Cache hit
         if symbol in quote_cache:
             quotes_to_return[symbol] = quote_cache[symbol]
-        else: # Cache miss
+        else:  # Cache miss
             missed_symbols.append(symbol)
     # Instead of calling every symbol to the client, we request all symbols in one call.
-    all_missing_quotes = get_quote(",".join(missed_symbols)) # call client api for all missing quotes at once!
-    missing_quotes_parser = QuoteResponseModel(all_missing_quotes) # Init model class
-    quotes_to_return.update(missing_quotes_parser.to_parsed_quotes()) # Parse all missed quotes with the model
+    all_missing_quotes = get_quote(",".join(missed_symbols))  # call client api for all missing quotes at once!
+    missing_quotes_parser = QuoteResponseModel(all_missing_quotes)  # Init model class
+    quotes_to_return.update(missing_quotes_parser.to_parsed_quotes())  # Parse all missed quotes with the model
 
     return quotes_to_return
-
-# else:
-# handler = QuoteHandler(**get_quote(symbol))
-# quote_cache[symbol] = quotes_to_return[symbol] = handler.to_parsed_quote()

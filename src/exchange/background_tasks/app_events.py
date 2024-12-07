@@ -3,12 +3,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 
+from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
 from src.exchange.background_tasks.fetch_us_stocks.fetch_us_stocks import update_stock_list
 from src.exchange.background_tasks.scheduler_manager import SchedulerManager
 from src.exchange.background_tasks.split_stocks.split_stocks import split_stocks
 from src.exchange.database.db_conn import get_db
 from src.exchange.external_client_handlers.client_manager import ClientManager
-from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
 
 
 @asynccontextmanager

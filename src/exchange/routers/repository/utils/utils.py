@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.exchange.app_logger import logger
-from src.exchange.database.models import User, MarketStatus
+from src.exchange.database.models import User
 
 
 def find_user(db: Session, user_id: str = None, email: str = None) -> User | bool:
@@ -16,19 +15,3 @@ def find_user(db: Session, user_id: str = None, email: str = None) -> User | boo
         return False
 
     return user
-
-
-def market_status_update(quotes: dict, db: Session) -> bool:
-    market = db.query(MarketStatus).filter(MarketStatus.exchange_name == 'NYSE').first()
-    if 'is_market_open' in quotes:
-        market.is_market_open = quotes.get('is_market_open')
-        try:
-            db.commit()
-        except Exception as e:
-            logger.critical(f"Cannot commit to market_status table: {e}")
-        return quotes.get('is_market_open')
-    else:
-        first_stock = next(iter(quotes.values()))  # get the first element in the dict
-        market.is_market_open = first_stock.get('is_market_open')  # apply to database
-        db.commit()
-        return first_stock.get('is_market_open')
