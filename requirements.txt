@@ -13,5 +13,5 @@ python-dotenv
 jose
 polygon-api-client
 finnhub-python
-apscheduler
+apscheduler==3.10.0
 cachetools
