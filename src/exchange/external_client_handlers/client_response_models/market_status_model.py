@@ -1,7 +1,5 @@
 from typing import Optional, Any
 
-from fastapi import FastAPI
-
 from src.exchange.external_client_handlers.client_requests import fetch_market_status
 
 
@@ -22,6 +20,6 @@ class MarketStatusModel:
         }
 
 
-def get_market_status(app: FastAPI) -> dict[str, Any]:
+def get_market_status() -> dict[str, Any]:
     handler = MarketStatusModel(**fetch_market_status())
     return handler.market_status()

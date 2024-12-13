@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
@@ -14,28 +14,28 @@ check_db = Depends(get_db)
 check_auth = Depends(get_current_user)
 
 
-@router.get('/parsedQuote', response_model=dict, status_code=status.HTTP_200_OK)
+@router.get('/ParsedQuote', response_model=dict, status_code=status.HTTP_200_OK)
 def get_parsed_quote(request: str, db: Session = check_db, current_user: TokenData = check_auth) -> dict:
     return get_parsed_quote(request, db)
 
 
-@router.get('/marketStatus', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
-def get_market_status(db: Session = check_db, current_user: TokenData = check_auth) -> dict:
+@router.get('/MarketStatus', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+def get_market_status(db: Session = check_db, current_user: TokenData = check_auth) -> dict[str, Any]:
     return market_status(db)
 
 
-@router.get('/stockSearch', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
+@router.get('/StockSearch', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
 def get_stock_search(request: str,
                      pagination: Pagination = Depends(),
-                     current_user: TokenData = check_auth, ) -> Dict[str, Any]:
+                     current_user: TokenData = check_auth, ) -> dict[str, Any]:
     return stock_search(request, pagination.page, pagination.page_size)
 
 
-@router.get('/marketMovers', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
-def get_market_movers(current_user: TokenData = check_auth) -> Dict[str, Any]:
+@router.get('/MarketMovers', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+def get_market_movers(current_user: TokenData = check_auth) -> dict[str, Any]:
     return market_movers()
 
 
-@router.get('/stockSentiment', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
-def get_stock_sentiment(request: str, current_user: TokenData = check_auth) -> Dict[str, Any]:
+@router.get('/StockSentiment', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+def get_stock_sentiment(request: str, current_user: TokenData = check_auth) -> dict[str, Any]:
     return stock_sentiment(request)

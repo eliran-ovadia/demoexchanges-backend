@@ -10,6 +10,6 @@ router = APIRouter(tags=['Authentication'])
 check_db = Depends(get_db)
 
 
-@router.post('/token')
+@router.post('/Token')
 def get_token(request: OAuth2PasswordRequestForm = Depends(), db: Session = check_db) -> Token:
     return get_bearer_token(username=request.username, password=request.password, db=db)

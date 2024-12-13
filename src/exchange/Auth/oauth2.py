@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from src.exchange.Auth import token
 from src.exchange.schemas import TokenData
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="Token")
 
 
 def get_current_user(data: str = Depends(oauth2_scheme)) -> TokenData:
