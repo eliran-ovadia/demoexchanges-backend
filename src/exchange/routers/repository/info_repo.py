@@ -2,8 +2,8 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from src.exchange.app_instanse import app
 from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
+from src.exchange.external_client_handlers.client_response_models.market_status_model import get_market_status
 from src.exchange.external_client_handlers.client_response_models.quote_model import get_cached_quotes
 from src.exchange.external_client_handlers.client_response_models.search_handler import SearchHandler, \
     get_search_handler
@@ -17,7 +17,7 @@ def get_parsed_quote(request: str, db: Session) -> dict[str, Any]:
 
 
 def market_status(db: Session) -> dict[str, Any]:
-    return app.state.market_status
+    return get_market_status()
 
 
 def stock_search(request: str, page: int, page_size: int):

@@ -12,7 +12,7 @@ from ..database.db_conn import get_db
 
 # NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
 # Twelve data fetch - stock price data
-def get_stock_price(symbol: str) -> float:
+def fetch_stock_price(symbol: str) -> float:
     td = ClientManager.get_td_client()
     try:
         stock = td.price(symbol=symbol).as_json()
@@ -26,7 +26,7 @@ def get_stock_price(symbol: str) -> float:
     return float(stock.get('price', 0.0))
 
 
-def get_quote(symbols: str, db: Session = get_db()) -> dict:
+def fetch_quote(symbols: str, db: Session = get_db()) -> dict:
     td = ClientManager.get_td_client()
     try:
         stocks = td.quote(symbol=symbols).as_json()
@@ -47,7 +47,7 @@ def get_quote(symbols: str, db: Session = get_db()) -> dict:
 
 # Twelve data fetch - search result raw data
 # output_size=120 - sweet spot to get the most relevant results
-def get_search_result(prompt: str, output_size=120) -> list:
+def fetch_search_result(prompt: str, output_size=120) -> list:
     td = ClientManager.get_td_client()
     try:
         results = td.symbol_search(symbol=str(prompt), outputsize=output_size).as_json()
@@ -62,7 +62,7 @@ def get_search_result(prompt: str, output_size=120) -> list:
 
 
 # Finnhub fetch - stock sentiment raw data
-def get_sentiment(symbol: str) -> list:
+def fetch_sentiment(symbol: str) -> list:
     fn = ClientManager.get_finnhub_client()
     try:
         sentiment = fn.recommendation_trends(symbol)
@@ -75,7 +75,7 @@ def get_sentiment(symbol: str) -> list:
     return sentiment
 
 
-def get_all_stocks(*, country='USA') -> list:
+def fetch_all_stocks(*, country='USA') -> list:
     td = ClientManager.get_td_client()
     stocks = []
     try:
@@ -87,7 +87,7 @@ def get_all_stocks(*, country='USA') -> list:
     return stocks
 
 
-def get_market_movers() -> dict:
+def fetch_market_movers() -> dict:
     api_key = ClientManager.get_api_key("ALPHA_VANTAGE_API_KEY")
     url = f'https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={api_key}'
     try:
@@ -118,7 +118,7 @@ def get_market_movers() -> dict:
     return useful_data
 
 
-def get_market_status() -> dict:
+def fetch_market_status() -> dict:
     fn = ClientManager.get_finnhub_client()
     try:
         current_status = fn.market_status(exchange="US")

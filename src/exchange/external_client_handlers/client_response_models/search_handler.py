@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Any, Optional
 
-from src.exchange.external_client_handlers.client_requests import get_search_result
+from src.exchange.external_client_handlers.client_requests import fetch_search_result
 
 
 # result for result in results if results["exchange"] in {"NYSE", "NASDAQ"}
@@ -10,7 +10,8 @@ class SearchHandler:
     def __init__(self, results: list = None):
         self.search_results: list = []
         for result in results:
-            if result['exchange'] in {'NYSE', 'NASDAQ'} and result['country'] =='United States':  # Filter results for US stocks only
+            if result['exchange'] in {'NYSE', 'NASDAQ'} and result[
+                'country'] == 'United States':  # Filter results for US stocks only
                 self.search_results.append(SingleResultHandler(**result).get_modeled_result())  # Model each result
         self.paginated_results = None
 
@@ -46,4 +47,4 @@ class SingleResultHandler:
 
 @lru_cache(maxsize=1000)
 def get_search_handler(request: str = '') -> SearchHandler:
-    return SearchHandler(get_search_result(request))
+    return SearchHandler(fetch_search_result(request))

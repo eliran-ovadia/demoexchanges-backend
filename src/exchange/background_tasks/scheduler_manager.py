@@ -1,4 +1,5 @@
 from apscheduler.schedulers.background import BackgroundScheduler
+
 from src.exchange.app_logger import logger
 
 

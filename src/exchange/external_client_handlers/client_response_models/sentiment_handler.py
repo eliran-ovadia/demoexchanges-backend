@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Any, Optional
 
-from src.exchange.external_client_handlers.client_requests import get_sentiment
+from src.exchange.external_client_handlers.client_requests import fetch_sentiment
 
 
 class SentimentHandler:
@@ -16,4 +16,4 @@ class SentimentHandler:
 # Factory cache - use LRU to swap entries
 @lru_cache(maxsize=100)
 def get_sentiment_handler(request: str = '') -> SentimentHandler:
-    return SentimentHandler(sentiment=get_sentiment(request))
+    return SentimentHandler(sentiment=fetch_sentiment(request))

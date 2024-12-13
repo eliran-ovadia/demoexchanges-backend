@@ -2,12 +2,12 @@ from sqlalchemy.orm import Session
 
 from src.exchange.app_logger import logger
 from src.exchange.database.models import UsStocks
-from src.exchange.external_client_handlers.client_requests import get_all_stocks
+from src.exchange.external_client_handlers.client_requests import fetch_all_stocks
 
 
 class FetchStocksHandler:
     def __init__(self):
-        self.new_stock_data: list = get_all_stocks()
+        self.new_stock_data: list = fetch_all_stocks()
 
     # delete only the relevant stocks from the db
     # the goal was to prevent a lot of writes to the db

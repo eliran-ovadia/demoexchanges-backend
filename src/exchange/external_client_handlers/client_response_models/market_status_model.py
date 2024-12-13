@@ -2,7 +2,7 @@ from typing import Optional, Any
 
 from fastapi import FastAPI
 
-from src.exchange.external_client_handlers.client_requests import get_market_status
+from src.exchange.external_client_handlers.client_requests import fetch_market_status
 
 
 class MarketStatusModel:
@@ -13,7 +13,7 @@ class MarketStatusModel:
         self.isOpen = isOpen
         self.session = session
 
-    def get_market_status(self) -> dict[str, Any]:
+    def market_status(self) -> dict[str, Any]:
         return {
             'exchange': self.exchange,
             'holiday': self.holiday,
@@ -22,6 +22,6 @@ class MarketStatusModel:
         }
 
 
-def refresh_market_status(app: FastAPI) -> None:
-    handler = MarketStatusModel(**get_market_status())
-    app.state.market_status = handler.get_market_status()
+def get_market_status(app: FastAPI) -> dict[str, Any]:
+    handler = MarketStatusModel(**fetch_market_status())
+    return handler.market_status()

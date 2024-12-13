@@ -4,7 +4,7 @@ from cachetools import TTLCache
 from fastapi import HTTPException, status
 
 from src.exchange.app_logger import logger
-from src.exchange.external_client_handlers.client_requests import get_quote
+from src.exchange.external_client_handlers.client_requests import fetch_quote
 
 quote_cache = TTLCache(maxsize=1000, ttl=20)
 
@@ -99,7 +99,7 @@ def get_cached_quotes(symbols: str) -> dict[str, Any]:
         else:  # Cache miss
             missed_symbols.append(symbol)
     # Instead of calling every symbol to the client, we request all symbols in one call.
-    all_missing_quotes = get_quote(",".join(missed_symbols))  # call client api for all missing quotes at once!
+    all_missing_quotes = fetch_quote(",".join(missed_symbols))  # call client api for all missing quotes at once!
     missing_quotes_parser = QuoteResponseModel(all_missing_quotes)  # Init model class
     quotes_to_return.update(missing_quotes_parser.to_parsed_quotes())  # Parse all missed quotes with the model
 

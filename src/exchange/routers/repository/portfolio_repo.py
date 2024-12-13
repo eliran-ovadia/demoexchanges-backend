@@ -1,7 +1,7 @@
 from typing import Any
 
 from src.exchange.database.models import History as modelHistory
-from src.exchange.external_client_handlers.client_requests import get_stock_price
+from src.exchange.external_client_handlers.client_requests import fetch_stock_price
 from src.exchange.routers.repository.utils.order_utils import *
 from src.exchange.routers.repository.utils.watchlist_manager import WatchlistManager
 from src.exchange.schemas import History as schemaHistory
@@ -15,7 +15,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) 
     if ',' in symbol:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Cannot buy/sell more than one stock at once")
-    price = get_stock_price(symbol)
+    price = fetch_stock_price(symbol)
     value = price * request.amount
 
     if request.amount == 0:

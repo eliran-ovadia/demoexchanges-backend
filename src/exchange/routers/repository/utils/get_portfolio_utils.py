@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 
 from src.exchange.database.models import Portfolio
-from src.exchange.external_client_handlers.client_requests import get_quote
+from src.exchange.external_client_handlers.client_requests import fetch_quote
 from src.exchange.schemas import TokenData, ShowStock
 from .utils import *
 
@@ -40,7 +40,7 @@ def fetch_portfolio_data(db: Session,
 
 def fetch_quotes(symbols: list, db: Session) -> dict:
     try:
-        quotes_response = get_quote(",".join(symbols), db)
+        quotes_response = fetch_quote(",".join(symbols), db)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 

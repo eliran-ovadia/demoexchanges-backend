@@ -1,7 +1,5 @@
 import threading
 
-from src.exchange.external_client_handlers.client_requests import get_market_movers
-
 
 class MarketMoversManager:  # Instead of saving to the db, market movers will stay in RAM.
 
