@@ -7,7 +7,7 @@ from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
 from src.exchange.routers.repository.info_repo import parsed_quote, market_status, stock_search, stock_sentiment, \
     market_movers
-from src.exchange.schemas import TokenData, Pagination
+from src.exchange.schemas.schemas import TokenData, Pagination
 
 router = APIRouter(tags=['info'], prefix="/api")
 check_db = Depends(get_db)

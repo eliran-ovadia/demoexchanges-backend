@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
 
-from src.exchange import schemas
+from src.exchange.schemas import schemas
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")

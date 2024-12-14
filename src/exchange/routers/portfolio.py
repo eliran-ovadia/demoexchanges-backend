@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
-from src.exchange.schemas import AfterOrder, TokenData, Order, Pagination, Stock
+from src.exchange.schemas.schemas import AfterOrder, TokenData, Order, Pagination, Stock
 from .repository import portfolio_repo
 
 router = APIRouter(tags=['portfolio'], prefix="/api")

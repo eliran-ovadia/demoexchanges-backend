@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 from src.exchange.database.models import Portfolio
 from src.exchange.external_client_handlers.client_requests import fetch_quote
-from src.exchange.schemas import TokenData, ShowStock
+from src.exchange.schemas.schemas import TokenData, ShowStock
 from .find_user import *
 
 

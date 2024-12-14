@@ -4,8 +4,8 @@ from src.exchange.database.models import History as modelHistory
 from src.exchange.external_client_handlers.client_requests import fetch_stock_price
 from src.exchange.routers.repository.utils.order_utils import *
 from src.exchange.routers.repository.utils.watchlist_manager import WatchlistManager
-from src.exchange.schemas import History as schemaHistory
-from src.exchange.schemas import Stock
+from src.exchange.schemas.schemas import History as schemaHistory
+from src.exchange.schemas.schemas import Stock
 from .utils.get_portfolio_utils import fetch_portfolio_data, handle_empty_portfolio, fetch_quotes, \
     process_portfolio_data, build_portfolio_response
 

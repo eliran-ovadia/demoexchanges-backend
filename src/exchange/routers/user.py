@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
-from src.exchange.schemas import TokenData, CreateUser
+from src.exchange.schemas.schemas import TokenData, CreateUser
 from .repository import user_repo
 
 router = APIRouter(tags=['users'], prefix='/api')

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.exchange.Auth.hashing import Hash
 from src.exchange.Auth.token_functions import create_access_token
 from src.exchange.database.models import User
-from src.exchange.schemas import Token
+from src.exchange.schemas.schemas import Token
 
 
 def get_bearer_token(*, username: str, password: str, db: Session) -> Token:

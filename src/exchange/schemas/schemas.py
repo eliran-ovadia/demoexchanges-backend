@@ -1,7 +1,8 @@
 import re
 from datetime import datetime
+from typing import ClassVar
 
-from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, PositiveInt, Field
+from pydantic import BaseModel, EmailStr, field_validator, constr, confloat, PositiveInt, Field, model_validator
 
 
 class Pagination(BaseModel):
@@ -60,24 +61,92 @@ class ShowStock(BaseModel):
 
 
 class CreateUser(BaseModel):
+    # Constants
+    NAME_REGEX: ClassVar[str] = r"^[A-Za-zÀ-ÿ ,.'-]+$"  # Class-level constant for valid name characters
+    COMMON_PASSWORDS: ClassVar[set[str]] = {"password", "12345678", "qwerty", "abc123", "letmein"}
+
+    # User fields
     name: str = Field(..., description="User's first name")
     last_name: str = Field(..., description="User's last name")
     email: EmailStr = Field(..., description="User's email address")
-    password: constr(min_length=8) = Field(..., description="Password (must meet security requirements)")
+    password: str = Field(..., description="Password (must meet security requirements)")
+    password_confirm: str = Field(..., description="Password confirmation")
+
+    # Field validators
+    @field_validator("name", "last_name")
+    def validate_name(cls, v: str, field_name: str) -> str:
+        """Ensure names contain only valid characters and meet length requirements."""
+        if not (1 <= len(v.strip()) <= 50):
+            raise ValueError(f"{field_name} must be between 1 and 50 characters long")
+        if not re.match(cls.NAME_REGEX, v):
+            raise ValueError(f"{field_name} must contain only valid characters")
+        return v.strip()
+
+    @field_validator("password", "password_confirm")
+    def validate_password_length(cls, v: str, field_name: str) -> str:
+        """Ensure passwords meet length requirements."""
+        if not (8 <= len(v.strip()) <= 128):
+            raise ValueError(f"{field_name} must be between 8 and 128 characters long")
+        return v.strip()
 
     @field_validator("password")
-    def password_check(cls, v: str):
-        if not re.search(r'[A-Z]', v):
-            raise ValueError('Password must contain at least one uppercase letter')
-        if not re.search(r'[a-z]', v):
-            raise ValueError('Password must contain at least one lowercase letter')
-        if not re.search(r'[0-9]', v):
-            raise ValueError('Password must contain at least one digit')
-        if not re.search(r'[\W_]', v):
-            raise ValueError('Password must contain at least one special character')
-        if re.search(r'(.)\1\1', v):
-            raise ValueError('Password must not contain the same character three times in a row')
-        return v
+    def validate_password_strength(cls, v: str) -> str:
+        """Validate the password meets security requirements."""
+        return cls._validate_password_strength(v)
+
+    @model_validator(mode="before")
+    def validate_password_match(cls, values: dict) -> dict:
+        """Ensure password confirmation matches the password."""
+        if values.get("password_confirm") != values.get("password"):
+            raise ValueError("The 'password_confirm' field must match the 'password' field.")
+        return values
+
+    @model_validator(mode="before")
+    def ensure_password_does_not_include_personal_info(cls, values: dict) -> dict:
+        """Ensure password doesn't include personal info."""
+        password, name, last_name, email = (
+            values.get("password", ""),
+            values.get("name", "").lower(),
+            values.get("last_name", "").lower(),
+            values.get("email", "").lower(),
+        )
+        if name and name in password.lower():
+            raise ValueError("Password must not contain your first name")
+        if last_name and last_name in password.lower():
+            raise ValueError("Password must not contain your last name")
+        if email and email.split("@")[0] in password.lower():
+            raise ValueError("Password must not contain parts of your email address")
+        return values
+
+    # Sensitive data handling
+    def dict(self, **kwargs):
+        """Exclude sensitive fields when converting the model to a dictionary."""
+        return super().model_dump(exclude={"password"}, **kwargs)
+
+    def json(self, **kwargs):
+        """Exclude sensitive fields when converting the model to JSON."""
+        return super().model_dump(exclude={"password"}, **kwargs)
+
+    model_config = {
+        "extra": "forbid",  # Prevent unexpected fields
+    }
+
+    @staticmethod
+    def _validate_password_strength(password: str) -> str:
+        """Validate password against security requirements."""
+        if not re.search(r"[A-Z]", password):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not re.search(r"[a-z]", password):
+            raise ValueError("Password must contain at least one lowercase letter")
+        if not re.search(r"[0-9]", password):
+            raise ValueError("Password must contain at least one digit")
+        if not re.search(r"[\W_]", password):
+            raise ValueError("Password must contain at least one special character")
+        if re.search(r"(.)\1\1", password):
+            raise ValueError("Password must not contain the same character three times in a row")
+        if password.lower() in CreateUser.COMMON_PASSWORDS:
+            raise ValueError("Password is too common")
+        return password
 
 
 class User(BaseModel):
