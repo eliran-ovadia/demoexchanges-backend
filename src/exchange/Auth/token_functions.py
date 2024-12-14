@@ -1,12 +1,10 @@
 import os
 from datetime import datetime, timedelta, timezone
 
-from dotenv import load_dotenv
 from jose import JWTError, jwt
 
 from src.exchange import schemas
 
-load_dotenv()  # does not work without it at the moment
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 120))

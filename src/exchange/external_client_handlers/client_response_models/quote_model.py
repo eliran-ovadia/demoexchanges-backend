@@ -1,12 +1,8 @@
 from typing import Optional, Any
 
-from cachetools import TTLCache
 from fastapi import HTTPException, status
 
 from src.exchange.app_logger import logger
-from src.exchange.external_client_handlers.client_requests import fetch_quote
-
-quote_cache = TTLCache(maxsize=1000, ttl=20)
 
 
 class SingleQuoteModel:
@@ -35,7 +31,6 @@ class SingleQuoteModel:
     def to_parsed_quote(self) -> dict:
         try:
             parsed_quote = {
-                "symbol": self.symbol,
                 "full_name": self.name,
                 "exchange": self.exchange,
                 "currency": self.currency,
@@ -72,35 +67,17 @@ class SingleQuoteModel:
 
 class QuoteResponseModel:
 
-    def __init__(self, data=None):
-        first_key = next(iter(data))
-        if isinstance(data[first_key], str):  # Signle quote
-            self.data = {data["symbol"]: SingleQuoteModel(**data)}
-        else:  # Multiple quotes
+    def __init__(self, data: dict = None):
+        if not next(iter(data)) == 'symbol':  # Multiple quotes
             self.data = {}
             for key, value in data.items():
-                self.data[key] = SingleQuoteModel(**value)
+                self.data[key.upper()] = SingleQuoteModel(**value).to_parsed_quote()
+        else:  # Single quote
+            self.data = {data['symbol']: SingleQuoteModel(**data).to_parsed_quote()}
 
-    def get_quote_for_symbol(self, symbol: str) -> Optional[dict]:
-        if symbol in self.data:
-            return self.data[symbol].to_parsed_quote()
+    def get_quote_for_symbol(self, symbol: str) -> dict[str, Any]:
+        if symbol in self.data.items():
+            return self.data[symbol]
 
     def to_parsed_quotes(self) -> dict[str, dict]:
-        return {symbol: quote.to_parsed_quote() for symbol, quote in self.data.items()}
-
-
-def get_cached_quotes(symbols: str) -> dict[str, Any]:
-    symbols_list = set(symbols.upper().split(","))
-    quotes_to_return = {}
-    missed_symbols = []
-    for symbol in symbols_list:  # Cache hit
-        if symbol in quote_cache:
-            quotes_to_return[symbol] = quote_cache[symbol]
-        else:  # Cache miss
-            missed_symbols.append(symbol)
-    # Instead of calling every symbol to the client, we request all symbols in one call.
-    all_missing_quotes = fetch_quote(",".join(missed_symbols))  # call client api for all missing quotes at once!
-    missing_quotes_parser = QuoteResponseModel(all_missing_quotes)  # Init model class
-    quotes_to_return.update(missing_quotes_parser.to_parsed_quotes())  # Parse all missed quotes with the model
-
-    return quotes_to_return
+        return {symbol: quote for symbol, quote in self.data.items()}

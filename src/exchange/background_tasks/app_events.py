@@ -9,8 +9,6 @@ from src.exchange.background_tasks.scheduler_manager import SchedulerManager
 from src.exchange.background_tasks.split_stocks.split_stocks import split_stocks
 from src.exchange.database.db_conn import get_db
 from src.exchange.external_client_handlers.client_manager import ClientManager
-from src.exchange.external_client_handlers.client_response_models.search_handler import get_search_handler
-from src.exchange.external_client_handlers.client_response_models.sentiment_handler import get_sentiment_handler
 
 
 @asynccontextmanager
@@ -27,8 +25,6 @@ async def lifespan(app: FastAPI):
     core_functions_scheduler.add_job(ClientManager.reset_clients, trigger="cron", hour=4, minute=1)
     core_functions_scheduler.add_job(lambda: update_stock_list(db), trigger="cron", hour=4, minute=2)
     core_functions_scheduler.add_job(MarketMoversManager.update_market_movers(), trigger="cron", hour=4, minute=3)
-    core_functions_scheduler.add_job(get_sentiment_handler.cache_clear, trigger="cron", hour=4, minute=4)
-    core_functions_scheduler.add_job(get_search_handler.cache_clear, trigger="interval", days=2)
 
     ########  close lifespan ########
     yield  # Wait for app to terminate

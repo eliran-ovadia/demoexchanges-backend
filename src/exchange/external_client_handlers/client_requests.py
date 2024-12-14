@@ -47,7 +47,7 @@ def fetch_quote(symbols: str, db: Session = get_db()) -> dict:
 
 # Twelve data fetch - search result raw data
 # output_size=120 - sweet spot to get the most relevant results
-def fetch_search_result(prompt: str, output_size=120) -> list:
+def fetch_search(prompt: str, output_size=120) -> list:
     td = ClientManager.get_td_client()
     try:
         results = td.symbol_search(symbol=str(prompt), outputsize=output_size).as_json()

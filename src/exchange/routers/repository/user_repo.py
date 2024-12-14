@@ -8,7 +8,7 @@ from src.exchange import schemas
 from src.exchange.Auth.hashing import Hash
 from src.exchange.app_logger import logger
 from src.exchange.database import models
-from src.exchange.routers.repository.utils.utils import find_user
+from src.exchange.routers.repository.utils.find_user import find_user
 
 
 def create_user(request: schemas.CreateUser, db: Session) -> dict[str, str]:
@@ -77,9 +77,9 @@ def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> d
         logger.info(f"User {request} deleted by admin {current_user.email}")
         return {"message": "User has been deleted"}
 
-    except HTTPException as http_exc:
-        logger.warning(f"Failed to delete user {request}: {http_exc.detail}")
-        raise http_exc
+    except HTTPException as e:
+        logger.warning(f"Failed to delete user {request}: {e.detail}")
+        raise e
     except Exception as exc:
         logger.error(f"Unexpected error occurred while trying to delete user {request}: {str(exc)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
