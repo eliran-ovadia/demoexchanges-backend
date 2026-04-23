@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer,Numeric, String, ForeignKey, Float, Boolean, DateTime, UniqueConstraint
+from sqlalchemy import Column, Integer, Numeric, String, ForeignKey, Boolean, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from .db_conn import Base
+
 
 class TimestampMixin:
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
@@ -16,7 +18,7 @@ class User(Base, TimestampMixin):
     email = Column(String, unique=True, nullable=False)  # candidate key
     password = Column(String, nullable=False)
     cash = Column(Numeric(12, 2), nullable=False, default=0.00)
-    is_admin = Column(Boolean, nullable=False)
+    is_admin = Column(Boolean, nullable=False, default=False)
 
     history = relationship("History", back_populates="creator", cascade="all, delete-orphan")
     portfolio = relationship("Portfolio", back_populates="creator", cascade="all, delete-orphan")
@@ -26,9 +28,9 @@ class User(Base, TimestampMixin):
 class History(Base, TimestampMixin):
     __tablename__ = 'history'
     order_id = Column(Integer, primary_key=True, index=True)
-    symbol = Column(String)
+    symbol = Column(String, nullable=False)
     price = Column(Numeric(12, 4), nullable=False)
-    amount = Column(Integer)
+    amount = Column(Integer, nullable=False)
     type = Column(String, nullable=False)
     value = Column(Numeric(12, 4), nullable=False)
     profit = Column(Numeric(12, 4))
@@ -71,7 +73,7 @@ class UsStocks(Base, TimestampMixin):
     figi_code = Column(String)
 
 
-class LastSplitDate(Base):
+class LastSplitDate(Base, TimestampMixin):
     __tablename__ = 'last_split_date'
     id = Column(Integer, primary_key=True, index=True)
-    last_split_check = Column(DateTime)
+    last_split_check = Column(DateTime(timezone=True))

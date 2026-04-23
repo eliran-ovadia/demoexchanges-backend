@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta
+
 import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -22,6 +23,8 @@ TABLES_TO_SYNC = [
     {"name": "portfolio", "date_column": "time_stamp"},
     {"name": "watchlist_items", "date_column": None}
 ]
+
+
 # --------------------------
 
 def sync_multiple_tables():
@@ -58,7 +61,7 @@ def sync_multiple_tables():
 
         except Exception as e:
             print(f"Error for table: '{table_name}': {e}")
-            raise e # We raise to alert a critical problem
+            raise e  # We raise to alert a critical problem
 
     print("\nDEV and PROD database sync completed!")
 
