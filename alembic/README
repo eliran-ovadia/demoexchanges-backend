@@ -1,0 +1,5 @@
+Generic single-database configuration.
+
+For db migration run:
+1. alembic revision
+2. upgrade head
