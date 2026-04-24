@@ -13,3 +13,5 @@ apscheduler
 cachetools
 psycopg2-binary
 alembic
+redis
+slowapi

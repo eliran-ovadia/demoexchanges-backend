@@ -3,16 +3,22 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 
+from src.exchange.Auth.token_functions import validate_auth_config
 from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
 from src.exchange.background_tasks.fetch_us_stocks.fetch_us_stocks import update_stock_list
 from src.exchange.background_tasks.scheduler_manager import SchedulerManager
 from src.exchange.background_tasks.split_stocks.split_stocks import split_stocks
 from src.exchange.database.db_conn import get_db
 from src.exchange.external_client_handlers.client_manager import ClientManager
+from src.exchange.redis_manager import RedisManager
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Fail fast if required env vars are missing
+    validate_auth_config()
+    RedisManager.get_client()  # ensure Redis connection is valid at startup
+
     core_functions_scheduler = SchedulerManager()
     core_functions_scheduler.start()
 
