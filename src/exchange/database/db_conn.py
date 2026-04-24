@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
@@ -19,7 +19,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
-
+Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = SessionLocal()
@@ -27,3 +27,6 @@ def get_db():
         yield db
     finally:
         db.close()
+
+if __name__ == "__main__":
+    pass
