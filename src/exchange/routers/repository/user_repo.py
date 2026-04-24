@@ -53,12 +53,16 @@ def reset_portfolio(db: Session, current_user: schemas.TokenData) -> dict[str, s
 
 
 def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> dict[str, str]:
-    if not current_user.is_admin:
+    # Re-verify admin status from DB — do not trust the JWT claim alone
+    requesting_user = find_user(db, user_id=current_user.id)
+    if not requesting_user or not requesting_user.is_admin:
         logger.warning(f"Unauthorized delete attempt by {current_user.email}")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized to delete accounts")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete accounts")
 
     try:
         user_to_delete = find_user(db, email=request)
+        if not user_to_delete:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         if user_to_delete.is_admin:
             logger.warning(f"Attempt to delete admin user {user_to_delete.email} by {current_user.email}")
@@ -67,7 +71,7 @@ def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> d
         db.delete(user_to_delete)
         try:
             db.commit()
-        except Exception as e:
+        except Exception:
             db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -81,5 +85,5 @@ def delete_user(request: str, db: Session, current_user: schemas.TokenData) -> d
         logger.warning(f"Failed to delete user {request}: {e.detail}")
         raise e
     except Exception as exc:
-        logger.error(f"Unexpected error occurred while trying to delete user {request}: {str(exc)}")
+        logger.error(f"Unexpected error while deleting user {request}: {str(exc)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")

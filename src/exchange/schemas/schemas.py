@@ -206,7 +206,16 @@ class Login(BaseModel):
 
 class Token(BaseModel):
     access_token: Annotated[str, Field(min_length=1)]
+    refresh_token: Annotated[str, Field(min_length=1)]
     token_type: Annotated[str, Field(min_length=1)]
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: Annotated[str, Field(min_length=1)]
+
+
+class LogoutRequest(BaseModel):
+    refresh_token: Optional[str] = None
 
 
 class TokenData(BaseModel):
