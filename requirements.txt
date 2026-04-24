@@ -17,3 +17,4 @@ apscheduler
 cachetools
 psycopg2-binary
 pandas
+alembic
