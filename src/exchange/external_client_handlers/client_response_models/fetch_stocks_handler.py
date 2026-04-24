@@ -57,7 +57,7 @@ class FetchStocksHandler:
             db.commit()
         except Exception as error:
             db.rollback()
-            logger.critical(f"An error occurred while updating {self.country} stocks in the database: {str(error)}")
+            logger.critical(f"An error occurred while updating stocks in the database: {str(error)}")
 
     @staticmethod
     def create_new_record(incoming_stock):

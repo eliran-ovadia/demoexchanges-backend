@@ -3,6 +3,7 @@ from typing import Tuple, Any, Dict, Optional
 from fastapi import HTTPException, status
 from sqlalchemy import func
 
+from exchange.app_logger import logger
 from src.exchange.database.models import Portfolio
 from src.exchange.external_client_handlers.client_requests import fetch_quote
 from src.exchange.schemas.schemas import TokenData, ShowStock
@@ -12,14 +13,13 @@ from .find_user import *
 def fetch_portfolio_data(db: Session,
                          current_user: TokenData,
                          page: int, page_size: int) -> Optional[Tuple[int, Dict[str, Any]]] | None:
-    # Query the database to get the symbols, total amounts, and average prices for the current user
     result = (db.query(
         Portfolio.symbol,
         func.sum(Portfolio.amount).label('total_amount'),
         func.avg(Portfolio.price).label('avg_price')
     ).filter(Portfolio.user_id == current_user.id)
               .group_by(Portfolio.symbol)
-              .order_by(Portfolio.symbol.desc())  # will add sorting option later
+              .order_by(Portfolio.symbol.desc())
               .offset((page - 1) * page_size)
               .limit(page_size)
               .all())
@@ -30,7 +30,7 @@ def fetch_portfolio_data(db: Session,
         func.avg(Portfolio.price).label('avg_price')
     ).filter(Portfolio.user_id == current_user.id)
                     .group_by(Portfolio.symbol)
-                    .order_by(Portfolio.symbol.desc())  # will add sorting option later
+                    .order_by(Portfolio.symbol.desc())
                     .count())
 
     return (total_stocks, {symbol: {'total_amount': total_amount,
@@ -51,11 +51,8 @@ def fetch_quotes(symbols: list, db: Session) -> dict:
 
 def handle_empty_portfolio(db: Session, current_user: TokenData) -> dict:
     user = find_user(db, current_user.id)
-    # query the amount of stocks here to save db access twice
-    # fetch_portfolio_data will just return None if it cannot find any stocks in the requested page
     total_stocks = db.query(Portfolio).filter(Portfolio.user_id == current_user.id).group_by(Portfolio.symbol).count()
 
-    # in the case of no stock, all values are 0
     balances_dict = {
         'buying_power': round(user.cash, 2),
         'portfolio_value': 0.00,
@@ -114,28 +111,26 @@ def create_stock_data(symbol: str, data: dict, quote_data: dict) -> ShowStock:
 
 
 def extract_prices(quote_data: dict, last_price: float) -> tuple:
-    open_price = round(float(quote_data.get('open', 0.0)), 2)
-    previous_close = round(float(quote_data.get('previous_close', 0.0)), 2)
-    bid_price = round(float(quote_data.get('bid', last_price)), 2)
-    ask_price = round(float(quote_data.get('ask', last_price)), 2)
+    open_price = round(float(quote_data.get('open') or 0.0), 2)
+    previous_close = round(float(quote_data.get('previous_close') or 0.0), 2)
+    # FMP standard quote does not include bid/ask; fall back to last price
+    bid_price = round(last_price, 2)
+    ask_price = round(last_price, 2)
     return open_price, previous_close, bid_price, ask_price
 
 
 def extract_year_range(quote_data: dict) -> tuple:
-    year_range_str = quote_data.get('fifty_two_week', {}).get('range', "")
-    if year_range_str:
-        year_range_low, year_range_high = map(float, year_range_str.split(" - "))
-        return round(year_range_low, 2), round(year_range_high, 2)
+    year_high = quote_data.get('year_high')
+    year_low = quote_data.get('year_low')
+    if year_high and year_low:
+        return round(float(year_low), 2), round(float(year_high), 2)
     return None, None
 
 
 def parse_price(quote_data: dict) -> float | None:
-    last_price_str = quote_data.get('last', None)
-    if last_price_str is None:
-        last_price_str = quote_data.get('close', None)
-
+    price = quote_data.get('price')
     try:
-        return float(last_price_str) if last_price_str is not None else None
+        return float(price) if price is not None else None
     except (TypeError, ValueError):
         return None
 

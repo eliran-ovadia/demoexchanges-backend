@@ -1,22 +1,26 @@
 import threading
 
+from src.exchange.app_logger import logger
 
-class MarketMoversManager:  # Instead of saving to the db, market movers will stay in RAM.
 
-    movers = None
-    last_updated = None
-    stocks = None
+class MarketMoversManager:
+    """Caches most-active stocks in RAM; updated by the daily background job."""
+
+    _movers: dict | None = None
     _lock = threading.Lock()
 
     @classmethod
     def update_market_movers(cls):
-        pass
-        # with cls._lock:
-        #     cls.movers = get_market_movers()
-        #     cls.last_updated = cls.movers.get('last_updated', '')
-        #     cls.stocks = cls.movers.get('stocks', '')
+        from src.exchange.external_client_handlers.client_requests import fetch_market_movers
+        try:
+            movers = fetch_market_movers()
+            with cls._lock:
+                cls._movers = movers
+            logger.info("Market movers cache updated.")
+        except Exception as e:
+            logger.error(f"Failed to update market movers: {e}")
 
     @classmethod
-    def get_market_movers(cls):
+    def get_market_movers(cls) -> dict | None:
         with cls._lock:
-            return cls.movers
+            return cls._movers

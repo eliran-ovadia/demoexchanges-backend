@@ -13,19 +13,19 @@ from src.exchange.external_client_handlers.client_manager import ClientManager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    ########  Schedular start ########
     core_functions_scheduler = SchedulerManager()
     core_functions_scheduler.start()
 
-    ########  startup tasks and variables ########
     db: Session = next(get_db())
 
-    ########  add jobs to the schedular ########
-    core_functions_scheduler.add_job(lambda: update_stock_list(db), trigger="cron", hour=4, minute=2)
-    core_functions_scheduler.add_job(MarketMoversManager.update_market_movers(), trigger="cron", hour=4, minute=3)
-    core_functions_scheduler.add_job(lambda: split_stocks(db), trigger="cron", hour=4, minute=0)
-    core_functions_scheduler.add_job(ClientManager.reset_clients, trigger="cron", hour=24, minute=1)
+    # Populate market movers cache on startup so the endpoint works immediately
+    MarketMoversManager.update_market_movers()
 
-    ########  close lifespan ########
-    yield  # Wait for app to terminate
+    # Daily refresh jobs
+    core_functions_scheduler.add_job(lambda: update_stock_list(db), trigger="cron", hour=4, minute=2)
+    core_functions_scheduler.add_job(MarketMoversManager.update_market_movers, trigger="cron", hour=4, minute=3)
+    core_functions_scheduler.add_job(lambda: split_stocks(db), trigger="cron", hour=4, minute=0)
+    core_functions_scheduler.add_job(ClientManager.reset_clients, trigger="cron", hour=0, minute=1)
+
+    yield
     core_functions_scheduler.stop()

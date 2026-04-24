@@ -2,17 +2,20 @@ from typing import Optional, Any
 
 
 class MarketStatusModel:
-    def __init__(self, exchange: Optional[str] = None, holiday: Optional[str] = None, isOpen: Optional[bool] = None,
-                 session: Optional[str] = None, **kwargs) -> None:
-        self.exchange = exchange
-        self.holiday = holiday
-        self.isOpen = isOpen
-        self.session = session
+    """
+    Wraps the FMP /is-the-market-open response.
+    FMP fields: isTheStockMarketOpen, stockExchangeName, stockMarketHolidays, ...
+    """
+
+    def __init__(self, isTheStockMarketOpen: Optional[bool] = None,
+                 stockExchangeName: Optional[str] = None, **kwargs) -> None:
+        self.isOpen = isTheStockMarketOpen
+        self.exchange = stockExchangeName
 
     def market_status(self) -> dict[str, Any]:
         return {
-            'exchange': self.exchange,
-            'holiday': self.holiday,
-            'isOpen': self.isOpen,
-            'session': self.session
+            "exchange": self.exchange,
+            "holiday": None,
+            "isOpen": self.isOpen,
+            "session": None,
         }

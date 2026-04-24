@@ -1,5 +1,6 @@
 from typing import Any
 
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
@@ -10,7 +11,6 @@ from src.exchange.external_client_handlers.client_response_models.quote_model im
 from src.exchange.external_client_handlers.client_response_models.search_handler import SearchHandler
 
 
-# This function can handle one of multiple symbol requests, with the help of QuoteHandler
 def parsed_quote(request: str) -> dict[str, Any]:
     return QuoteResponseModel(fetch_quote(request)).to_parsed_quotes()
 
@@ -23,8 +23,14 @@ def stock_search(request: str, page: int, page_size: int):
     return SearchHandler(fetch_search(request)).search(page, page_size)
 
 
-def market_movers():
-    return MarketMoversManager.get_market_movers()
+def market_movers() -> dict[str, Any]:
+    movers = MarketMoversManager.get_market_movers()
+    if movers is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Market movers not yet available — try again shortly"
+        )
+    return movers
 
 
 def stock_sentiment(request: str) -> list[dict[str, Any]]:

@@ -37,9 +37,7 @@ DATABASE_PROD_URL=postgresql://...   # AWS RDS
 SECRET_KEY=<jwt_secret>
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=120
-TWELVE_DATA_API_KEY=<key>
-POLYGON_API_KEY=<key>
-FINNHUB_API_KEY=<key>
+FMP_API_KEY=<key>                    # Financial Modeling Prep — single provider for all market data
 ```
 
 ## Architecture
