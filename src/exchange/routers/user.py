@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
+from src.exchange.rate_limiter import limiter
 from src.exchange.schemas.schemas import TokenData, CreateUser
 from .repository import user_repo
 
@@ -12,15 +13,27 @@ check_auth = Depends(get_current_user)
 
 
 @router.post('/CreateUser', response_model=dict[str, str], status_code=status.HTTP_201_CREATED)
-def create_user(request: CreateUser, db: Session = check_db) -> dict[str, str]:
-    return user_repo.create_user(request, db)
+@limiter.limit("5/minute")
+def create_user(request: Request, body: CreateUser, db: Session = check_db) -> dict[str, str]:
+    return user_repo.create_user(body, db)
 
 
 @router.patch('/ResetPortfolio/', response_model=dict[str, str], status_code=status.HTTP_200_OK)
-def reset_portfolio(db: Session = check_db, current_user: TokenData = check_auth) -> dict[str, str]:
+@limiter.limit("5/minute")
+def reset_portfolio(
+    request: Request,
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+) -> dict[str, str]:
     return user_repo.reset_portfolio(db, current_user)
 
 
 @router.delete('/DeleteUser/', response_model=dict[str, str], status_code=status.HTTP_200_OK)
-def delete_user(request: str, db: Session = check_db, current_user: TokenData = check_auth) -> dict[str, str]:
-    return user_repo.delete_user(request, db, current_user)
+@limiter.limit("10/minute")
+def delete_user(
+    request: Request,
+    email: str,
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+) -> dict[str, str]:
+    return user_repo.delete_user(email, db, current_user)

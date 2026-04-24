@@ -23,12 +23,15 @@ def get_token(
 
 
 @router.post('/Refresh')
-def refresh(body: RefreshRequest, db: Session = check_db) -> Token:
+@limiter.limit("20/minute")
+def refresh(request: Request, body: RefreshRequest, db: Session = check_db) -> Token:
     return refresh_tokens(body.refresh_token, db)
 
 
 @router.post('/Logout', status_code=204)
+@limiter.limit("10/minute")
 def logout_user(
+    request: Request,
     body: LogoutRequest = LogoutRequest(),
     access_token: str = Depends(get_raw_token),
 ) -> None:

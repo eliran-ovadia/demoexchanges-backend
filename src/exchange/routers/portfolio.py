@@ -1,10 +1,11 @@
 from typing import Dict, Any
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
+from src.exchange.rate_limiter import limiter
 from src.exchange.schemas.schemas import AfterOrder, TokenData, Order, Pagination, Stock
 from .repository import portfolio_repo
 
@@ -14,37 +15,66 @@ check_auth = Depends(get_current_user)
 
 
 @router.get('/GetPortfolio', response_model=dict, status_code=status.HTTP_200_OK)
-def get_portfolio(pagination: Pagination = Depends(),
-                  db: Session = check_db,
-                  current_user: TokenData = check_auth) -> dict:
+@limiter.limit("30/minute")
+def get_portfolio(
+    request: Request,
+    pagination: Pagination = Depends(),
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+) -> dict:
     return portfolio_repo.get_portfolio(db, current_user, pagination.page, pagination.page_size)
 
 
 @router.post('/Order', response_model=AfterOrder, status_code=status.HTTP_201_CREATED)
-def order(request: Order, db: Session = check_db, current_user: TokenData = check_auth) -> AfterOrder:
-    return portfolio_repo.order(request, db, current_user)
+@limiter.limit("10/minute")
+def order(
+    request: Request,
+    body: Order,
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+) -> AfterOrder:
+    return portfolio_repo.order(body, db, current_user)
 
 
 @router.get('/GetHistory', response_model=Dict[str, Any], status_code=status.HTTP_200_OK)
-def get_history(pagination: Pagination = Depends(),
-                db: Session = check_db,
-                current_user: TokenData = check_auth
-                ) -> Dict[str, Any]:
+@limiter.limit("30/minute")
+def get_history(
+    request: Request,
+    pagination: Pagination = Depends(),
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+) -> Dict[str, Any]:
     return portfolio_repo.get_history(db, current_user, pagination.page, pagination.page_size)
 
 
 @router.post('/AddToWatchlist', response_model=dict, status_code=status.HTTP_200_OK)
-def add_to_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):
-    return portfolio_repo.add_to_watchlist(request, db, current_user)
+@limiter.limit("20/minute")
+def add_to_watchlist(
+    request: Request,
+    stock: Stock = Depends(),
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+):
+    return portfolio_repo.add_to_watchlist(stock, db, current_user)
 
 
 @router.delete('/DeleteFromWatchlist', response_model=dict, status_code=status.HTTP_200_OK)
-def delete_from_watchlist(request: Stock = Depends(), db: Session = check_db, current_user: TokenData = check_auth):
-    return portfolio_repo.delete_from_watchlist(request, db, current_user)
+@limiter.limit("20/minute")
+def delete_from_watchlist(
+    request: Request,
+    stock: Stock = Depends(),
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+):
+    return portfolio_repo.delete_from_watchlist(stock, db, current_user)
 
 
 @router.get('/GetWatchlist', response_model=dict[str, list], status_code=status.HTTP_200_OK)
-def get_watchlist(pagination: Pagination = Depends(),
-                  db: Session = check_db,
-                  current_user: TokenData = check_auth) -> dict[str, list]:
+@limiter.limit("30/minute")
+def get_watchlist(
+    request: Request,
+    pagination: Pagination = Depends(),
+    db: Session = check_db,
+    current_user: TokenData = check_auth,
+) -> dict[str, list]:
     return portfolio_repo.get_watchlist(db, pagination.page, pagination.page_size, current_user)
