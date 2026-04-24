@@ -2,27 +2,28 @@ from fastapi import HTTPException, status
 
 from .client_manager import ClientManager
 from ..app_logger import logger
+from ..schemas.fmp_schemas import QuoteSchema
 
 
-def _normalize_quote(raw: dict) -> dict:
-    """Map an FMP /quote response object to our internal quote format."""
-    return {
-        "symbol": raw.get("symbol", ""),
-        "name": raw.get("name", ""),
-        "exchange": raw.get("exchange", ""),
-        "currency": "USD",
-        "price": float(raw.get("price") or 0.0),
-        "open": float(raw.get("open") or 0.0),
-        "high": float(raw.get("dayHigh") or 0.0),
-        "low": float(raw.get("dayLow") or 0.0),
-        "previous_close": float(raw.get("previousClose") or 0.0),
-        "change": float(raw.get("change") or 0.0),
-        "percent_change": float(raw.get("changesPercentage") or 0.0),
-        "volume": int(raw.get("volume") or 0),
-        "avg_volume": int(raw.get("avgVolume") or 0),
-        "year_high": float(raw.get("yearHigh") or 0.0),
-        "year_low": float(raw.get("yearLow") or 0.0),
-    }
+def _to_quote_schema(raw: dict) -> QuoteSchema:
+    """Map one FMP /quote object to our internal QuoteSchema."""
+    return QuoteSchema(
+        symbol=raw.get("symbol", ""),
+        name=raw.get("name", ""),
+        exchange=raw.get("exchange", ""),
+        currency="USD",
+        price=float(raw.get("price") or 0.0),
+        open=float(raw.get("open") or 0.0),
+        high=float(raw.get("dayHigh") or 0.0),
+        low=float(raw.get("dayLow") or 0.0),
+        previous_close=float(raw.get("previousClose") or 0.0),
+        change=float(raw.get("change") or 0.0),
+        percent_change=float(raw.get("changesPercentage") or 0.0),
+        volume=int(raw.get("volume") or 0),
+        avg_volume=int(raw.get("avgVolume") or 0),
+        year_high=float(raw.get("yearHigh") or 0.0),
+        year_low=float(raw.get("yearLow") or 0.0),
+    )
 
 
 def fetch_stock_price(symbol: str) -> float:
@@ -35,24 +36,15 @@ def fetch_stock_price(symbol: str) -> float:
     return float(data[0].get("price") or 0.0)
 
 
-def fetch_quote(symbols: str, db=None) -> dict:
-    """
-    Returns a single normalized quote dict for one symbol,
-    or a {symbol: quote_dict} mapping for comma-separated symbols.
-    """
+def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
+    """Always returns {symbol: QuoteSchema} — same shape for one or many symbols."""
     fmp = ClientManager.get_client()
     data = fmp.get(f"quote/{symbols}")
     if not data:
         logger.error(f"Quote not found for symbols: {symbols}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Quote for {symbols} not found")
-
-    normalized = [_normalize_quote(item) for item in data]
-    symbol_list = [s.strip() for s in symbols.split(",")]
-
-    if len(symbol_list) == 1:
-        return normalized[0]
-    return {item["symbol"]: item for item in normalized}
+    return {item["symbol"]: _to_quote_schema(item) for item in data}
 
 
 def fetch_search(prompt: str, output_size: int = 120) -> list:
