@@ -5,32 +5,25 @@ from sqlalchemy.orm import Session
 from src.exchange.background_tasks.split_stocks.split_utils import get_last_split_date, get_unique_stocks_list, \
     split_handler
 from src.exchange.database.models import LastSplitDate
-from src.exchange.external_client_handlers.client_manager import ClientManager
+from src.exchange.external_client_handlers.client_requests import fetch_splits_calendar
 
 
 def split_stocks(db: Session):
     current_time = datetime.now()
     previous_split_date = get_last_split_date(db, current_time)
-    delta_time = current_time - previous_split_date
-    delta_days = delta_time.days
+    delta_days = (current_time - previous_split_date).days
 
     if delta_days > 0:
-        formatted_last_split_date = previous_split_date.strftime("%Y-%m-%d")
-        formatted_now = current_time.strftime("%Y-%m-%d")
-        unique_symbol_list = get_unique_stocks_list(db)
-        pg = ClientManager.get_polygon_client()
+        from_date = previous_split_date.strftime("%Y-%m-%d")
+        to_date = current_time.strftime("%Y-%m-%d")
 
-        for symbol in unique_symbol_list:
-            # Convert the generator to a list and access the first item
-            response = next(pg.list_splits(reverse_split=True, sort='execution_date', order='desc', ticker=symbol,
-                                           execution_date_gt=formatted_last_split_date,
-                                           execution_date_lte=formatted_now), None)
-            # Check if response is None or results are empty
-            if not response or not response.get('results'):
-                continue
+        # One API call for all splits in the window, then filter to held symbols
+        held_symbols = set(get_unique_stocks_list(db))
+        splits = fetch_splits_calendar(from_date, to_date)
 
-            for split in response['results']:
-                split_handler(db, split, symbol)
+        for split in splits:
+            if split.get("symbol") in held_symbols:
+                split_handler(db, split)
 
         last_split_date_row = db.query(LastSplitDate).first()
         last_split_date_row.last_split_check = current_time

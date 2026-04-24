@@ -33,7 +33,7 @@ def get_portfolio(db: Session, current_user: schemas.TokenData, page: int, page_
         return handle_empty_portfolio(db, current_user)  # If no stocks, return balance with zeroes
 
     symbols = list(portfolio_data.keys())
-    quotes = fetch_quotes(symbols, db)
+    quotes = fetch_quotes(symbols)
     detailed_portfolio_data = process_portfolio_data(portfolio_data, quotes)
 
     return build_portfolio_response(db, current_user, detailed_portfolio_data, total_stocks)
@@ -47,7 +47,7 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
     history_array = (
         db.query(modelHistory)
         .filter(modelHistory.user_id == current_user.id)
-        .order_by(modelHistory.time_stamp.desc())
+        .order_by(modelHistory.created_at.desc())
         .offset((page - 1) * page_size)
         .limit(page_size)
         .all()
@@ -65,7 +65,7 @@ def get_history(db: Session, current_user: schemas.TokenData, page: int, page_si
             type=history.type,
             value=round(history.value, 2),
             profit=round(history.profit, 2),
-            time_stamp=history.time_stamp,
+            time_stamp=history.created_at,
         )
         for history in history_array
     ]

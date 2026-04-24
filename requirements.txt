@@ -7,14 +7,9 @@ requests
 python-jose[cryptography]
 python-multipart
 setuptools
-twelvedata[pandas,matplotlib,plotly,websocket-client]
 pydantic[email]
 python-dotenv
-jose
-polygon-api-client
-finnhub-python
 apscheduler
 cachetools
 psycopg2-binary
-pandas
 alembic

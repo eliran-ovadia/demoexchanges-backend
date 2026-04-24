@@ -1,133 +1,145 @@
-from logging import exception
-
-import requests
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
-from twelvedata.exceptions import TwelveDataError
 
 from .client_manager import ClientManager
 from ..app_logger import logger
-from ..database.db_conn import get_db
+from ..schemas.fmp_schemas import QuoteSchema
 
 
-# NOTE: market_status_update(stock, db) - cannot update the price here because td.price return only the stocks price
-# Twelve data fetch - stock price data
+def _to_quote_schema(raw: dict) -> QuoteSchema:
+    """Map one FMP /quote object to our internal QuoteSchema."""
+    return QuoteSchema(
+        symbol=raw.get("symbol", ""),
+        name=raw.get("name", ""),
+        exchange=raw.get("exchange", ""),
+        currency="USD",
+        price=float(raw.get("price") or 0.0),
+        open=float(raw.get("open") or 0.0),
+        high=float(raw.get("dayHigh") or 0.0),
+        low=float(raw.get("dayLow") or 0.0),
+        previous_close=float(raw.get("previousClose") or 0.0),
+        change=float(raw.get("change") or 0.0),
+        percent_change=float(raw.get("changesPercentage") or 0.0),
+        volume=int(raw.get("volume") or 0),
+        avg_volume=int(raw.get("avgVolume") or 0),
+        year_high=float(raw.get("yearHigh") or 0.0),
+        year_low=float(raw.get("yearLow") or 0.0),
+    )
+
+
 def fetch_stock_price(symbol: str) -> float:
-    td = ClientManager.get_td_client()
-    try:
-        stock = td.price(symbol=symbol).as_json()
-    except TwelveDataError as e:
-        logger.critical(f"Price not found for symbol: {symbol} - {str(e)}")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"info for symbol: {symbol} not found")
-    except Exception as e:
-        logger.critical(f"Failed to fetch price for symbol: {symbol} - {str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-    return float(stock.get('price', 0.0))
-
-
-def fetch_quote(symbols: str, db: Session = get_db()) -> dict:
-    td = ClientManager.get_td_client()
-    try:
-        stocks = td.quote(symbol=symbols).as_json()
-    except TwelveDataError as e:
-        logger.error(f"Quote not found for symbols: {symbols} - {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Quote for one of the symbols: {symbols} not found"
-        )
-    except Exception as e:
-        logger.critical(f"Unexpected error fetching quote for symbols: {symbols} - {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error occurred while fetching quotes"
-        )
-    return stocks
-
-
-# Twelve data fetch - search result raw data
-# output_size=120 - sweet spot to get the most relevant results
-def fetch_search(prompt: str, output_size=120) -> list:
-    td = ClientManager.get_td_client()
-    try:
-        results = td.symbol_search(symbol=str(prompt), outputsize=output_size).as_json()
-    except TwelveDataError as e:
-        logger.critical(f"search result not found for the search prompt: {prompt} - {str(e)}")
+    fmp = ClientManager.get_client()
+    data = fmp.get(f"quote-short/{symbol}")
+    if not data:
+        logger.critical(f"Price not found for symbol: {symbol}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"result for the search prompt: {prompt} not found")
-    except Exception as e:
-        logger.critical(f"Failed to find results for search prompt: {prompt} - {str(e)}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-    return results
+                            detail=f"Price for symbol {symbol} not found")
+    return float(data[0].get("price") or 0.0)
 
 
-# Finnhub fetch - stock sentiment raw data
+def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
+    """Always returns {symbol: QuoteSchema} — same shape for one or many symbols."""
+    fmp = ClientManager.get_client()
+    data = fmp.get(f"quote/{symbols}")
+    if not data:
+        logger.error(f"Quote not found for symbols: {symbols}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Quote for {symbols} not found")
+    return {item["symbol"]: _to_quote_schema(item) for item in data}
+
+
+def fetch_search(prompt: str, output_size: int = 120) -> list:
+    fmp = ClientManager.get_client()
+    data = fmp.get("search", params={"query": prompt, "limit": output_size})
+    if data is None:
+        logger.critical(f"Search failed for prompt: {prompt}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"No results for search: {prompt}")
+    return data
+
+
 def fetch_sentiment(symbol: str) -> list:
-    fn = ClientManager.get_finnhub_client()
-    try:
-        sentiment = fn.recommendation_trends(symbol)
-    except exception as e:
-        logger.critical(f"sentiment call is not working for symbol {symbol}: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail="could not get sentiment at the moment")
-    if not sentiment:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Please request sentiment to a valid symbol")
-    return sentiment
+    fmp = ClientManager.get_client()
+    data = fmp.get(f"analyst-stock-recommendations/{symbol}")
+    if not data:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="No sentiment data for this symbol")
+    return [
+        {
+            "symbol": item.get("symbol"),
+            "period": item.get("date"),
+            "strongBuy": item.get("analystRatingsStrongBuy", 0),
+            "buy": item.get("analystRatingsbuy", 0),
+            "hold": item.get("analystRatingsHold", 0),
+            "sell": item.get("analystRatingsSell", 0),
+            "strongSell": item.get("analystRatingsStrongSell", 0),
+        }
+        for item in data
+    ]
 
 
-def fetch_all_stocks(*, country='USA') -> list:
-    td = ClientManager.get_td_client()
-    stocks = []
+def fetch_all_stocks() -> list:
+    """Returns NYSE/NASDAQ stocks normalized to the UsStocks model field shape."""
+    fmp = ClientManager.get_client()
     try:
-        stocks = td.get_stocks_list(country=country).as_json()
-    except TwelveDataError as e:
-        logger.error(f"failed to fetch all {country} stocks: {str(e)}")
+        data = fmp.get("stock/list")
     except Exception as e:
-        logger.critical(f"Unexpected error fetching all {country} stocks: {str(e)}")
-    return stocks
+        logger.error(f"Failed to fetch stock list: {e}")
+        return []
+    return [
+        {
+            "symbol": item.get("symbol", ""),
+            "name": item.get("name", ""),
+            "currency": "",
+            "exchange": item.get("exchangeShortName", ""),
+            "mic_code": "",
+            "country": "United States",
+            "type": item.get("type", ""),
+            "figi_code": "",
+        }
+        for item in (data or [])
+        if item.get("exchangeShortName") in {"NYSE", "NASDAQ"}
+        and item.get("type") == "stock"
+    ]
 
 
 def fetch_market_movers() -> dict:
-    api_key = ClientManager.get_api_key("ALPHA_VANTAGE_API_KEY")
-    url = f'https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey={api_key}'
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # raise if not 200
-        json_response = response.json()
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"alphavantage TOP_GAINERS_LOSERS call failed: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"cannot access market movers at the moment"
-        )
-    if 'most_actively_traded' not in json_response or 'last_updated' not in json_response:
-        logger.critical(
-            "alphavantage TOP_GAINERS_LOSERS call is not containing *most_actively_traded* or *last_updated*")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"cannot access market movers at the moment"
-        )
-    useful_data = {
-        'last_updated': json_response['last_updated'],
-        'stocks': sorted([stock for stock in json_response['most_actively_traded'] if float(stock['price']) > 1],
-                         key=lambda x: int(x['volume']),
-                         reverse=True
-                         )
-    }
-    return useful_data
+    fmp = ClientManager.get_client()
+    data = fmp.get("stock_market/actives")
+    if not data:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                            detail="Market movers unavailable")
+    stocks = [
+        {
+            "symbol": item.get("ticker") or item.get("symbol", ""),
+            "name": item.get("companyName") or item.get("name", ""),
+            "price": float(item.get("price") or 0.0),
+            "change": float(item.get("changes") or item.get("change") or 0.0),
+            "percent_change": item.get("changesPercentage", ""),
+            "volume": item.get("volume", 0),
+        }
+        for item in data
+        if float(item.get("price") or 0) > 1
+    ]
+    return {"stocks": stocks}
 
 
 def fetch_market_status() -> dict:
-    fn = ClientManager.get_finnhub_client()
+    fmp = ClientManager.get_client()
+    data = fmp.get("is-the-market-open")
+    if not isinstance(data, dict):
+        logger.critical("Unexpected response from FMP market-status endpoint")
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                            detail="Market status unavailable")
+    return data
+
+
+def fetch_splits_calendar(from_date: str, to_date: str) -> list:
+    """Returns all stock splits in the given date range across all tickers."""
+    fmp = ClientManager.get_client()
     try:
-        current_status = fn.market_status(exchange="US")
+        # "from" is a Python keyword — must be passed via explicit dict
+        data = fmp.get("stock-split-calendar", params={"from": from_date, "to": to_date})
     except Exception as e:
-        logger.critical(f"Failed to fetch market status: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not fetch market status at the moment"
-        )
-    if 'isOpen' not in current_status:
-        logger.critical("Market status response does not contain the 'isOpen' key.")
-    return current_status
+        logger.error(f"Failed to fetch splits calendar {from_date} → {to_date}: {e}")
+        return []
+    return data or []
