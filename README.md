@@ -1,4 +1,4 @@
-mermaid'''
+```mermaid
 erDiagram
     users ||--o{ history : "has many"
     users ||--o{ portfolio : "owns"
@@ -62,4 +62,4 @@ erDiagram
         DateTime created_at
         DateTime updated_at
     }
-'''
+```
