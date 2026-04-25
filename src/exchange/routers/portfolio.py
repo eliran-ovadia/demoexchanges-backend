@@ -69,12 +69,12 @@ async def delete_from_watchlist(
     return await portfolio_repo.delete_from_watchlist(stock, db, current_user)
 
 
-@router.get('/GetWatchlist', response_model=dict[str, list], status_code=status.HTTP_200_OK)
+@router.get('/GetWatchlist', response_model=dict, status_code=status.HTTP_200_OK)
 @limiter.limit("30/minute")
 async def get_watchlist(
     request: Request,
     pagination: Pagination = Depends(),
     db: AsyncSession = check_db,
     current_user: TokenData = check_auth,
-) -> dict[str, list]:
+) -> dict:
     return await portfolio_repo.get_watchlist(db, pagination.page, pagination.page_size, current_user)

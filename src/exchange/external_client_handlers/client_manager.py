@@ -19,7 +19,7 @@ class FMPClient:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self._client = httpx.AsyncClient(
-            timeout=httpx.Timeout(connect=_CONNECT_TIMEOUT, read=_READ_TIMEOUT),
+            timeout=httpx.Timeout(_READ_TIMEOUT, connect=_CONNECT_TIMEOUT),
         )
 
     async def get(self, endpoint: str, params: dict | None = None) -> dict | list:

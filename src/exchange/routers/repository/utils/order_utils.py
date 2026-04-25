@@ -115,7 +115,7 @@ async def buy_handler(
     )
     if result.rowcount == 0:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                            detail=f"Insufficient funds to buy {symbol}")
+                            detail=f"Insufficient funds to buy {value} worth of {symbol}")
 
     db.add_all([
         models.Portfolio(

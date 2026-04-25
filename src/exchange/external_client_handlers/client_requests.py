@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import HTTPException, status
 
 from .client_manager import ClientManager
@@ -39,13 +41,28 @@ async def fetch_stock_price(symbol: str) -> float:
 async def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
     """Always returns {symbol: QuoteSchema} — same shape for one or many symbols."""
     fmp = ClientManager.get_client()
-    endpoint = "batch-quote" if "," in symbols else "quote"
-    data = await fmp.get(endpoint=endpoint, params={"symbol": symbols})
-    if not data:
+    symbol_list = [s.strip() for s in symbols.split(",")]
+
+    # UPGRADE: if you have a plan that includes batch-quote, replace the gather below with:
+    # data = await fmp.get(endpoint="batch-quote", params={"symbol": symbols})
+    # if not data:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Quote for {symbols} not found")
+    # return {item["symbol"]: _to_quote_schema(item) for item in data}
+
+    results = await asyncio.gather(*[
+        fmp.get(endpoint="quote", params={"symbol": s}) for s in symbol_list
+    ])
+
+    out = {}
+    for data in results:
+        if data:
+            out[data[0]["symbol"]] = _to_quote_schema(data[0])
+
+    if not out:
         logger.error(f"Quote not found for symbols: {symbols}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Quote for {symbols} not found")
-    return {item["symbol"]: _to_quote_schema(item) for item in data}
+    return out
 
 
 async def fetch_search(prompt: str, output_size: int = 50) -> list[dict]:
