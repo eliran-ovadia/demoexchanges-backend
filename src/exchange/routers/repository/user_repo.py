@@ -12,8 +12,6 @@ from src.exchange.schemas import schemas
 
 
 def create_user(request: schemas.CreateUser, db: Session) -> dict[str, str]:
-    if find_user(db, email=request.email):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email is already taken")
     new_user = models.User(
         id=str(uuid4()),
         name=request.name,
@@ -29,8 +27,7 @@ def create_user(request: schemas.CreateUser, db: Session) -> dict[str, str]:
         db.refresh(new_user)
     except IntegrityError:
         db.rollback()
-        logger.debug(f"a new user with email {request.email} errored at creation")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="encountered an error")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email is already taken")
     return {"message": f"Created a new user with email: {request.email}"}
 
 

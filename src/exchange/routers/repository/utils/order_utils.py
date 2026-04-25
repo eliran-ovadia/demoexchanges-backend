@@ -37,7 +37,7 @@ def sell(current_user: schemas.TokenData, db: Session, price: float, request: sc
     portfolio_entries = db.query(models.Portfolio).filter(
         models.Portfolio.user_id == current_user.id,
         models.Portfolio.symbol == symbol
-    ).order_by(models.Portfolio.created_at.asc()).yield_per(100)
+    ).order_by(models.Portfolio.created_at.asc()).all()
 
     remaining_to_sell = request.amount
     total_profit = 0.0

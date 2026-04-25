@@ -1,3 +1,4 @@
+Deploy in the cloud: gunicorn src.exchange.main:app -w <num of cores * 2 + 1> -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 ```mermaid
 erDiagram
     users ||--o{ history : "has many"

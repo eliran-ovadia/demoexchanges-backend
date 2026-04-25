@@ -15,11 +15,16 @@ else:
     print("Starting in DEV mode (Local Docker container)")
     SQLALCHEMY_DATABASE_URL: str = os.getenv("DATABASE_DEV_URL", "default connections string")
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_size=10,
+    max_overflow=20,
+    pool_pre_ping=True,  # drops stale connections before use
+    pool_recycle=1800,   # recycle connections every 30 min — important for RDS
+)
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
-Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = SessionLocal()
