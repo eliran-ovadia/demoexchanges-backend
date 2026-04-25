@@ -51,7 +51,7 @@ class ParsedQuoteResponse(BaseModel):
 
 class SearchResult(BaseModel):
     country: str
-    currency: Optional[str] = None
+    currency: str
     exchange: str
     instrument_name: str
     symbol: str
@@ -66,19 +66,19 @@ class SearchResponse(BaseModel):
 
 class MarketStatusResponse(BaseModel):
     exchange: Optional[str] = None
-    holiday: Optional[str] = None
-    isOpen: Optional[bool] = None
-    session: Optional[str] = None
+    is_open: Optional[bool] = None
+    # open_time = Optional[str] = None
+    # close_time = Optional[str] = None
 
 
 class SentimentEntry(BaseModel):
-    symbol: Optional[str] = None
-    period: Optional[str] = None
+    symbol: str
     strongBuy: int = 0
     buy: int = 0
     hold: int = 0
     sell: int = 0
     strongSell: int = 0
+    consensus: Optional[str] = None
 
 
 class MarketMoverEntry(BaseModel):
@@ -86,8 +86,7 @@ class MarketMoverEntry(BaseModel):
     name: str
     price: float
     change: float
-    percent_change: str
-    volume: int
+    percent_change: float
 
 
 class MarketMoversResponse(BaseModel):

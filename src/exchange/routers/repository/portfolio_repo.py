@@ -19,7 +19,7 @@ def order(request: schemas.Order, db: Session, current_user: schemas.TokenData) 
     value = price * request.amount
 
     if request.amount == 0:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Amount cannot be 0")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Value of trade cannot be 0")
     if request.type == 'Buy':
         return buy_handler(request, db, current_user, symbol, price, value)
     else:
@@ -30,7 +30,7 @@ def get_portfolio(db: Session, current_user: schemas.TokenData, page: int, page_
     total_stocks, portfolio_data = fetch_portfolio_data(db, current_user, page, page_size)
 
     if not portfolio_data:
-        return handle_empty_portfolio(db, current_user)  # If no stocks, return balance with zeroes
+        return handle_empty_portfolio(db, current_user, total_stocks)
 
     symbols = list(portfolio_data.keys())
     quotes = fetch_quotes(symbols)
