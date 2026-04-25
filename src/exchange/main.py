@@ -18,3 +18,8 @@ app.include_router(auth_router)
 app.include_router(info_router)
 app.include_router(portfolio_router)
 app.include_router(user_router)
+
+
+@app.get("/health", tags=["health"], include_in_schema=False)
+async def health() -> dict:
+    return {"status": "ok"}
