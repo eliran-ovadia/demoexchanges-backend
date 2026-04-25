@@ -13,8 +13,8 @@ from src.exchange.schemas.fmp_schemas import (
 )
 
 
-def parsed_quote(symbols: str) -> dict[str, Any]:
-    quotes = fetch_quote(symbols)
+def parsed_quote(symbols: str) -> dict[str, ParsedQuoteResponse]:
+    quote = fetch_quote(symbols)
     return {
         symbol: ParsedQuoteResponse(
             full_name=q.name,
@@ -31,30 +31,32 @@ def parsed_quote(symbols: str) -> dict[str, Any]:
             year_range_high=round(q.year_high, 2) if q.year_high else None,
             year_range_low=round(q.year_low, 2) if q.year_low else None,
         ).model_dump()
-        for symbol, q in quotes.items()
+        for symbol, q in quote.items()
     }
 
 
 def market_status(db: Session) -> dict[str, Any]:
     data = fetch_market_status()
     return MarketStatusResponse(
-        exchange=data.get("stockExchangeName"),
-        isOpen=data.get("isTheStockMarketOpen"),
+        exchange=data.get("exchange"),
+        is_open=data.get("isMarketOpen"),
+        # open_time=data.get("openingHour"),
+        # close_time = data.get("closingHour")
     ).model_dump()
 
 
-def stock_search(request: str, page: int, page_size: int) -> dict[str, Any]:
+def stock_search(request: str, page: int, page_size: int) -> SearchResponse:
     raw = fetch_search(request)
     results = [
         SearchResult(
-            country="United States",
-            currency=item.get("currency"),
-            exchange=item.get("exchangeShortName", ""),
+            country="US",
+            currency=item.get("currency", "USD*"), # * BECAUSE IT MAY NOT BE USD
+            exchange=item.get("exchange", ""),
             instrument_name=item.get("name", ""),
             symbol=item.get("symbol", ""),
         )
         for item in raw
-        if item.get("exchangeShortName") in {"NYSE", "NASDAQ"}
+        if item.get("exchange") in {"NYSE", "NASDAQ"}
     ]
     page_start = (page - 1) * page_size
     return SearchResponse(
@@ -65,7 +67,7 @@ def stock_search(request: str, page: int, page_size: int) -> dict[str, Any]:
     ).model_dump()
 
 
-def market_movers() -> dict[str, Any]:
+def market_movers() -> MarketMoversResponse:
     movers = MarketMoversManager.get_market_movers()
     if movers is None:
         raise HTTPException(

@@ -51,14 +51,10 @@ def fetch_quotes(symbols: list[str]) -> dict[str, QuoteSchema]:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-def handle_empty_portfolio(db: Session, current_user: TokenData) -> dict:
-    user = find_user(db, current_user.id)
-    total_stocks = (
-        db.query(Portfolio)
-        .filter(Portfolio.user_id == current_user.id)
-        .group_by(Portfolio.symbol)
-        .count()
-    )
+def handle_empty_portfolio(db: Session, current_user: TokenData, total_stocks: int) -> dict:
+    user = find_user(db, user_id=current_user.id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return dict(
         balance={
             "buying_power": round(float(user.cash), 2),
@@ -115,7 +111,9 @@ def build_portfolio_response(db: Session,
                              current_user: TokenData,
                              portfolio_data: list[ShowStock],
                              total_stocks: int) -> dict:
-    user = find_user(db, current_user.id)
+    user = find_user(db, user_id=current_user.id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     portfolio_value = round(sum(x.total_value for x in portfolio_data), 2)
     total_return = round(sum(x.total_return for x in portfolio_data), 2)
     total_invested = round(sum(x.avg_price * x.amount for x in portfolio_data), 2)

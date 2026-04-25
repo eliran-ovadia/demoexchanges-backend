@@ -7,7 +7,7 @@ from src.exchange.routers.repository.utils.find_user import *
 from src.exchange.schemas import schemas
 
 
-##################### Sell logic #####################
+# Sell logic ---------
 def sell_handler(request: schemas.Order, db: Session, current_user: schemas.TokenData, symbol: str, price: float,
                  value: float):
     total_owned_stock = db.query(func.sum(models.Portfolio.amount)).filter(
@@ -80,7 +80,7 @@ def sell(current_user: schemas.TokenData, db: Session, price: float, request: sc
     return total_profit
 
 
-##################### Buy logic #####################
+# Buy logic ---------
 def buy_handler(request: schemas.Order, db: Session, current_user: schemas.TokenData, symbol: str, price: float,
                 value: float):
     affected_rows = (
@@ -89,9 +89,8 @@ def buy_handler(request: schemas.Order, db: Session, current_user: schemas.Token
         .update({models.User.cash: models.User.cash - value})
     )
     if affected_rows == 0:
-        logger.error(f"User {current_user.email} attempted to buy with insufficient cash.")
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                            detail=f"Insufficient cash to buy {symbol}")
+                            detail=f"Insufficient funds to buy {symbol}")
 
     db.add_all([
         models.Portfolio(

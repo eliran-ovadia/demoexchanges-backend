@@ -51,7 +51,7 @@ class ParsedQuoteResponse(BaseModel):
 
 class SearchResult(BaseModel):
     country: str
-    currency: Optional[str] = None
+    currency: str
     exchange: str
     instrument_name: str
     symbol: str
@@ -66,9 +66,9 @@ class SearchResponse(BaseModel):
 
 class MarketStatusResponse(BaseModel):
     exchange: Optional[str] = None
-    holiday: Optional[str] = None
-    isOpen: Optional[bool] = None
-    session: Optional[str] = None
+    is_open: Optional[bool] = None
+    # open_time = Optional[str] = None
+    # close_time = Optional[str] = None
 
 
 class SentimentEntry(BaseModel):
@@ -86,8 +86,7 @@ class MarketMoverEntry(BaseModel):
     name: str
     price: float
     change: float
-    percent_change: str
-    volume: int
+    changesPercentage: str
 
 
 class MarketMoversResponse(BaseModel):

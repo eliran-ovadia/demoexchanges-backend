@@ -13,7 +13,7 @@ _MAX_RETRIES = 2       # retries on 5xx / connection errors
 
 
 class FMPClient:
-    BASE_URL = "https://financialmodelingprep.com/api/v3"
+    BASE_URL = "https://financialmodelingprep.com/stable"
 
     def __init__(self, api_key: str):
         self.api_key = api_key

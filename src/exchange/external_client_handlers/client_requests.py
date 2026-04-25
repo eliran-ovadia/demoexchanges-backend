@@ -28,7 +28,7 @@ def _to_quote_schema(raw: dict) -> QuoteSchema:
 
 def fetch_stock_price(symbol: str) -> float:
     fmp = ClientManager.get_client()
-    data = fmp.get(f"quote-short/{symbol}")
+    data = fmp.get(endpoint="quote-short",params={"symbol": symbol})
     if not data:
         logger.critical(f"Price not found for symbol: {symbol}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -39,7 +39,8 @@ def fetch_stock_price(symbol: str) -> float:
 def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
     """Always returns {symbol: QuoteSchema} — same shape for one or many symbols."""
     fmp = ClientManager.get_client()
-    data = fmp.get(f"quote/{symbols}")
+    endpoint = "batch-quote" if "," in symbols else "quote" # Backup because we use the starter plan so we do not have access to batch-quote
+    data = fmp.get(endpoint=endpoint, params={"symbol": symbols})
     if not data:
         logger.error(f"Quote not found for symbols: {symbols}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -47,10 +48,10 @@ def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
     return {item["symbol"]: _to_quote_schema(item) for item in data}
 
 
-def fetch_search(prompt: str, output_size: int = 120) -> list:
+def fetch_search(prompt: str, output_size: int = 50) -> list[dict]:
     fmp = ClientManager.get_client()
-    data = fmp.get("search", params={"query": prompt, "limit": output_size})
-    if data is None:
+    data = fmp.get("search-symbol", params={"query": prompt, "limit": output_size})
+    if data is []:
         logger.critical(f"Search failed for prompt: {prompt}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"No results for search: {prompt}")
@@ -104,28 +105,26 @@ def fetch_all_stocks() -> list:
 
 def fetch_market_movers() -> dict:
     fmp = ClientManager.get_client()
-    data = fmp.get("stock_market/actives")
+    data = fmp.get(endpoint="most-actives")
     if not data:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail="Market movers unavailable")
     stocks = [
         {
-            "symbol": item.get("ticker") or item.get("symbol", ""),
-            "name": item.get("companyName") or item.get("name", ""),
-            "price": float(item.get("price") or 0.0),
-            "change": float(item.get("changes") or item.get("change") or 0.0),
+            "symbol": item.get("symbol", ""),
+            "name": item.get("name", ""),
+            "price": item.get("price"),
+            "change": item.get("change"),
             "percent_change": item.get("changesPercentage", ""),
-            "volume": item.get("volume", 0),
         }
         for item in data
-        if float(item.get("price") or 0) > 1
     ]
     return {"stocks": stocks}
 
 
 def fetch_market_status() -> dict:
     fmp = ClientManager.get_client()
-    data = fmp.get("is-the-market-open")
+    data = fmp.get(endpoint="exchange-market-hours", params={"exchange": "NASDAQ"})[0]
     if not isinstance(data, dict):
         logger.critical("Unexpected response from FMP market-status endpoint")
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
+from exchange.schemas.fmp_schemas import SearchResponse, MarketStatusResponse, ParsedQuoteResponse, MarketMoversResponse
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
 from src.exchange.rate_limiter import limiter
@@ -15,32 +16,32 @@ check_db = Depends(get_db)
 check_auth = Depends(get_current_user)
 
 
-@router.get('/ParsedQuote', response_model=dict, status_code=status.HTTP_200_OK)
+@router.get('/ParsedQuote', response_model=dict[str, ParsedQuoteResponse], status_code=status.HTTP_200_OK)
 @limiter.limit("30/minute")
-def get_parsed_quote(request: Request, symbol: str, current_user: TokenData = check_auth) -> dict:
+def get_parsed_quote(request: Request, symbol: str, current_user: TokenData = check_auth) -> dict[str, ParsedQuoteResponse]:
     return parsed_quote(symbol)
 
 
-@router.get('/MarketStatus', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+@router.get('/MarketStatus', response_model=MarketStatusResponse, status_code=status.HTTP_200_OK)
 @limiter.limit("20/minute")
 def get_market_status(request: Request, db: Session = check_db, current_user: TokenData = check_auth) -> dict[str, Any]:
     return market_status(db)
 
 
-@router.get('/StockSearch', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+@router.get('/StockSearch', response_model=SearchResponse, status_code=status.HTTP_200_OK)
 @limiter.limit("20/minute")
 def get_stock_search(
     request: Request,
     symbol: str,
     pagination: Pagination = Depends(),
     current_user: TokenData = check_auth,
-) -> dict[str, Any]:
+) -> SearchResponse:
     return stock_search(symbol, pagination.page, pagination.page_size)
 
 
-@router.get('/MarketMovers', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+@router.get('/MarketMovers', response_model=MarketMoversResponse, status_code=status.HTTP_200_OK)
 @limiter.limit("20/minute")
-def get_market_movers(request: Request, current_user: TokenData = check_auth) -> dict[str, Any]:
+def get_market_movers(request: Request, current_user: TokenData = check_auth) -> MarketMoversResponse:
     return market_movers()
 
 
