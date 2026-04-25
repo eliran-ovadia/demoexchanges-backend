@@ -3,3 +3,6 @@ __pycache__
 .DS_Store
 .env
 app.log
+.claude
+.coverage
+htmlcov/

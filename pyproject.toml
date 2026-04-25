@@ -1,0 +1,18 @@
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--cov=src/exchange --cov-report=term-missing --cov-report=html:htmlcov -q"
+
+[tool.coverage.run]
+source = ["src/exchange"]
+omit = [
+    "src/exchange/database/create_tables.py",
+    "src/exchange/database/sync_prod_to_dev.py",
+    "src/exchange/background_tasks/fetch_us_stocks/*",
+    "src/exchange/background_tasks/split_stocks/*",
+    "*/alembic/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
