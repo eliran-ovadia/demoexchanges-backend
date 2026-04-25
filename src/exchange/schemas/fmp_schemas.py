@@ -86,7 +86,7 @@ class MarketMoverEntry(BaseModel):
     name: str
     price: float
     change: float
-    changesPercentage: str
+    percent_change: float
 
 
 class MarketMoversResponse(BaseModel):

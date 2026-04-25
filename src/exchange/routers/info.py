@@ -3,7 +3,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
-from exchange.schemas.fmp_schemas import SearchResponse, MarketStatusResponse, ParsedQuoteResponse, MarketMoversResponse
+from src.exchange.schemas.fmp_schemas import SearchResponse, MarketStatusResponse, ParsedQuoteResponse, MarketMoversResponse
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
 from src.exchange.rate_limiter import limiter

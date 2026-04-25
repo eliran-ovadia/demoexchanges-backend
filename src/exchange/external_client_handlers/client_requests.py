@@ -51,7 +51,7 @@ def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
 def fetch_search(prompt: str, output_size: int = 50) -> list[dict]:
     fmp = ClientManager.get_client()
     data = fmp.get("search-symbol", params={"query": prompt, "limit": output_size})
-    if data is []:
+    if not data:
         logger.critical(f"Search failed for prompt: {prompt}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"No results for search: {prompt}")

@@ -74,7 +74,8 @@ def market_movers() -> MarketMoversResponse:
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Market movers not yet available — try again shortly"
         )
-    return MarketMoversResponse(**movers).model_dump()
+    stocks_list: list[dict] = movers.get("stocks")
+    return MarketMoversResponse(stocks=stocks_list).model_dump()
 
 
 def stock_sentiment(symbol: str) -> list[dict[str, Any]]:
