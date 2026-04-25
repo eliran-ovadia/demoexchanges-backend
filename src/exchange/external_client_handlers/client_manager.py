@@ -1,6 +1,6 @@
+import asyncio
 import os
 import threading
-import time
 
 import httpx
 from fastapi import HTTPException, status
@@ -10,6 +10,7 @@ from src.exchange.app_logger import logger
 _CONNECT_TIMEOUT = 3   # seconds to establish TCP connection
 _READ_TIMEOUT = 10     # seconds to wait for FMP response
 _MAX_RETRIES = 2       # retries on 5xx / connection errors
+_RETRY_BACKOFF = 0.3   # base backoff in seconds (doubles each retry)
 
 
 class FMPClient:
@@ -17,18 +18,18 @@ class FMPClient:
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self._client = httpx.Client(
+        self._client = httpx.AsyncClient(
             timeout=httpx.Timeout(connect=_CONNECT_TIMEOUT, read=_READ_TIMEOUT),
         )
 
-    def get(self, endpoint: str, params: dict | None = None) -> dict | list:
+    async def get(self, endpoint: str, params: dict | None = None) -> dict | list:
         all_params = dict(params or {})
         all_params["apikey"] = self.api_key
         url = f"{self.BASE_URL}/{endpoint}"
 
         for attempt in range(_MAX_RETRIES + 1):
             try:
-                response = self._client.get(url, params=all_params)
+                response = await self._client.get(url, params=all_params)
                 response.raise_for_status()
                 return response.json()
 
@@ -54,10 +55,10 @@ class FMPClient:
                                         detail="Market data request timed out")
                 logger.warning(f"FMP timeout, retrying ({attempt + 1}/{_MAX_RETRIES})")
 
-            time.sleep(0.3 * 2 ** attempt)  # 0.3s, then 0.6s
+            await asyncio.sleep(_RETRY_BACKOFF * 2 ** attempt)  # 0.3s, then 0.6s
 
-    def close(self):
-        self._client.close()
+    async def close(self):
+        await self._client.aclose()
 
 
 class ClientManager:
@@ -81,9 +82,9 @@ class ClientManager:
         return cls._client
 
     @classmethod
-    def reset_clients(cls):
+    async def reset_clients(cls):
         with cls._lock:
             if cls._client:
-                cls._client.close()
+                await cls._client.close()
             cls._client = None
             logger.info("FMP client reset.")

@@ -2,7 +2,7 @@ import os
 import threading
 from typing import Optional
 
-import redis
+import redis.asyncio as redis
 
 from src.exchange.app_logger import logger
 
@@ -15,15 +15,15 @@ class RedisClient:
     # Access token blacklist (fail-open: Redis down → token passes through)
     # ------------------------------------------------------------------
 
-    def blacklist_token(self, jti: str, ttl_seconds: int) -> None:
+    async def blacklist_token(self, jti: str, ttl_seconds: int) -> None:
         try:
-            self._redis.setex(f"blacklist:{jti}", ttl_seconds, "1")
+            await self._redis.setex(f"blacklist:{jti}", ttl_seconds, "1")
         except redis.RedisError as e:
             logger.error(f"Redis blacklist write failed: {e}")
 
-    def is_blacklisted(self, jti: str) -> bool:
+    async def is_blacklisted(self, jti: str) -> bool:
         try:
-            return self._redis.exists(f"blacklist:{jti}") > 0
+            return await self._redis.exists(f"blacklist:{jti}") > 0
         except redis.RedisError as e:
             logger.error(f"Redis blacklist read failed: {e}")
             return False  # fail-open: Redis down should not lock out all users
@@ -32,22 +32,22 @@ class RedisClient:
     # Refresh token whitelist (fail-secure: Redis down → token rejected)
     # ------------------------------------------------------------------
 
-    def store_refresh_token(self, jti: str, ttl_seconds: int) -> None:
+    async def store_refresh_token(self, jti: str, ttl_seconds: int) -> None:
         try:
-            self._redis.setex(f"refresh:{jti}", ttl_seconds, "1")
+            await self._redis.setex(f"refresh:{jti}", ttl_seconds, "1")
         except redis.RedisError as e:
             logger.error(f"Redis refresh token store failed: {e}")
 
-    def is_valid_refresh_token(self, jti: str) -> bool:
+    async def is_valid_refresh_token(self, jti: str) -> bool:
         try:
-            return self._redis.exists(f"refresh:{jti}") > 0
+            return await self._redis.exists(f"refresh:{jti}") > 0
         except redis.RedisError as e:
             logger.error(f"Redis refresh token check failed: {e}")
             return False  # fail-secure: Redis down invalidates refresh tokens
 
-    def revoke_refresh_token(self, jti: str) -> None:
+    async def revoke_refresh_token(self, jti: str) -> None:
         try:
-            self._redis.delete(f"refresh:{jti}")
+            await self._redis.delete(f"refresh:{jti}")
         except redis.RedisError as e:
             logger.error(f"Redis refresh token revoke failed: {e}")
 
@@ -55,27 +55,27 @@ class RedisClient:
     # Generic cache
     # ------------------------------------------------------------------
 
-    def cache_set(self, key: str, value: str, ttl_seconds: int) -> None:
+    async def cache_set(self, key: str, value: str, ttl_seconds: int) -> None:
         try:
-            self._redis.setex(key, ttl_seconds, value)
+            await self._redis.setex(key, ttl_seconds, value)
         except redis.RedisError as e:
             logger.error(f"Redis cache set failed for key={key}: {e}")
 
-    def cache_get(self, key: str) -> Optional[str]:
+    async def cache_get(self, key: str) -> Optional[str]:
         try:
-            return self._redis.get(key)
+            return await self._redis.get(key)
         except redis.RedisError as e:
             logger.error(f"Redis cache get failed for key={key}: {e}")
             return None
 
-    def ping(self) -> bool:
+    async def ping(self) -> bool:
         try:
-            return self._redis.ping()
+            return await self._redis.ping()
         except redis.RedisError:
             return False
 
-    def close(self) -> None:
-        self._redis.close()
+    async def close(self) -> None:
+        await self._redis.aclose()
 
 
 class RedisManager:
@@ -102,9 +102,9 @@ class RedisManager:
         return client
 
     @classmethod
-    def reset(cls) -> None:
+    async def reset(cls) -> None:
         with cls._lock:
             if cls._client:
-                cls._client.close()
+                await cls._client.close()
             cls._client = None
             logger.info("Redis client reset.")

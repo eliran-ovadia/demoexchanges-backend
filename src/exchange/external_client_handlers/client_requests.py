@@ -26,9 +26,9 @@ def _to_quote_schema(raw: dict) -> QuoteSchema:
     )
 
 
-def fetch_stock_price(symbol: str) -> float:
+async def fetch_stock_price(symbol: str) -> float:
     fmp = ClientManager.get_client()
-    data = fmp.get(endpoint="quote-short",params={"symbol": symbol})
+    data = await fmp.get(endpoint="quote-short", params={"symbol": symbol})
     if not data:
         logger.critical(f"Price not found for symbol: {symbol}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -36,11 +36,11 @@ def fetch_stock_price(symbol: str) -> float:
     return float(data[0].get("price") or 0.0)
 
 
-def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
+async def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
     """Always returns {symbol: QuoteSchema} — same shape for one or many symbols."""
     fmp = ClientManager.get_client()
-    endpoint = "batch-quote" if "," in symbols else "quote" # Backup because we use the starter plan so we do not have access to batch-quote
-    data = fmp.get(endpoint=endpoint, params={"symbol": symbols})
+    endpoint = "batch-quote" if "," in symbols else "quote"
+    data = await fmp.get(endpoint=endpoint, params={"symbol": symbols})
     if not data:
         logger.error(f"Quote not found for symbols: {symbols}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -48,9 +48,9 @@ def fetch_quote(symbols: str) -> dict[str, QuoteSchema]:
     return {item["symbol"]: _to_quote_schema(item) for item in data}
 
 
-def fetch_search(prompt: str, output_size: int = 50) -> list[dict]:
+async def fetch_search(prompt: str, output_size: int = 50) -> list[dict]:
     fmp = ClientManager.get_client()
-    data = fmp.get("search-symbol", params={"query": prompt, "limit": output_size})
+    data = await fmp.get("search-symbol", params={"query": prompt, "limit": output_size})
     if not data:
         logger.critical(f"Search failed for prompt: {prompt}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -58,20 +58,20 @@ def fetch_search(prompt: str, output_size: int = 50) -> list[dict]:
     return data
 
 
-def fetch_sentiment(symbol: str) -> dict:
+async def fetch_sentiment(symbol: str) -> dict:
     fmp = ClientManager.get_client()
-    data = fmp.get("grades-consensus", params={"symbol": symbol})
+    data = await fmp.get("grades-consensus", params={"symbol": symbol})
     if not data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="No sentiment data for this symbol")
     return data[0]
 
 
-def fetch_all_stocks() -> list:
+async def fetch_all_stocks() -> list:
     """Returns NYSE/NASDAQ stocks normalized to the UsStocks model field shape."""
     fmp = ClientManager.get_client()
     try:
-        data = fmp.get("stock/list")
+        data = await fmp.get("stock/list")
     except Exception as e:
         logger.error(f"Failed to fetch stock list: {e}")
         return []
@@ -92,9 +92,9 @@ def fetch_all_stocks() -> list:
     ]
 
 
-def fetch_market_movers() -> dict:
+async def fetch_market_movers() -> dict:
     fmp = ClientManager.get_client()
-    data = fmp.get(endpoint="most-actives")
+    data = await fmp.get(endpoint="most-actives")
     if not data:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail="Market movers unavailable")
@@ -111,22 +111,21 @@ def fetch_market_movers() -> dict:
     return {"stocks": stocks}
 
 
-def fetch_market_status() -> dict:
+async def fetch_market_status() -> dict:
     fmp = ClientManager.get_client()
-    data = fmp.get(endpoint="exchange-market-hours", params={"exchange": "NASDAQ"})[0]
-    if not isinstance(data, dict):
+    data = await fmp.get(endpoint="exchange-market-hours", params={"exchange": "NASDAQ"})
+    if not data or not isinstance(data[0], dict):
         logger.critical("Unexpected response from FMP market-status endpoint")
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail="Market status unavailable")
-    return data
+    return data[0]
 
 
-def fetch_splits_calendar(from_date: str, to_date: str) -> list:
+async def fetch_splits_calendar(from_date: str, to_date: str) -> list:
     """Returns all stock splits in the given date range across all tickers."""
     fmp = ClientManager.get_client()
     try:
-        # "from" is a Python keyword — must be passed via explicit dict
-        data = fmp.get("stock-split-calendar", params={"from": from_date, "to": to_date})
+        data = await fmp.get("stock-split-calendar", params={"from": from_date, "to": to_date})
     except Exception as e:
         logger.error(f"Failed to fetch splits calendar {from_date} → {to_date}: {e}")
         return []

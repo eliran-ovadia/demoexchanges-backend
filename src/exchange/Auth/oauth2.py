@@ -14,9 +14,9 @@ _CREDENTIALS_EXCEPTION = HTTPException(
 )
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     token_data, jti = verify_token(token, _CREDENTIALS_EXCEPTION)
-    if RedisManager.get_client().is_blacklisted(jti):
+    if await RedisManager.get_client().is_blacklisted(jti):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has been revoked",
@@ -25,6 +25,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     return token_data
 
 
-def get_raw_token(token: str = Depends(oauth2_scheme)) -> str:
+async def get_raw_token(token: str = Depends(oauth2_scheme)) -> str:
     """Returns the raw JWT string — used by logout to blacklist it."""
     return token
