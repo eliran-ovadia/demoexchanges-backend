@@ -35,25 +35,38 @@ class WatchlistManager:
         return {"message": "Stock added successfully to your watchlist"}
 
     def delete_from_watchlist(self, symbol: str) -> dict:
-        entry = (self.db.query(WatchlistItem)
-                 .filter(WatchlistItem.symbol == symbol, WatchlistItem.user_id == self.user_id)
-                 .first())
-        if entry is None:
+        deleted = (
+            self.db.query(WatchlistItem)
+            .filter(WatchlistItem.symbol == symbol, WatchlistItem.user_id == self.user_id)
+            .delete(synchronize_session=False)
+        )
+        if not deleted:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"'{symbol}' is not in your watchlist")
-        self.db.delete(entry)
         try:
             self.db.commit()
-        except IntegrityError:
+        except Exception:
             self.db.rollback()
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"An error occurred while removing '{symbol}'")
         return {"message": "Stock deleted successfully from your watchlist"}
 
     def get_watchlist(self, page: int, page_size: int) -> dict:
-        watchlist = (self.db.query(WatchlistItem)
-                     .filter(WatchlistItem.user_id == self.user_id)
-                     .offset((page - 1) * page_size)
-                     .limit(page_size)
-                     .all())
-        return {"watchlist": [item.symbol for item in watchlist]}
+        total_items = (
+            self.db.query(WatchlistItem)
+            .filter(WatchlistItem.user_id == self.user_id)
+            .count()
+        )
+        watchlist = (
+            self.db.query(WatchlistItem)
+            .filter(WatchlistItem.user_id == self.user_id)
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )
+        return {
+            "total_items": total_items,
+            "page": page,
+            "page_size": page_size,
+            "watchlist": [item.symbol for item in watchlist],
+        }
