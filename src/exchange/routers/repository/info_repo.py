@@ -78,6 +78,6 @@ def market_movers() -> MarketMoversResponse:
     return MarketMoversResponse(stocks=stocks_list).model_dump()
 
 
-def stock_sentiment(symbol: str) -> list[dict[str, Any]]:
+def stock_sentiment(symbol: str) -> dict[str, Any]:
     raw = fetch_sentiment(symbol)
-    return [SentimentEntry(**item).model_dump() for item in raw]
+    return SentimentEntry(**raw).model_dump()

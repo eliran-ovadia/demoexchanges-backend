@@ -3,7 +3,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 
-from src.exchange.schemas.fmp_schemas import SearchResponse, MarketStatusResponse, ParsedQuoteResponse, MarketMoversResponse
+from src.exchange.schemas.fmp_schemas import SearchResponse, MarketStatusResponse, ParsedQuoteResponse, \
+    MarketMoversResponse, SentimentEntry
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
 from src.exchange.rate_limiter import limiter
@@ -45,7 +46,7 @@ def get_market_movers(request: Request, current_user: TokenData = check_auth) ->
     return market_movers()
 
 
-@router.get('/StockSentiment', response_model=dict[str, Any], status_code=status.HTTP_200_OK)
+@router.get('/StockSentiment', response_model=SentimentEntry, status_code=status.HTTP_200_OK)
 @limiter.limit("20/minute")
-def get_stock_sentiment(request: Request, symbol: str, current_user: TokenData = check_auth) -> list[dict[str, Any]]:
+def get_stock_sentiment(request: Request, symbol: str, current_user: TokenData = check_auth) -> dict[str, Any]:
     return stock_sentiment(symbol)

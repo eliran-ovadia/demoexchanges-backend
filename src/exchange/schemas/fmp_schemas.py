@@ -72,13 +72,13 @@ class MarketStatusResponse(BaseModel):
 
 
 class SentimentEntry(BaseModel):
-    symbol: Optional[str] = None
-    period: Optional[str] = None
+    symbol: str
     strongBuy: int = 0
     buy: int = 0
     hold: int = 0
     sell: int = 0
     strongSell: int = 0
+    consensus: Optional[str] = None
 
 
 class MarketMoverEntry(BaseModel):

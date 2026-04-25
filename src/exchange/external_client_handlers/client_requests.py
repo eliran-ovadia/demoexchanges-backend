@@ -58,24 +58,13 @@ def fetch_search(prompt: str, output_size: int = 50) -> list[dict]:
     return data
 
 
-def fetch_sentiment(symbol: str) -> list:
+def fetch_sentiment(symbol: str) -> dict:
     fmp = ClientManager.get_client()
-    data = fmp.get(f"analyst-stock-recommendations/{symbol}")
+    data = fmp.get("grades-consensus", params={"symbol": symbol})
     if not data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="No sentiment data for this symbol")
-    return [
-        {
-            "symbol": item.get("symbol"),
-            "period": item.get("date"),
-            "strongBuy": item.get("analystRatingsStrongBuy", 0),
-            "buy": item.get("analystRatingsbuy", 0),
-            "hold": item.get("analystRatingsHold", 0),
-            "sell": item.get("analystRatingsSell", 0),
-            "strongSell": item.get("analystRatingsStrongSell", 0),
-        }
-        for item in data
-    ]
+    return data[0]
 
 
 def fetch_all_stocks() -> list:
