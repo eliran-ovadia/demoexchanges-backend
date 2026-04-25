@@ -2,7 +2,7 @@ import os
 import threading
 import time
 
-import requests
+import httpx
 from fastapi import HTTPException, status
 
 from src.exchange.app_logger import logger
@@ -17,7 +17,9 @@ class FMPClient:
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self._session = requests.Session()
+        self._client = httpx.Client(
+            timeout=httpx.Timeout(connect=_CONNECT_TIMEOUT, read=_READ_TIMEOUT),
+        )
 
     def get(self, endpoint: str, params: dict | None = None) -> dict | list:
         all_params = dict(params or {})
@@ -26,13 +28,11 @@ class FMPClient:
 
         for attempt in range(_MAX_RETRIES + 1):
             try:
-                response = self._session.get(
-                    url, params=all_params, timeout=(_CONNECT_TIMEOUT, _READ_TIMEOUT)
-                )
+                response = self._client.get(url, params=all_params)
                 response.raise_for_status()
                 return response.json()
 
-            except requests.HTTPError as e:
+            except httpx.HTTPStatusError as e:
                 code = e.response.status_code
                 if code < 500 or attempt == _MAX_RETRIES:
                     logger.error(f"FMP {endpoint} → {code}: {e.response.text[:200]}")
@@ -40,14 +40,14 @@ class FMPClient:
                                         detail="Market data unavailable")
                 logger.warning(f"FMP {endpoint} → {code}, retrying ({attempt + 1}/{_MAX_RETRIES})")
 
-            except requests.ConnectionError as e:
+            except httpx.ConnectError as e:
                 if attempt == _MAX_RETRIES:
                     logger.critical(f"FMP connection failed for {endpoint}: {e}")
                     raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                         detail="Market data service unreachable")
                 logger.warning(f"FMP connection error, retrying ({attempt + 1}/{_MAX_RETRIES})")
 
-            except requests.Timeout:
+            except httpx.TimeoutException:
                 if attempt == _MAX_RETRIES:
                     logger.critical(f"FMP timed out for {endpoint}")
                     raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT,
@@ -57,7 +57,7 @@ class FMPClient:
             time.sleep(0.3 * 2 ** attempt)  # 0.3s, then 0.6s
 
     def close(self):
-        self._session.close()
+        self._client.close()
 
 
 class ClientManager:
