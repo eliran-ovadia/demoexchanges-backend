@@ -1,20 +1,20 @@
 from typing import Any
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exchange.background_tasks.fetch_market_movers.market_movers_handler import MarketMoversManager
 from src.exchange.external_client_handlers.client_requests import (
-    fetch_quote, fetch_market_status, fetch_search, fetch_sentiment
+    fetch_quote, fetch_market_status, fetch_search, fetch_sentiment,
 )
 from src.exchange.schemas.fmp_schemas import (
     ParsedQuoteResponse, SearchResult, SearchResponse,
-    MarketStatusResponse, SentimentEntry, MarketMoversResponse
+    MarketStatusResponse, SentimentEntry, MarketMoversResponse,
 )
 
 
-def parsed_quote(symbols: str) -> dict[str, ParsedQuoteResponse]:
-    quote = fetch_quote(symbols)
+async def parsed_quote(symbols: str) -> dict[str, ParsedQuoteResponse]:
+    quote = await fetch_quote(symbols)
     return {
         symbol: ParsedQuoteResponse(
             full_name=q.name,
@@ -35,22 +35,20 @@ def parsed_quote(symbols: str) -> dict[str, ParsedQuoteResponse]:
     }
 
 
-def market_status(db: Session) -> dict[str, Any]:
-    data = fetch_market_status()
+async def market_status(db: AsyncSession) -> dict[str, Any]:
+    data = await fetch_market_status()
     return MarketStatusResponse(
         exchange=data.get("exchange"),
         is_open=data.get("isMarketOpen"),
-        # open_time=data.get("openingHour"),
-        # close_time = data.get("closingHour")
     ).model_dump()
 
 
-def stock_search(request: str, page: int, page_size: int) -> SearchResponse:
-    raw = fetch_search(request)
+async def stock_search(request: str, page: int, page_size: int) -> SearchResponse:
+    raw = await fetch_search(request)
     results = [
         SearchResult(
             country="US",
-            currency=item.get("currency", "USD*"), # * BECAUSE IT MAY NOT BE USD
+            currency=item.get("currency", "USD*"),
             exchange=item.get("exchange", ""),
             instrument_name=item.get("name", ""),
             symbol=item.get("symbol", ""),
@@ -67,17 +65,16 @@ def stock_search(request: str, page: int, page_size: int) -> SearchResponse:
     ).model_dump()
 
 
-def market_movers() -> MarketMoversResponse:
-    movers = MarketMoversManager.get_market_movers()
+async def market_movers() -> MarketMoversResponse:
+    movers = await MarketMoversManager.get_market_movers()
     if movers is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Market movers not yet available — try again shortly"
+            detail="Market movers not yet available — try again shortly",
         )
-    stocks_list: list[dict] = movers.get("stocks")
-    return MarketMoversResponse(stocks=stocks_list).model_dump()
+    return MarketMoversResponse(stocks=movers.get("stocks")).model_dump()
 
 
-def stock_sentiment(symbol: str) -> dict[str, Any]:
-    raw = fetch_sentiment(symbol)
+async def stock_sentiment(symbol: str) -> dict[str, Any]:
+    raw = await fetch_sentiment(symbol)
     return SentimentEntry(**raw).model_dump()

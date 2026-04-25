@@ -1,4 +1,4 @@
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from src.exchange.app_logger import logger
 
@@ -6,7 +6,7 @@ from src.exchange.app_logger import logger
 class SchedulerManager:
 
     def __init__(self):
-        self.scheduler = BackgroundScheduler()
+        self.scheduler = AsyncIOScheduler()
 
     def start(self):
         if not self.scheduler.running:

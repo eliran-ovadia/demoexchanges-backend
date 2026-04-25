@@ -1,17 +1,14 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exchange.database.models import User
 
 
-def find_user(db: Session, user_id: str = None, email: str = None) -> User | bool:
+async def find_user(db: AsyncSession, user_id: str = None, email: str = None) -> User | None:
     if user_id:
-        user = db.query(User).filter(User.id == user_id).first()
+        result = await db.execute(select(User).where(User.id == user_id))
     elif email:
-        user = db.query(User).filter(User.email == email).first()
+        result = await db.execute(select(User).where(User.email == email))
     else:
         raise ValueError("Either user_id or email must be provided.")
-
-    if not user:
-        return False
-
-    return user
+    return result.scalar_one_or_none()

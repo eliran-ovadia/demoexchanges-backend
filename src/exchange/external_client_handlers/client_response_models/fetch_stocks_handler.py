@@ -1,5 +1,5 @@
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exchange.app_logger import logger
 from src.exchange.database.models import UsStocks
@@ -16,7 +16,7 @@ class FetchStocksHandler:
     def __init__(self, stock_data: list):
         self.stock_data = stock_data
 
-    def update_stocks_in_db(self, db: Session) -> None:
+    async def update_stocks_in_db(self, db: AsyncSession) -> None:
         if not self.stock_data:
             return
 
@@ -24,14 +24,14 @@ class FetchStocksHandler:
         incoming_symbols = [s["symbol"] for s in valid]
 
         try:
-            self._upsert_chunks(db, valid)
-            self._delete_removed(db, incoming_symbols)
-            db.commit()
+            await self._upsert_chunks(db, valid)
+            await self._delete_removed(db, incoming_symbols)
+            await db.commit()
         except Exception as e:
-            db.rollback()
+            await db.rollback()
             logger.critical(f"Failed to sync us_stocks: {e}")
 
-    def _upsert_chunks(self, db: Session, stocks: list) -> None:
+    async def _upsert_chunks(self, db: AsyncSession, stocks: list) -> None:
         for i in range(0, len(stocks), _CHUNK_SIZE):
             chunk = stocks[i: i + _CHUNK_SIZE]
             stmt = insert(UsStocks).values([
@@ -55,10 +55,11 @@ class FetchStocksHandler:
                     "type": stmt.excluded.type,
                 },
             )
-            db.execute(stmt)
+            await db.execute(stmt)
 
     @staticmethod
-    def _delete_removed(db: Session, incoming_symbols: list[str]) -> None:
-        db.query(UsStocks).filter(
-            UsStocks.symbol.notin_(incoming_symbols)
-        ).delete(synchronize_session=False)
+    async def _delete_removed(db: AsyncSession, incoming_symbols: list[str]) -> None:
+        from sqlalchemy import delete
+        await db.execute(
+            delete(UsStocks).where(UsStocks.symbol.notin_(incoming_symbols))
+        )

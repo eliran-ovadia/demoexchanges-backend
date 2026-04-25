@@ -1,58 +1,58 @@
 from typing import Tuple, Any, Dict, Optional
 
 from fastapi import HTTPException, status
-from sqlalchemy import func
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exchange.app_logger import logger
 from src.exchange.database.models import Portfolio
 from src.exchange.external_client_handlers.client_requests import fetch_quote
 from src.exchange.schemas.fmp_schemas import QuoteSchema
 from src.exchange.schemas.schemas import TokenData, ShowStock
-from .find_user import *
+from .find_user import find_user
 
 
-def fetch_portfolio_data(db: Session,
-                         current_user: TokenData,
-                         page: int,
-                         page_size: int) -> Tuple[int, Optional[Dict[str, Any]]]:
-    result = (
-        db.query(
+async def fetch_portfolio_data(
+    db: AsyncSession,
+    current_user: TokenData,
+    page: int,
+    page_size: int,
+) -> Tuple[int, Optional[Dict[str, Any]]]:
+    rows = (await db.execute(
+        select(
             Portfolio.symbol,
             func.sum(Portfolio.amount).label("total_amount"),
             func.avg(Portfolio.price).label("avg_price"),
         )
-        .filter(Portfolio.user_id == current_user.id)
+        .where(Portfolio.user_id == current_user.id)
         .group_by(Portfolio.symbol)
         .order_by(Portfolio.symbol.desc())
         .offset((page - 1) * page_size)
         .limit(page_size)
-        .all()
-    )
+    )).all()
 
-    total_stocks = (
-        db.query(Portfolio.symbol)
-        .filter(Portfolio.user_id == current_user.id)
-        .group_by(Portfolio.symbol)
-        .count()
-    )
+    total_stocks = (await db.execute(
+        select(func.count(Portfolio.symbol.distinct()))
+        .where(Portfolio.user_id == current_user.id)
+    )).scalar()
 
     data = (
         {symbol: {"total_amount": total_amount, "avg_price": avg_price}
-         for symbol, total_amount, avg_price in result}
-        if result else None
+         for symbol, total_amount, avg_price in rows}
+        if rows else None
     )
     return total_stocks, data
 
 
-def fetch_quotes(symbols: list[str]) -> dict[str, QuoteSchema]:
+async def fetch_quotes(symbols: list[str]) -> dict[str, QuoteSchema]:
     try:
-        return fetch_quote(",".join(symbols))
+        return await fetch_quote(",".join(symbols))
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-def handle_empty_portfolio(db: Session, current_user: TokenData, total_stocks: int) -> dict:
-    user = find_user(db, user_id=current_user.id)
+async def handle_empty_portfolio(db: AsyncSession, current_user: TokenData, total_stocks: int) -> dict:
+    user = await find_user(db, user_id=current_user.id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return dict(
@@ -107,11 +107,13 @@ def _build_show_stock(symbol: str, data: dict, q: QuoteSchema) -> ShowStock:
     )
 
 
-def build_portfolio_response(db: Session,
-                             current_user: TokenData,
-                             portfolio_data: list[ShowStock],
-                             total_stocks: int) -> dict:
-    user = find_user(db, user_id=current_user.id)
+async def build_portfolio_response(
+    db: AsyncSession,
+    current_user: TokenData,
+    portfolio_data: list[ShowStock],
+    total_stocks: int,
+) -> dict:
+    user = await find_user(db, user_id=current_user.id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     portfolio_value = round(sum(x.total_value for x in portfolio_data), 2)

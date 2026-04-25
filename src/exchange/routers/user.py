@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exchange.Auth.oauth2 import get_current_user
 from src.exchange.database.db_conn import get_db
@@ -14,26 +14,26 @@ check_auth = Depends(get_current_user)
 
 @router.post('/CreateUser', response_model=dict[str, str], status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
-def create_user(request: Request, body: CreateUser, db: Session = check_db) -> dict[str, str]:
-    return user_repo.create_user(body, db)
+async def create_user(request: Request, body: CreateUser, db: AsyncSession = check_db) -> dict[str, str]:
+    return await user_repo.create_user(body, db)
 
 
 @router.patch('/ResetPortfolio/', response_model=dict[str, str], status_code=status.HTTP_200_OK)
 @limiter.limit("5/minute")
-def reset_portfolio(
+async def reset_portfolio(
     request: Request,
-    db: Session = check_db,
+    db: AsyncSession = check_db,
     current_user: TokenData = check_auth,
 ) -> dict[str, str]:
-    return user_repo.reset_portfolio(db, current_user)
+    return await user_repo.reset_portfolio(db, current_user)
 
 
 @router.delete('/DeleteUser/', response_model=dict[str, str], status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
-def delete_user(
+async def delete_user(
     request: Request,
     email: str,
-    db: Session = check_db,
+    db: AsyncSession = check_db,
     current_user: TokenData = check_auth,
 ) -> dict[str, str]:
-    return user_repo.delete_user(email, db, current_user)
+    return await user_repo.delete_user(email, db, current_user)
