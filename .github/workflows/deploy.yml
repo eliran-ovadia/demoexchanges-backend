@@ -1,8 +1,8 @@
 name: Deploy to ECS
 
 on:
-  push:
-    branches: [master]
+  workflow_dispatch: :
+#    branches: [master]
 
 env:
   AWS_REGION: il-central-1          # ← update if your RDS is in a different region
