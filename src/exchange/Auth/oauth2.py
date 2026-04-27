@@ -5,7 +5,7 @@ from src.exchange.Auth.token_functions import verify_token
 from src.exchange.redis_manager import RedisManager
 from src.exchange.schemas.schemas import TokenData
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="Token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 _CREDENTIALS_EXCEPTION = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,

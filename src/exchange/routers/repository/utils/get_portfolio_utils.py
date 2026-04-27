@@ -1,4 +1,4 @@
-from typing import Tuple, Any, Dict, Optional
+from typing import Tuple, Dict, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -8,7 +8,7 @@ from src.exchange.app_logger import logger
 from src.exchange.database.models import Portfolio
 from src.exchange.external_client_handlers.client_requests import fetch_quote
 from src.exchange.schemas.fmp_schemas import QuoteSchema
-from src.exchange.schemas.schemas import TokenData, ShowStock
+from src.exchange.schemas.schemas import TokenData, ShowStock, PortfolioResponse, PortfolioBalance
 from .find_user import find_user
 
 
@@ -51,19 +51,19 @@ async def fetch_quotes(symbols: list[str]) -> dict[str, QuoteSchema]:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-async def handle_empty_portfolio(db: AsyncSession, current_user: TokenData, total_stocks: int) -> dict:
+async def handle_empty_portfolio(db: AsyncSession, current_user: TokenData, total_stocks: int) -> PortfolioResponse:
     user = await find_user(db, user_id=current_user.id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    return dict(
-        balance={
-            "buying_power": round(float(user.cash), 2),
-            "portfolio_value": 0.00,
-            "total_return": 0.00,
-            "total_return_percent": 0.00,
-            "account_value": round(float(user.cash), 2),
-            "total_stocks": total_stocks,
-        },
+    return PortfolioResponse(
+        balance=PortfolioBalance(
+            buying_power=round(float(user.cash), 2),
+            portfolio_value=0.00,
+            total_return=0.00,
+            total_return_percent=0.00,
+            account_value=round(float(user.cash), 2),
+            total_stocks=total_stocks,
+        ),
         portfolio=[],
     )
 
@@ -112,7 +112,7 @@ async def build_portfolio_response(
     current_user: TokenData,
     portfolio_data: list[ShowStock],
     total_stocks: int,
-) -> dict:
+) -> PortfolioResponse:
     user = await find_user(db, user_id=current_user.id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -121,14 +121,14 @@ async def build_portfolio_response(
     total_invested = round(sum(x.avg_price * x.amount for x in portfolio_data), 2)
     total_return_percent = round((total_return / total_invested) * 100, 2) if total_invested > 0 else 0
 
-    return dict(
-        balance={
-            "buying_power": round(float(user.cash), 2),
-            "portfolio_value": portfolio_value,
-            "total_return": total_return,
-            "total_return_percent": total_return_percent,
-            "account_value": round(float(user.cash) + portfolio_value, 2),
-            "total_stocks": total_stocks,
-        },
+    return PortfolioResponse(
+        balance=PortfolioBalance(
+            buying_power=round(float(user.cash), 2),
+            portfolio_value=portfolio_value,
+            total_return=total_return,
+            total_return_percent=total_return_percent,
+            account_value=round(float(user.cash) + portfolio_value, 2),
+            total_stocks=total_stocks,
+        ),
         portfolio=portfolio_data,
     )

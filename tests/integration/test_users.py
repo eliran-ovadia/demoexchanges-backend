@@ -16,13 +16,13 @@ VALID_PAYLOAD = {
 # ── POST /api/CreateUser ─────────────────────────────────────────────────────
 
 async def test_create_user_returns_201(client):
-    resp = await client.post("/api/CreateUser", json=VALID_PAYLOAD)
+    resp = await client.post("/api/users", json=VALID_PAYLOAD)
     assert resp.status_code == 201
     assert "jane@example.com" in resp.json()["message"]
 
 
 async def test_create_user_starts_with_100k_cash(client, db_session):
-    await client.post("/api/CreateUser", json=VALID_PAYLOAD)
+    await client.post("/api/users", json=VALID_PAYLOAD)
     from sqlalchemy import select
     user = (await db_session.execute(
         select(User).where(User.email == VALID_PAYLOAD["email"])
@@ -32,14 +32,14 @@ async def test_create_user_starts_with_100k_cash(client, db_session):
 
 
 async def test_create_user_duplicate_email_returns_400(client):
-    await client.post("/api/CreateUser", json=VALID_PAYLOAD)
-    resp = await client.post("/api/CreateUser", json=VALID_PAYLOAD)
+    await client.post("/api/users", json=VALID_PAYLOAD)
+    resp = await client.post("/api/users", json=VALID_PAYLOAD)
     assert resp.status_code == 400
     assert "taken" in resp.json()["detail"].lower()
 
 
 async def test_create_user_weak_password_returns_422(client):
-    resp = await client.post("/api/CreateUser", json={
+    resp = await client.post("/api/users", json={
         **VALID_PAYLOAD,
         "password": "weakpassword",
         "password_confirm": "weakpassword",
@@ -48,7 +48,7 @@ async def test_create_user_weak_password_returns_422(client):
 
 
 async def test_create_user_passwords_mismatch_returns_422(client):
-    resp = await client.post("/api/CreateUser", json={
+    resp = await client.post("/api/users", json={
         **VALID_PAYLOAD,
         "password_confirm": "Different#Pass9",
     })
@@ -56,7 +56,7 @@ async def test_create_user_passwords_mismatch_returns_422(client):
 
 
 async def test_create_user_invalid_email_returns_422(client):
-    resp = await client.post("/api/CreateUser", json={**VALID_PAYLOAD, "email": "bad-email"})
+    resp = await client.post("/api/users", json={**VALID_PAYLOAD, "email": "bad-email"})
     assert resp.status_code == 422
 
 
@@ -79,7 +79,7 @@ async def test_reset_portfolio_clears_holdings_and_restores_cash(client, registe
     user_row.cash = 99_250
     await db_session.commit()
 
-    resp = await client.patch("/api/ResetPortfolio/", headers=auth_headers)
+    resp = await client.patch("/api/portfolio/reset", headers=auth_headers)
     assert resp.status_code == 200
     assert "$100,000" in resp.json()["message"]
 
@@ -93,7 +93,7 @@ async def test_reset_portfolio_clears_holdings_and_restores_cash(client, registe
 
 
 async def test_reset_portfolio_requires_auth(client):
-    resp = await client.patch("/api/ResetPortfolio/")
+    resp = await client.patch("/api/portfolio/reset")
     assert resp.status_code == 401
 
 
@@ -101,7 +101,7 @@ async def test_reset_portfolio_requires_auth(client):
 
 async def test_delete_user_by_non_admin_returns_403(client, registered_user, auth_headers):
     resp = await client.delete(
-        "/api/DeleteUser/",
+        "/api/users",
         params={"email": "someone@example.com"},
         headers=auth_headers,
     )
@@ -123,7 +123,7 @@ async def test_delete_user_by_admin_returns_200(client, admin_headers, db_sessio
     await db_session.commit()
 
     resp = await client.delete(
-        "/api/DeleteUser/",
+        "/api/users",
         params={"email": "target@example.com"},
         headers=admin_headers,
     )
@@ -133,7 +133,7 @@ async def test_delete_user_by_admin_returns_200(client, admin_headers, db_sessio
 
 async def test_delete_nonexistent_user_returns_404(client, admin_headers):
     resp = await client.delete(
-        "/api/DeleteUser/",
+        "/api/users",
         params={"email": "nobody@example.com"},
         headers=admin_headers,
     )
@@ -154,7 +154,7 @@ async def test_admin_cannot_delete_another_admin(client, admin_headers, db_sessi
     await db_session.commit()
 
     resp = await client.delete(
-        "/api/DeleteUser/",
+        "/api/users",
         params={"email": "other_admin@example.com"},
         headers=admin_headers,
     )

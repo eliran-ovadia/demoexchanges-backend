@@ -12,7 +12,7 @@ router = APIRouter(tags=['Authentication'])
 check_db = Depends(get_db)
 
 
-@router.post('/Token')
+@router.post('/token')
 @limiter.limit("5/minute")
 async def get_token(
     request: Request,
@@ -22,13 +22,13 @@ async def get_token(
     return await get_bearer_token(username=form_data.username, password=form_data.password, db=db)
 
 
-@router.post('/Refresh')
+@router.post('/refresh')
 @limiter.limit("20/minute")
 async def refresh(request: Request, body: RefreshRequest, db: AsyncSession = check_db) -> Token:
     return await refresh_tokens(body.refresh_token, db)
 
 
-@router.post('/Logout', status_code=204)
+@router.post('/logout', status_code=204)
 @limiter.limit("10/minute")
 async def logout_user(
     request: Request,

@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.exchange.database.models import WatchlistItem
+from src.exchange.schemas.schemas import MessageResponse, WatchlistResponse
 
 
 class WatchlistManager:
@@ -20,7 +21,7 @@ class WatchlistManager:
         except HTTPException:
             return False
 
-    async def add_to_watchlist(self, symbol: str) -> dict:
+    async def add_to_watchlist(self, symbol: str) -> MessageResponse:
         if not await self._symbol_exists(symbol):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"Symbol '{symbol}' not found")
@@ -31,9 +32,9 @@ class WatchlistManager:
             await self.db.rollback()
             raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                                 detail=f"'{symbol}' is already in your watchlist")
-        return {"message": "Stock added successfully to your watchlist"}
+        return MessageResponse(message="Stock added successfully to your watchlist")
 
-    async def delete_from_watchlist(self, symbol: str) -> dict:
+    async def delete_from_watchlist(self, symbol: str) -> MessageResponse:
         result = await self.db.execute(
             delete(WatchlistItem).where(
                 WatchlistItem.symbol == symbol,
@@ -49,9 +50,9 @@ class WatchlistManager:
             await self.db.rollback()
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"An error occurred while removing '{symbol}'")
-        return {"message": "Stock deleted successfully from your watchlist"}
+        return MessageResponse(message="Stock deleted successfully from your watchlist")
 
-    async def get_watchlist(self, page: int, page_size: int) -> dict:
+    async def get_watchlist(self, page: int, page_size: int) -> WatchlistResponse:
         total_items = (await self.db.execute(
             select(func.count(WatchlistItem.id)).where(WatchlistItem.user_id == self.user_id)
         )).scalar()
@@ -63,9 +64,9 @@ class WatchlistManager:
             .limit(page_size)
         )).scalars().all()
 
-        return {
-            "total_items": total_items,
-            "page": page,
-            "page_size": page_size,
-            "watchlist": [item.symbol for item in watchlist],
-        }
+        return WatchlistResponse(
+            total_items=total_items,
+            page=page,
+            page_size=page_size,
+            watchlist=[item.symbol for item in watchlist],
+        )
