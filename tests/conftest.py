@@ -109,14 +109,14 @@ ADMIN_PASSWORD = "AdminSecure#9"
 
 @pytest_asyncio.fixture
 async def registered_user(client):
-    await client.post("/api/CreateUser", json=USER_PAYLOAD)
+    await client.post("/api/users", json=USER_PAYLOAD)
     return USER_PAYLOAD
 
 
 @pytest_asyncio.fixture
 async def auth_tokens(client, registered_user):
     resp = await client.post(
-        "/Token",
+        "/token",
         data={"username": USER_EMAIL, "password": USER_PASSWORD},
     )
     data = resp.json()
@@ -147,7 +147,7 @@ async def admin_user(db_session):
 @pytest_asyncio.fixture
 async def admin_headers(client, admin_user):
     resp = await client.post(
-        "/Token",
+        "/token",
         data={"username": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
     )
     token = resp.json()["access_token"]

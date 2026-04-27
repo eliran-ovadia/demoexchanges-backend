@@ -197,6 +197,41 @@ class AfterOrder(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Responses
+# ---------------------------------------------------------------------------
+class MessageResponse(BaseModel):
+    message: str
+
+
+class PortfolioBalance(BaseModel):
+    buying_power: float
+    portfolio_value: float
+    total_return: float
+    total_return_percent: float
+    account_value: float
+    total_stocks: int
+
+
+class PortfolioResponse(BaseModel):
+    balance: PortfolioBalance
+    portfolio: list["ShowStock"]
+
+
+class HistoryResponse(BaseModel):
+    total_items: int
+    page: int
+    page_size: int
+    history: list["History"]
+
+
+class WatchlistResponse(BaseModel):
+    total_items: int
+    page: int
+    page_size: int
+    watchlist: list[str]
+
+
+# ---------------------------------------------------------------------------
 # Auth
 # ---------------------------------------------------------------------------
 class Login(BaseModel):

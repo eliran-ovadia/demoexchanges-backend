@@ -10,9 +10,10 @@ from src.exchange.app_logger import logger
 from src.exchange.database import models
 from src.exchange.routers.repository.utils.find_user import find_user
 from src.exchange.schemas import schemas
+from src.exchange.schemas.schemas import MessageResponse
 
 
-async def create_user(request: schemas.CreateUser, db: AsyncSession) -> dict[str, str]:
+async def create_user(request: schemas.CreateUser, db: AsyncSession) -> MessageResponse:
     new_user = models.User(
         id=str(uuid4()),
         name=request.name,
@@ -29,10 +30,10 @@ async def create_user(request: schemas.CreateUser, db: AsyncSession) -> dict[str
     except IntegrityError:
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email is already taken")
-    return {"message": f"Created a new user with email: {request.email}"}
+    return MessageResponse(message=f"Created a new user with email: {request.email}")
 
 
-async def reset_portfolio(db: AsyncSession, current_user: schemas.TokenData) -> dict[str, str]:
+async def reset_portfolio(db: AsyncSession, current_user: schemas.TokenData) -> MessageResponse:
     user = await find_user(db, user_id=current_user.id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not located")
@@ -45,10 +46,10 @@ async def reset_portfolio(db: AsyncSession, current_user: schemas.TokenData) -> 
         await db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="An error occurred while attempting to reset the portfolio.")
-    return {"message": "Portfolio is now empty and cash reset to $100,000"}
+    return MessageResponse(message="Portfolio is now empty and cash reset to $100,000")
 
 
-async def delete_user(request: str, db: AsyncSession, current_user: schemas.TokenData) -> dict[str, str]:
+async def delete_user(request: str, db: AsyncSession, current_user: schemas.TokenData) -> MessageResponse:
     requesting_user = await find_user(db, user_id=current_user.id)
     if not requesting_user or not requesting_user.is_admin:
         logger.warning(f"Unauthorized delete attempt by {current_user.email}")
@@ -72,7 +73,7 @@ async def delete_user(request: str, db: AsyncSession, current_user: schemas.Toke
                                 detail=f"An error occurred while attempting to delete {user_to_delete.email}")
 
         logger.info(f"User {request} deleted by admin {current_user.email}")
-        return {"message": "User has been deleted"}
+        return MessageResponse(message="User has been deleted")
 
     except HTTPException as e:
         logger.warning(f"Failed to delete user {request}: {e.detail}")

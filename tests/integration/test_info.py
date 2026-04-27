@@ -15,7 +15,7 @@ _GET_MOVERS = "src.exchange.routers.repository.info_repo.MarketMoversManager.get
 
 async def test_parsed_quote_returns_200(client, auth_headers):
     with patch(_FETCH_QUOTE, new_callable=AsyncMock, return_value={"AAPL": make_quote("AAPL", 150.0)}):
-        resp = await client.get("/api/ParsedQuote?symbol=AAPL", headers=auth_headers)
+        resp = await client.get("/api/quote?symbol=AAPL", headers=auth_headers)
 
     assert resp.status_code == 200
     body = resp.json()
@@ -25,7 +25,7 @@ async def test_parsed_quote_returns_200(client, auth_headers):
 
 
 async def test_parsed_quote_requires_auth(client):
-    resp = await client.get("/api/ParsedQuote?symbol=AAPL")
+    resp = await client.get("/api/quote?symbol=AAPL")
     assert resp.status_code == 401
 
 
@@ -36,7 +36,7 @@ async def test_market_status_returns_200(client, auth_headers):
         "exchange": "NASDAQ",
         "isMarketOpen": False,
     }):
-        resp = await client.get("/api/MarketStatus", headers=auth_headers)
+        resp = await client.get("/api/market-status", headers=auth_headers)
 
     assert resp.status_code == 200
     body = resp.json()
@@ -55,7 +55,7 @@ SEARCH_RAW = [
 
 async def test_stock_search_filters_to_us_exchanges(client, auth_headers):
     with patch(_FETCH_SEARCH, new_callable=AsyncMock, return_value=SEARCH_RAW):
-        resp = await client.get("/api/StockSearch?symbol=AAPL&page=1&page_size=10", headers=auth_headers)
+        resp = await client.get("/api/search?symbol=AAPL&page=1&page_size=10", headers=auth_headers)
 
     assert resp.status_code == 200
     body = resp.json()
@@ -70,7 +70,7 @@ async def test_stock_search_pagination(client, auth_headers):
         for i in range(8)
     ]
     with patch(_FETCH_SEARCH, new_callable=AsyncMock, return_value=many_results):
-        resp = await client.get("/api/StockSearch?symbol=SYM&page=1&page_size=3", headers=auth_headers)
+        resp = await client.get("/api/search?symbol=SYM&page=1&page_size=3", headers=auth_headers)
 
     body = resp.json()
     assert body["total_results"] == 8
@@ -82,7 +82,7 @@ async def test_stock_search_pagination(client, auth_headers):
 async def test_market_movers_returns_cached_data(client, auth_headers, fake_redis):
     await fake_redis.setex("market_movers", 3600, json.dumps(MOCK_MARKET_MOVERS))
 
-    resp = await client.get("/api/MarketMovers", headers=auth_headers)
+    resp = await client.get("/api/market-movers", headers=auth_headers)
     assert resp.status_code == 200
     body = resp.json()
     assert len(body["stocks"]) == 2
@@ -91,7 +91,7 @@ async def test_market_movers_returns_cached_data(client, auth_headers, fake_redi
 
 async def test_market_movers_unavailable_returns_503(client, auth_headers):
     with patch(_GET_MOVERS, new_callable=AsyncMock, return_value=None):
-        resp = await client.get("/api/MarketMovers", headers=auth_headers)
+        resp = await client.get("/api/market-movers", headers=auth_headers)
     assert resp.status_code == 503
 
 
@@ -110,7 +110,7 @@ SENTIMENT_RAW = {
 
 async def test_stock_sentiment_returns_200(client, auth_headers):
     with patch(_FETCH_SENTIMENT, new_callable=AsyncMock, return_value=SENTIMENT_RAW):
-        resp = await client.get("/api/StockSentiment?symbol=AAPL", headers=auth_headers)
+        resp = await client.get("/api/sentiment?symbol=AAPL", headers=auth_headers)
 
     assert resp.status_code == 200
     body = resp.json()
@@ -120,5 +120,5 @@ async def test_stock_sentiment_returns_200(client, auth_headers):
 
 
 async def test_stock_sentiment_requires_auth(client):
-    resp = await client.get("/api/StockSentiment?symbol=AAPL")
+    resp = await client.get("/api/sentiment?symbol=AAPL")
     assert resp.status_code == 401

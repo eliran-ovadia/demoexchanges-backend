@@ -1,5 +1,3 @@
-from typing import Any
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,7 +5,7 @@ from src.exchange.database.models import History as modelHistory
 from src.exchange.external_client_handlers.client_requests import fetch_stock_price
 from src.exchange.routers.repository.utils.order_utils import buy_handler, sell_handler
 from src.exchange.routers.repository.utils.watchlist_manager import WatchlistManager
-from src.exchange.schemas.schemas import History as schemaHistory, Stock
+from src.exchange.schemas.schemas import History as schemaHistory, Stock, HistoryResponse, MessageResponse, WatchlistResponse
 from src.exchange.schemas import schemas
 from .utils.get_portfolio_utils import (
     fetch_portfolio_data, handle_empty_portfolio, fetch_quotes,
@@ -33,7 +31,7 @@ async def order(request: schemas.Order, db: AsyncSession, current_user: schemas.
         return await sell_handler(request, db, current_user, symbol, price, value)
 
 
-async def get_portfolio(db: AsyncSession, current_user: schemas.TokenData, page: int, page_size: int) -> dict:
+async def get_portfolio(db: AsyncSession, current_user: schemas.TokenData, page: int, page_size: int) -> schemas.PortfolioResponse:
     total_stocks, portfolio_data = await fetch_portfolio_data(db, current_user, page, page_size)
 
     if not portfolio_data:
@@ -46,7 +44,7 @@ async def get_portfolio(db: AsyncSession, current_user: schemas.TokenData, page:
     return await build_portfolio_response(db, current_user, detailed_portfolio_data, total_stocks)
 
 
-async def get_history(db: AsyncSession, current_user: schemas.TokenData, page: int, page_size: int) -> dict[str, Any]:
+async def get_history(db: AsyncSession, current_user: schemas.TokenData, page: int, page_size: int) -> HistoryResponse:
     from sqlalchemy import func
     total_items = (await db.execute(
         select(func.count(modelHistory.order_id)).where(modelHistory.user_id == current_user.id)
@@ -67,25 +65,23 @@ async def get_history(db: AsyncSession, current_user: schemas.TokenData, page: i
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"No records for this page, there are {total_items} records total for the account")
 
-    history_to_return = [
-        schemaHistory(
-            symbol=history.symbol,
-            price=round(history.price, 2),
-            amount=history.amount,
-            type=history.type,
-            value=round(history.value, 2),
-            profit=round(history.profit, 2),
-            time_stamp=history.created_at,
-        )
-        for history in history_array
-    ]
-
-    return {
-        "total_items": total_items,
-        "page": page,
-        "page_size": page_size,
-        "history": history_to_return,
-    }
+    return HistoryResponse(
+        total_items=total_items,
+        page=page,
+        page_size=page_size,
+        history=[
+            schemaHistory(
+                symbol=h.symbol,
+                price=round(h.price, 2),
+                amount=h.amount,
+                type=h.type,
+                value=round(h.value, 2),
+                profit=round(h.profit, 2),
+                time_stamp=h.created_at,
+            )
+            for h in history_array
+        ],
+    )
 
 
 async def add_to_watchlist(request: Stock, db: AsyncSession, current_user: schemas.TokenData):
