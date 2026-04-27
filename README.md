@@ -8,6 +8,7 @@
 ![AWS](https://img.shields.io/badge/AWS-ECS%20Fargate-FF9900?style=flat&logo=amazonaws&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-92%20passing-brightgreen?style=flat&logo=pytest&logoColor=white)
 ![Coverage](https://img.shields.io/badge/Coverage-76%25-yellow?style=flat)
+![Release](https://img.shields.io/github/v/release/eliran-ovadia/demo_stock_trading_full_backend?style=flat)
 
 A production-grade async REST API simulating a stock trading exchange. Users start with **$100,000 virtual cash** and can trade real US stocks with live market data, manage portfolios, track transaction history, and follow analyst sentiment — all backed by a secure JWT authentication system with refresh token rotation.
 
