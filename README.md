@@ -1,7 +1,7 @@
 # Stock Trading Exchange API
 
 ![Python](https://img.shields.io/badge/Python-3.14-3776AB?style=flat&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat&logo=fastapi&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.136.1-009688?style=flat&logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-asyncpg-4169E1?style=flat&logo=postgresql&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-asyncio-DC382D?style=flat&logo=redis&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat&logo=docker&logoColor=white)
@@ -145,7 +145,7 @@ Interactive docs available at `/docs` when the server is running.
 ## Security Design
 
 - **JWT access tokens** (15 min TTL) signed with HS256 — user data embedded, no DB hit per request
-- **Refresh token rotation** — each refresh token is single-use; reuse triggers invalidation
+- **Refresh tokens** with rotation — each refresh token is single-use; reuse triggers invalidation
 - **Logout blacklist** — revoked JTIs stored in Redis with exact remaining TTL; auto-cleaned on expiry
 - **Timing attack prevention** — bcrypt always runs even when the user doesn't exist (`_DUMMY_HASH`)
 - **Admin verification** — admin status re-checked from DB on admin routes, not trusted from JWT claim
