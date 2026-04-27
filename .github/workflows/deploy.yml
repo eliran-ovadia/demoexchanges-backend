@@ -8,7 +8,7 @@ env:
   AWS_REGION: il-central-1          # ← update if your RDS is in a different region
   ECR_REPOSITORY: demo-stock-trading
   ECS_CLUSTER: demo-trading-cluster
-  ECS_SERVICE: demo-trading-service
+  ECS_SERVICE: demo-trading-task-strong-service-111
   CONTAINER_NAME: demo-trading-app
 
 jobs:
