@@ -19,7 +19,7 @@ EXPOSE 8000
 
 # 2 * vCPU + 1 workers — tune via ECS task definition env var GUNICORN_WORKERS
 CMD ["sh", "-c", "gunicorn src.exchange.main:app \
-    -w ${GUNICORN_WORKERS:-3} \
+    -w 2 \
     -k uvicorn.workers.UvicornWorker \
     --bind 0.0.0.0:8000 \
     --timeout 120 \
