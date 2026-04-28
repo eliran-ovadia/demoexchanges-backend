@@ -16,15 +16,15 @@ A production-grade async REST API simulating a stock trading exchange. Users sta
 
 ## Features
 
-- **Live market data** — real-time quotes, market movers, stock search, and analyst sentiment via Financial Modeling Prep
-- **Paper trading** — buy and sell US stocks with live prices; profit/loss calculated on every trade
-- **Portfolio management** — paginated holdings view with live valuations, average cost basis, and total return
-- **Transaction history** — full audit trail of every order with timestamps and realized P&L
-- **Watchlist** — track symbols without trading them
-- **Secure auth** — JWT access tokens (15 min) + refresh tokens (24 hr) with rotation; logout blacklists tokens in Redis
-- **Rate limiting** — per-IP limits on all endpoints, Redis-backed, stricter on auth routes
-- **Stock split detection** — nightly background job adjusts share counts automatically
-- **Async throughout** — fully async stack (asyncpg, httpx, redis.asyncio) for high concurrency
+1. Live market data : real-time quotes, market movers, stock search, and analyst sentiment via Financial Modeling Prep
+2. Paper trading : buy and sell US stocks at live prices with profit/loss calculated on every trade
+3. Portfolio management : paginated holdings with live valuations, average cost basis, and total return
+4. Transaction history : full audit trail of every order with timestamps and realized P&L
+5. Watchlist : track symbols without trading them
+6. Secure auth : JWT access tokens (15 min) with refresh token rotation; logout blacklists tokens in Redis
+7. Rate limiting : per-IP on all endpoints, Redis-backed, with stricter limits on auth routes
+8. Stock split detection : nightly background job adjusts share counts automatically
+9. Fully async : asyncpg, httpx, and redis.asyncio throughout for high concurrency
 
 ---
 
@@ -145,12 +145,12 @@ Interactive docs available at `/docs` when the server is running.
 
 ## Security Design
 
-- **JWT access tokens** (15 min TTL) signed with HS256 — user data embedded, no DB hit per request
-- **Refresh tokens** with rotation — each refresh token is single-use; reuse triggers invalidation
-- **Logout blacklist** — revoked JTIs stored in Redis with exact remaining TTL; auto-cleaned on expiry
-- **Timing attack prevention** — bcrypt always runs even when the user doesn't exist (`_DUMMY_HASH`)
-- **Admin verification** — admin status re-checked from DB on admin routes, not trusted from JWT claim
-- **Password policy** — uppercase, lowercase, digit, special char required; blocks common passwords and personal info
+1. JWT access tokens : 15-minute TTL, signed with HS256; user data embedded so protected routes require no DB hit per request
+2. Refresh token rotation : each token is single-use; reuse of a consumed token triggers immediate invalidation
+3. Logout blacklist : revoked JTIs stored in Redis with exact remaining TTL, cleaned up automatically on expiry
+4. Timing attack prevention : bcrypt always runs even when the user doesn't exist
+5. Admin verification : admin status re-checked from DB on admin routes, not trusted from the JWT claim
+6. Password policy : requires uppercase, lowercase, digit, and special character; blocks common passwords and personal info
 
 ---
 
@@ -237,12 +237,9 @@ erDiagram
 
 ## Getting Started
 
-### Prerequisites
-- Python 3.14+
-- PostgreSQL
-- Redis
+Requires Python 3.14+, PostgreSQL, and Redis.
 
-### Local Setup
+### Local Setup (without Docker)
 
 ```bash
 # Clone and install
@@ -257,6 +254,15 @@ alembic upgrade head
 # Start dev server
 uvicorn src.exchange.main:app --reload
 ```
+
+### Local Setup (Docker)
+
+```bash
+# Build and start Postgres, Redis, and the API
+docker compose up --build
+```
+
+The `migrate` service runs `alembic upgrade head` automatically before the API starts. On subsequent runs with an existing volume, it is a no-op if the schema is already up to date.
 
 ### Environment Variables
 
@@ -284,9 +290,17 @@ pytest tests/ --cov=src --cov-report=html  # with coverage report
 
 ## Cloud Deployment
 
-```bash
-# Multi-process production server
-gunicorn src.exchange.main:app -w <(vCPU * 2 + 1)> -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
-```
-
 Deployed on **AWS ECS Fargate** behind an **Application Load Balancer** with HTTPS termination via ACM. Environment variables are injected from **AWS Secrets Manager** at container boot. CI/CD via GitHub Actions: tests must pass before any image is built or deployed.
+
+### Migrations on AWS
+
+Migrations are intentionally not run on every container start — doing so would race across multiple ECS tasks scaling up simultaneously. Instead, run migrations once as a one-off ECS task before each deployment:
+
+```bash
+aws ecs run-task \
+  --cluster <your-cluster> \
+  --task-definition <your-task-definition> \
+  --overrides '{"containerOverrides":[{"name":"api","command":["alembic","upgrade","head"]}]}' \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[<subnet-id>],securityGroups=[<sg-id>]}"
+```
