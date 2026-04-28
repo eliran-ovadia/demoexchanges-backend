@@ -28,7 +28,9 @@ load_dotenv(find_dotenv())
 from src.exchange.database.db_conn import Base, SQLALCHEMY_DATABASE_URL
 from src.exchange.database.models import User, History, Portfolio, WatchlistItem, UsStocks, LastSplitDate
 
-safe_url = SQLALCHEMY_DATABASE_URL.replace("%", "%%")
+# Alembic runs synchronously and needs psycopg2, not asyncpg
+sync_url = SQLALCHEMY_DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://", 1)
+safe_url = sync_url.replace("%", "%%")
 config.set_main_option("sqlalchemy.url", safe_url)
 
 target_metadata = Base.metadata
