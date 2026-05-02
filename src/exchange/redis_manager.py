@@ -9,7 +9,7 @@ from src.exchange.app_logger import logger
 
 class RedisClient:
     def __init__(self, url: str):
-        self._redis = redis.from_url(url, decode_responses=True)
+        self._redis = redis.from_url(url, decode_responses=True, socket_connect_timeout=3, socket_timeout=5)
 
     # ------------------------------------------------------------------
     # Access token blacklist (fail-open: Redis down → token passes through)
@@ -55,11 +55,13 @@ class RedisClient:
     # Generic cache
     # ------------------------------------------------------------------
 
-    async def cache_set(self, key: str, value: str, ttl_seconds: int) -> None:
+    async def cache_set(self, key: str, value: str, ttl_seconds: int) -> bool:
         try:
             await self._redis.setex(key, ttl_seconds, value)
+            return True
         except redis.RedisError as e:
             logger.error(f"Redis cache set failed for key={key}: {e}")
+            return False
 
     async def cache_get(self, key: str) -> Optional[str]:
         try:

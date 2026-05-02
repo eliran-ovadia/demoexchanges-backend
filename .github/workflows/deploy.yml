@@ -1,15 +1,16 @@
 name: Deploy to ECS
 
 on:
-  workflow_dispatch: :
-#    branches: [master]
+  push:
+    branches: [master]
 
 env:
-  AWS_REGION: il-central-1          # ← update if your RDS is in a different region
-  ECR_REPOSITORY: demo-stock-trading
-  ECS_CLUSTER: demo-trading-cluster
-  ECS_SERVICE: demo-trading-task-strong-service-111
-  CONTAINER_NAME: demo-trading-app
+  AWS_REGION: il-central-1
+  ECR_REPOSITORY: demoexchanges-prod-container
+  ECS_CLUSTER: demo-api-cluster
+  ECS_SERVICE: demo-container-task-service
+  ECS_TASK_DEFINITION: demo-trading-task-strong
+  CONTAINER_NAME: demoexchanges-prod-container
 
 jobs:
   test:
@@ -37,12 +38,12 @@ jobs:
           REDIS_DEV_URL: redis://localhost:6379
           DATABASE_DEV_URL: postgresql://placeholder/placeholder
           FMP_API_KEY: test-key
-        run: pytest tests/ --no-cov -q
+        run: pytest
 
   deploy:
     name: Build & deploy
     runs-on: ubuntu-latest
-    needs: test          # only deploy if tests pass
+    needs: test
 
     steps:
       - uses: actions/checkout@v4
@@ -70,10 +71,25 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Deploy to ECS (force new deployment)
+      - name: Download current task definition
         run: |
-          aws ecs update-service \
-            --cluster $ECS_CLUSTER \
-            --service $ECS_SERVICE \
-            --force-new-deployment \
-            --region $AWS_REGION
+          aws ecs describe-task-definition \
+            --task-definition $ECS_TASK_DEFINITION \
+            --query taskDefinition \
+            > task-definition.json
+
+      - name: Render new task definition with updated image
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
