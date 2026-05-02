@@ -77,6 +77,8 @@ jobs:
             --task-definition $ECS_TASK_DEFINITION \
             --query taskDefinition \
             > task-definition.json
+          echo "Container names in task definition:"
+          python3 -c "import json; td=json.load(open('task-definition.json')); [print(' -', c['name']) for c in td['containerDefinitions']]"
 
       - name: Render new task definition with updated image
         id: render-task-def
