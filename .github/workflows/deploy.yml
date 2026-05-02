@@ -10,7 +10,7 @@ env:
   ECS_CLUSTER: demo-api-cluster
   ECS_SERVICE: demo-container-task-service
   ECS_TASK_DEFINITION: demo-trading-task-strong
-  CONTAINER_NAME: demoexchanges-prod-container
+  CONTAINER_NAME: demo-api-container
 
 jobs:
   test:
