@@ -10,7 +10,7 @@ env:
   ECS_CLUSTER: demo-api-cluster
   ECS_SERVICE: demo-container-task-service
   ECS_TASK_DEFINITION: demo-trading-task-strong
-  CONTAINER_NAME: demo-api-container
+  CONTAINER_NAME: demoexchanges-prod-container
 
 jobs:
   test:
@@ -77,8 +77,6 @@ jobs:
             --task-definition $ECS_TASK_DEFINITION \
             --query taskDefinition \
             > task-definition.json
-          echo "Container names in task definition:"
-          python3 -c "import json; td=json.load(open('task-definition.json')); [print(' -', c['name']) for c in td['containerDefinitions']]"
 
       - name: Render new task definition with updated image
         id: render-task-def
