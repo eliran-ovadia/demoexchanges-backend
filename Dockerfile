@@ -19,4 +19,4 @@ USER appuser
 EXPOSE 8000
 
 # 2 * vCPU + 1 workers — tune via ECS task definition env var GUNICORN_WORKERS
-CMD ["uvicorn", "src.exchange.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "alembic upgrade head && uvicorn src.exchange.main:app --host 0.0.0.0 --port 8000"]
