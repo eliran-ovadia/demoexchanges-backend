@@ -15,8 +15,11 @@ class MarketMoversManager:
         from src.exchange.redis_manager import RedisManager
         try:
             movers = await fetch_market_movers()
-            await RedisManager.get_client().cache_set(_CACHE_KEY, json.dumps(movers), _CACHE_TTL)
-            logger.info("Market movers cache updated in Redis.")
+            stored = await RedisManager.get_client().cache_set(_CACHE_KEY, json.dumps(movers), _CACHE_TTL)
+            if stored:
+                logger.info("Market movers cache updated in Redis.")
+            else:
+                logger.warning("Market movers fetched but Redis cache write failed; continuing without cache.")
         except Exception as e:
             logger.error(f"Failed to update market movers: {e}")
 
